@@ -42,3 +42,5 @@ npx wrangler d1 execute DB --remote --file data/drugs_import.sql
 最終更新: Workers Builds（D1マイグレーション込み）での自動デプロイを確認。
 
 Workers Builds 連携の再確認（2026-11-08）。
+
+ビルド再試行の確認（17:31）。
