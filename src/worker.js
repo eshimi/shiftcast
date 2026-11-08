@@ -7,7 +7,7 @@ import { getAreaStats } from './stats.js';
 import { buildInsights } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
-import { refreshJmaForecastArea } fhrom './jma.js';
+import { refreshJmaForecastArea } from './jma.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
