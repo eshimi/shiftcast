@@ -7,7 +7,7 @@ import { getAreaStats } from './stats.js';
 import { buildInsights } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
-import { refreshJmaForecastArea } from './jma.js';
+import { refreshJmaForecastArea } fhrom './jma.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -119,15 +119,15 @@ app.get('/api/forecast', async (c) => {
   const db = c.env.DB;
   await ensureFresh(c.env, code);
   const now = Date.now();
-  const rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 78 * HOUR, now + 6 * 24 * HOUR);
-  const observed = await all(db, `SELECT ts,pressure,descr FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 72 * HOUR, now);
+  const rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 7 * 24 * HOUR, now + 6 * 24 * HOUR);
+  const observed = await all(db, `SELECT ts,pressure,descr FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 7 * 24 * HOUR, now);
   const fetchedAt = Number((await get(db, 'SELECT v FROM meta WHERE k=?', 'fetched:' + code))?.v || 0) || null;
   return c.json({
     area: { code, name: AREA_BY_CODE.get(code).name },
     now,
     fetchedAt,
     demo: rows.some((r) => r.source === 'demo'),
-    points: annotate(rows).filter((p) => p.ts >= now - 72 * HOUR),
+    points: annotate(rows).filter((p) => p.ts >= now - 7 * 24 * HOUR),
     observed,
     jma: await jmaForecast(c.env, code),
   });
