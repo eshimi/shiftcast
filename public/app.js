@@ -209,7 +209,7 @@ function drawChart(fc, logs) {
     responsive: true, maintainAspectRatio: false, animation: false,
     layout: { padding: { top: 38 } },
     scales: {
-      x: { type: 'linear', min: pts[0].ts, max: pts[pts.length - 1].ts, ticks: { stepSize: 6 * HOUR, maxRotation: 0, font: { size: 10 }, callback: (v) => { const d = new Date(v); return d.getHours() === 0 ? `${d.getMonth() + 1}/${d.getDate()}` : d.getHours() + '時'; } }, grid: { color: 'rgba(128,128,128,.15)' } },
+      x: { type: 'linear', min: pts[0].ts, max: pts[pts.length - 1].ts, ticks: { stepSize: 6 * HOUR, maxRotation: 0, font: { size: 10 }, callback: (v) => { const d = new Date(v); return [`${d.getMonth() + 1}/${d.getDate()}`, `${d.getHours()}時`]; } }, grid: { color: 'rgba(128,128,128,.15)' } },
       y: { min, max, ticks: { display: false } }, // 縦軸は横スクロールしても残るよう、HTML側(#yAxis)に描画
     },
     plugins: { legend: { display: false }, tooltip: { callbacks: { title: (it) => fmtDT(it[0].parsed.x), label: (it) => { const p = pts.find((q) => q.ts === it.parsed.x); return `${it.parsed.y.toFixed(1)} hPa` + (p?.rate != null ? ` (${p.rate > 0 ? '+' : ''}${p.rate.toFixed(1)}/h ${LABEL[p.level]})` : ''); } } } },
