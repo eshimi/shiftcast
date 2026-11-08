@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "shiftcast",
+  "main": "src/worker.js",
+  "compatibility_date": "2025-09-01",
+  "observability": { "enabled": true },
+  // 静的ファイル(PWA)はAssetsで配信。/api/* のみWorkerを先に実行する。
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "shiftcast",
+      // GitHub Actions(scripts/ensure-d1.sh)が実際のIDに置き換える。ローカル開発ではこのままでよい。
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // 10分ごとに起動し、src/cron.js が気象取得(3h毎)・アメダス(毎時)・統計(10分)・翌日アラート(20時JST)を振り分ける。
+  "triggers": { "crons": ["*/10 * * * *"] },
+  "vars": {
+    "ALERT_HOUR": "20",
+    "WEATHER_INTERVAL_H": "3",
+    "MIN_K": "5",
+    "EXTRA_AREAS": "",
+    "ALL_AREAS": "0"
+  }
+  // Secrets（wrangler secret put / Actions で設定）: OPENWEATHER_API_KEY, FIREBASE_SERVICE_ACCOUNT,
+  //   FIREBASE_WEB_CONFIG, FIREBASE_VAPID_KEY
+}

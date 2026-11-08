@@ -149,3 +149,7 @@ vite.config.ts.timestamp-*
 .turbo
 
 data/app.db*
+
+.wrangler/
+.dev.vars
+data/drugs_import.sql

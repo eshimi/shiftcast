@@ -1,25 +1,17 @@
 {
-  "name": "kiatsu",
-  "version": "0.1.0",
+  "name": "shiftcast",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "気圧・体調管理サービス（オープンデータ活用型）",
-  "engines": { "node": ">=22.13" },
+  "description": "気圧・体調管理サービス（Cloudflare Workers + D1）",
   "scripts": {
-    "start": "node --disable-warning=ExperimentalWarning src/server.js",
-    "dev": "node --watch --disable-warning=ExperimentalWarning src/server.js",
-    "batch:weather": "node --disable-warning=ExperimentalWarning scripts/run.js weather",
-    "batch:jma": "node --disable-warning=ExperimentalWarning scripts/run.js jma",
-    "batch:alert": "node --disable-warning=ExperimentalWarning scripts/run.js alert",
-    "batch:stats": "node --disable-warning=ExperimentalWarning scripts/run.js stats",
-    "import:drugs": "node --disable-warning=ExperimentalWarning scripts/import-drugs.js",
-    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+    "dev": "wrangler dev --test-scheduled",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "db:migrate:remote": "wrangler d1 migrations apply DB --remote",
+    "import:drugs": "node scripts/import-drugs.js",
+    "test": "node --test test/*.test.js"
   },
-  "dependencies": {
-    "chart.js": "4.4.6",
-    "express": "4.21.1"
-  },
-  "optionalDependencies": {
-    "firebase-admin": "12.7.0"
-  }
+  "dependencies": { "hono": "^4.6.0" },
+  "devDependencies": { "wrangler": "^4.0.0" }
 }

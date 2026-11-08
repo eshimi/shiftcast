@@ -1,0 +1,28 @@
+-- 動作確認用サンプル（厚労省データではありません）。本番は scripts/import-drugs.js で差し替え。
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ロキソニンS','ロキソニンs','第一三共ヘルスケア','ロキソプロフェンナトリウム水和物') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('バファリンA','バファリンa','ライオン','アスピリン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('バファリンルナJ','バファリンルナj','ライオン','イブプロフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('イブA錠','イブa錠','エスエス製薬','イブプロフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('EVE A錠','evea錠','エスエス製薬','イブプロフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ナロンエースT','ナロンエスt','大正製薬','イブプロフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ナロンメディカル','ナロンメディカル','大正製薬','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('セデス・ハイ','セデスハイ','シオノギヘルスケア','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('タイレノールA','タイレノルa','ジョンソン・エンド・ジョンソン','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ノーシン','ノシン','アラクス','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ケロリン','ケロリン','内外薬品','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ポンタールL','ポンタルl','第一三共ヘルスケア','メフェナム酸') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ルルアタックEX','ルルアタックex','第一三共ヘルスケア','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('新ルルA錠s','新ルルa錠s','第一三共ヘルスケア','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('パブロンゴールドA','パブロンゴルドa','大正製薬','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ストナ去たんカプセル','ストナ去タンカプセル','佐藤製薬','アセトアミノフェン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ガスター10','ガスタ10','第一三共ヘルスケア','ファモチジン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ガスピタン','ガスピタン','小林製薬','ファモチジン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ロートエース','ロトエス','ロート製薬','ロートエキス') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ドリエル','ドリエル','エスエス製薬','ジフェンヒドラミン塩酸塩') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('トラベルミン','トラベルミン','エーザイ','ジフェンヒドラミン') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('アネロン「ニスキャップ」','アネロンニスキャップ','エスエス製薬','ジメンヒドリナート') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('センパア','センパア','第一三共ヘルスケア','ジメンヒドリナート') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('五苓散','五苓散','ツムラ','五苓散') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('苓桂朮甘湯','苓桂朮甘湯','ツムラ','苓桂朮甘湯') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('呉茱萸湯','呉茱萸湯','ツムラ','呉茱萸湯') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
+INSERT INTO drugs(name,name_norm,maker,ingredient) VALUES('ロキソプロフェン錠「クニヒロ」','ロキソプロフェン錠クニヒロ','皇漢堂製薬','ロキソプロフェンナトリウム水和物') ON CONFLICT(name,maker) DO UPDATE SET name_norm=excluded.name_norm, ingredient=excluded.ingredient;
