@@ -345,18 +345,6 @@ async function loadInsight() {
   $('#insightDetail').textContent = `記録 ${r.totalLogs}件 / 不調(痛み3以上) ${r.events}件 / 気圧と照合できた件数 ${r.analyzed}件` +
     (d ? `\n不調時の直前3時間の平均気圧変化 ${d.meanDropAtEvents}hPa（全期間 ${d.meanDropBaseline}hPa）` : '');
   $('#insightDetail').style.whiteSpace = 'pre-line';
-  renderBento();
-}
-
-// 分析タブのデータ表示（React製 Analytics Bento。hero.js が window.KiatsuHero を提供）
-async function renderBento() {
-  const el = $('#bento-root');
-  if (!window.KiatsuHero?.renderBento) { el.textContent = ''; return; }
-  const [logs, forecast] = await Promise.all([
-    api('/logs?from=0').catch(() => []),
-    api('/forecast?area=' + (S.me.areas[0] || S.sel)).catch(() => null),
-  ]);
-  window.KiatsuHero.renderBento(el, { logs, forecast });
 }
 
 // ---------- 設定 ----------

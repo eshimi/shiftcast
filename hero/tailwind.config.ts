@@ -2,8 +2,8 @@ import type { Config } from "tailwindcss";
 
 export default {
   content: ["./src/**/*.{ts,tsx}"],
-  // 既存アプリのCSSと衝突しないよう、ユーティリティを #hero-root / #bento-root 配下に限定し、preflight(リセットCSS)は無効化
-  important: ":is(#hero-root, #bento-root)",
+  // 既存アプリのCSSと衝突しないよう、ユーティリティを #hero-root 配下に限定し、preflight(リセットCSS)は無効化
+  important: "#hero-root",
   corePlugins: { preflight: false },
   theme: {
     extend: {
@@ -18,7 +18,6 @@ export default {
         destructive: { DEFAULT: "hsl(var(--destructive) / <alpha-value>)", foreground: "hsl(var(--destructive-foreground) / <alpha-value>)" },
         muted: { DEFAULT: "hsl(var(--muted) / <alpha-value>)", foreground: "hsl(var(--muted-foreground) / <alpha-value>)" },
         accent: { DEFAULT: "hsl(var(--accent) / <alpha-value>)", foreground: "hsl(var(--accent-foreground) / <alpha-value>)" },
-        popover: { DEFAULT: "hsl(var(--popover) / <alpha-value>)", foreground: "hsl(var(--popover-foreground) / <alpha-value>)" },
         card: { DEFAULT: "hsl(var(--card) / <alpha-value>)", foreground: "hsl(var(--card-foreground) / <alpha-value>)" },
       },
       borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)" },

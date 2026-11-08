@@ -3,13 +3,11 @@
 @tailwind utilities;
 
 /* shadcn のデザイントークン。アプリ本体のカラー(青 #2563eb)に合わせ、#hero-root 内だけに適用 */
-#hero-root, #bento-root {
+#hero-root {
   --background: 220 27% 96%;
   --foreground: 217 28% 14%;
   --card: 0 0% 100%;
   --card-foreground: 217 28% 14%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 217 28% 14%;
   --primary: 221 83% 53%;
   --primary-foreground: 0 0% 100%;
   --secondary: 220 20% 92%;
@@ -27,13 +25,11 @@
   color: hsl(var(--foreground));
 }
 @media (prefers-color-scheme: dark) {
-  #hero-root, #bento-root {
+  #hero-root {
     --background: 212 24% 8%;
     --foreground: 214 32% 94%;
     --card: 211 24% 13%;
     --card-foreground: 214 32% 94%;
-    --popover: 211 24% 13%;
-    --popover-foreground: 214 32% 94%;
     --primary: 219 100% 72%;
     --primary-foreground: 212 24% 8%;
     --secondary: 213 24% 19%;
@@ -47,11 +43,9 @@
     --ring: 219 100% 72%;
   }
 }
-#hero-root *, #hero-root *::before, #hero-root *::after, #bento-root *, #bento-root *::before, #bento-root *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: hsl(var(--border)); }
+#hero-root *, #hero-root *::before, #hero-root *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: hsl(var(--border)); }
 
 /* preflight を無効にしているため、必要最小限のリセットだけ #hero-root 内に用意（ユーティリティの方が詳細度が高く、上書きできる） */
-#hero-root :is(h1, h2, h3, p, ul), #bento-root :is(h1, h2, h3, p, ul) { margin: 0; }
-#hero-root img, #bento-root img { display: block; max-width: 100%; }
-#bento-root table { border-collapse: collapse; }
-#bento-root svg { display: block; }
-#hero-root button, #bento-root button { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+#hero-root :is(h1, h2, h3, p, ul) { margin: 0; }
+#hero-root img { display: block; max-width: 100%; }
+#hero-root button { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; padding: 0; }

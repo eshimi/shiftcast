@@ -49,7 +49,3 @@ Workers Builds 連携の再確認（2026-11-08）。
 ダッシュボード上部のHEROは `hero/`（Vite + React + TypeScript + Tailwind、shadcn構成）で作り、
 ビルド済みの `public/hero/hero.js|css` を素のJSアプリに差し込んでいます（ビルド成果物はコミット済みなので、デプロイ時のビルド設定変更は不要）。
 編集したら `npm run build:hero` で再生成してください。モックアップの画像は `public/hero/shots/` のアプリ実画面です。
-
-### 分析タブ（Analytics Bento）
-`hero/src/components/ui/analytics-bento.tsx` を使い、気圧・時間帯別の記録・症状タグ別・曜日別の4カードで表示します。
-データの変換は `hero/src/bento-data.ts`（API の記録/気圧 → コンポーネントの props）。デモ用の元データは `hero/src/analytics-bento-demo.tsx`。
