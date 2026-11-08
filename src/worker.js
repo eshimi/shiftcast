@@ -7,6 +7,7 @@ import { getAreaStats } from './stats.js';
 import { buildInsights } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
+import { refreshJmaForecastArea } from './jma.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -94,22 +95,41 @@ app.delete('/api/me', async (c) => {
 });
 
 // ---------- ダッシュボード ----------
+async function jmaForecast(env, code) {
+  const read = async () => {
+    const raw = (await get(env.DB, 'SELECT v FROM meta WHERE k=?', 'jmaFc:' + code))?.v;
+    return raw ? JSON.parse(raw) : null;
+  };
+  let j = await read();
+  if (!j || Date.now() - j.at > 6 * HOUR) {
+    // 未取得/古い場合はその場で取得（失敗しても気圧表示は続ける）
+    try {
+      await refreshJmaForecastArea(env, code);
+      j = await read();
+    } catch (e) {
+      console.error('[jma:forecast:on-demand]', e.message);
+    }
+  }
+  return j && Date.now() - j.at < 24 * HOUR ? j : null;
+}
+
 app.get('/api/forecast', async (c) => {
   const code = c.req.query('area') || '';
   if (!isAreaCode(code)) return bad(c, 'bad_area');
   const db = c.env.DB;
   await ensureFresh(c.env, code);
   const now = Date.now();
-  const rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 30 * HOUR, now + 6 * 24 * HOUR);
-  const observed = await all(db, `SELECT ts,pressure,descr FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 24 * HOUR, now);
+  const rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 78 * HOUR, now + 6 * 24 * HOUR);
+  const observed = await all(db, `SELECT ts,pressure,descr FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 72 * HOUR, now);
   const fetchedAt = Number((await get(db, 'SELECT v FROM meta WHERE k=?', 'fetched:' + code))?.v || 0) || null;
   return c.json({
     area: { code, name: AREA_BY_CODE.get(code).name },
     now,
     fetchedAt,
     demo: rows.some((r) => r.source === 'demo'),
-    points: annotate(rows).filter((p) => p.ts >= now - 24 * HOUR),
+    points: annotate(rows).filter((p) => p.ts >= now - 72 * HOUR),
     observed,
+    jma: await jmaForecast(c.env, code),
   });
 });
 

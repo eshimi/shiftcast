@@ -1,5 +1,5 @@
 // 気象庁アメダス実況による国内データの補完。最寄りの「気圧観測あり」観測所の海面気圧を実況値として保存する。
-import { batch } from './db.js';
+import { batch, setMeta } from './db.js';
 import { AREAS } from './areas.js';
 import { targetAreas } from './weather.js';
 
@@ -43,4 +43,42 @@ export async function refreshJma(env) {
   }
   await batch(env.DB, stmts);
   console.log(`[jma] stored ${stmts.length} areas @ ${latest}`);
+}
+
+/** 気象庁 府県天気予報の要約（今日〜数日の天気文と降水確率）。主地域(areas[0])を採用。 */
+export function summarizeForecast(data) {
+  const short = data?.[0]?.timeSeries;
+  if (!short?.[0]?.areas?.[0]) return [];
+  const w = short[0];
+  const pops = short.find((t) => t.areas?.[0]?.pops);
+  const maxPop = {};
+  pops?.timeDefines.forEach((t, i) => {
+    const d = t.slice(0, 10); // JSTの日付
+    const v = Number(pops.areas[0].pops[i]);
+    if (Number.isFinite(v)) maxPop[d] = Math.max(maxPop[d] ?? 0, v);
+  });
+  return w.timeDefines.map((t, i) => ({
+    date: t.slice(0, 10),
+    weather: String(w.areas[0].weathers?.[i] ?? '').replace(/[\u3000\s]+/g, ' ').trim(),
+    pop: maxPop[t.slice(0, 10)] ?? null,
+  }));
+}
+
+export async function refreshJmaForecastArea(env, code) {
+  const a = AREAS.find((x) => x.code === code);
+  const data = await getJson(`https://www.jma.go.jp/bosai/forecast/data/forecast/${a.jma}.json`);
+  await setMeta(env.DB, 'jmaFc:' + code, JSON.stringify({ at: Date.now(), office: data[0]?.publishingOffice, days: summarizeForecast(data) }));
+}
+
+export async function refreshJmaForecast(env) {
+  let ok = 0;
+  for (const code of await targetAreas(env)) {
+    try {
+      await refreshJmaForecastArea(env, code);
+      ok++;
+    } catch (e) {
+      console.error('[jma:forecast]', code, e.message);
+    }
+  }
+  console.log(`[jma] forecast ${ok} areas`);
 }

@@ -23,14 +23,15 @@
     <div id="summary" class="card summary"></div>
     <div class="card">
       <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>
-      <div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div>
+      <div class="chart-box"><div id="yAxis" class="yaxis"></div><div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div></div>
       <div class="legend">
         <i class="lg rise"></i>上昇注意 <i class="lg slight"></i>やや注意 <i class="lg caution"></i>注意 <i class="lg warning"></i>警戒
         <span class="muted">／ 点線=気象庁アメダス実況</span>
       </div>
     </div>
+    <div id="jma" class="card" hidden></div>
     <div id="stats" class="card"></div>
-    <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
+    <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。<a href="/terms.html">利用規約</a></p>
   </section>
 
   <!-- 記録 -->
@@ -91,6 +92,7 @@
         <li>氏名・メールアドレス等は取得しません。端末ごとの匿名IDで記録を管理します。</li>
         <li>地域の「不調割合」は都道府県単位の匿名集計で、人数が少ない地域は表示しません。</li>
       </ul>
+      <p><a href="/terms.html">利用規約・プライバシーの詳細</a></p>
       <button id="wipe" class="btn danger block">自分のデータをすべて削除</button>
     </div>
   </section>

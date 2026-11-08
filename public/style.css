@@ -59,3 +59,11 @@ input, select, textarea { width: 100%; font: inherit; color: var(--fg); backgrou
 .tabs button span { display: block; font-size: 22px; line-height: 1.2; }
 .tabs button.on { color: var(--accent); font-weight: 600; }
 .toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: #1b2330; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 20; max-width: 90%; }
+.chart-box { display: flex; }
+.yaxis { position: relative; flex: none; width: 38px; font-size: 10px; color: var(--muted); }
+.yaxis span { position: absolute; right: 4px; transform: translateY(-50%); }
+.chart-box .chart-scroll { flex: 1; min-width: 0; }
+.jma-day { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
+.jma-day:last-child { border: 0; } .jma-day b { flex: none; width: 64px; }
+.jma-day .pop { flex: none; color: var(--muted); }
+a { color: var(--accent); }

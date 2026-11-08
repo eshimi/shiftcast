@@ -112,11 +112,11 @@ async function loadDash() {
   try {
     const [fc, logs, st] = await Promise.all([
       api('/forecast?area=' + code),
-      api(`/logs?from=${Date.now() - 24 * HOUR}`),
+      api(`/logs?from=${Date.now() - 72 * HOUR}`),
       api('/area-stats?area=' + code),
     ]);
     if (code !== S.sel) return; // 切替競合
-    S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderStats(st);
+    S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
     $('#fetched').textContent = fc.fetchedAt ? `更新 ${fmtDT(fc.fetchedAt)}` : '';
     $('#demoBadge').hidden = !fc.demo && !S.cfg.demo;
   } catch (e) { toast('気象データを取得できませんでした'); }
@@ -210,7 +210,7 @@ function drawChart(fc, logs) {
     layout: { padding: { top: 38 } },
     scales: {
       x: { type: 'linear', min: pts[0].ts, max: pts[pts.length - 1].ts, ticks: { stepSize: 6 * HOUR, maxRotation: 0, font: { size: 10 }, callback: (v) => { const d = new Date(v); return d.getHours() === 0 ? `${d.getMonth() + 1}/${d.getDate()}` : d.getHours() + '時'; } }, grid: { color: 'rgba(128,128,128,.15)' } },
-      y: { min, max, title: { display: true, text: 'hPa', font: { size: 10 } }, ticks: { font: { size: 10 } } },
+      y: { min, max, ticks: { display: false } }, // 縦軸は横スクロールしても残るよう、HTML側(#yAxis)に描画
     },
     plugins: { legend: { display: false }, tooltip: { callbacks: { title: (it) => fmtDT(it[0].parsed.x), label: (it) => { const p = pts.find((q) => q.ts === it.parsed.x); return `${it.parsed.y.toFixed(1)} hPa` + (p?.rate != null ? ` (${p.rate > 0 ? '+' : ''}${p.rate.toFixed(1)}/h ${LABEL[p.level]})` : ''); } } } },
   };
@@ -218,9 +218,31 @@ function drawChart(fc, logs) {
   S.chart = new Chart($('#chart'), { type: 'line', data, options: opts, plugins: [overlay] });
   S.chart.$pts = pts; S.chart.$now = fc.now; S.chart.$logs = logs;
   S.chart.update('none');
+  drawYAxis(S.chart, min, max);
   // 現在時刻付近まで自動スクロール
   const sc = $('#chartScroll');
   sc.scrollLeft = Math.max(0, ((fc.now - pts[0].ts) / (pts[pts.length - 1].ts - pts[0].ts)) * wrap.clientWidth - sc.clientWidth * 0.3);
+}
+
+function drawYAxis(chart, min, max) {
+  const box = $('#yAxis'); box.replaceChildren();
+  box.style.height = $('#chartWrap').style.height || '300px';
+  const step = max - min > 30 ? 10 : max - min > 14 ? 5 : 2;
+  for (let v = Math.ceil(min / step) * step; v <= max; v += step) box.append(h('span', { style: `top:${chart.scales.y.getPixelForValue(v)}px` }, String(v)));
+  box.append(h('span', { style: 'top:6px;font-size:9px' }, 'hPa'));
+}
+
+const jmaText = (w) => w || '';
+function renderJma(j) {
+  const el = $('#jma');
+  if (!j?.days?.length) { el.hidden = true; return; }
+  el.hidden = false;
+  const dow = '日月火水木金土';
+  el.replaceChildren(
+    h('b', {}, '気象庁の天気予報'),
+    ...j.days.slice(0, 3).map((d) => { const [y, m, dd] = d.date.split('-').map(Number); const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay(); return h('div', { class: 'jma-day' }, h('b', {}, `${m}/${dd}(${dow[wd]})`), h('span', {}, jmaText(d.weather)), h('span', { class: 'pop' }, d.pop != null ? `☂${d.pop}%` : '')); }),
+    h('div', { class: 'muted' }, `${j.office || '気象庁'} 発表（降水確率は日ごとの最大値）`),
+  );
 }
 
 function renderStats(st) {
