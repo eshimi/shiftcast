@@ -38,3 +38,5 @@ npx wrangler d1 execute DB --remote --file data/drugs_import.sql
 
 ## 免責
 本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。
+
+最終更新: Workers Builds（D1マイグレーション込み）での自動デプロイを確認。
