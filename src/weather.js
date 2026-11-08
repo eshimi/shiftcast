@@ -1,5 +1,5 @@
 // 気象データ定期取得（OpenWeatherMap 無料枠）。クライアントは外部APIを直接呼ばず、ここで保存したD1を参照する。
-import { all, get, batch, getMeta, setMeta } from './db.js';
+import { all, get, run, batch, getMeta, setMeta } from './db.js';
 import { AREAS, AREA_BY_CODE } from './areas.js';
 import { HOUR } from './pressure.js';
 
@@ -43,6 +43,7 @@ export async function refreshArea(env, code) {
     await batch(env.DB, demoRows(code, has ? now - 6 * HOUR : now - 14 * 24 * HOUR, now + 5 * 24 * HOUR));
   } else {
     const base = `lat=${area.lat}&lon=${area.lon}&units=metric&lang=ja&appid=${env.OPENWEATHER_API_KEY}`;
+    await run(env.DB, "DELETE FROM points WHERE source='demo'"); // キー設定後はデモ行を残さない
     const [fc, cur] = await Promise.all([
       getJson(`https://api.openweathermap.org/data/2.5/forecast?${base}`),
       getJson(`https://api.openweathermap.org/data/2.5/weather?${base}`),
