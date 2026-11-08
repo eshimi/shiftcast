@@ -10,8 +10,8 @@
     {
       "binding": "DB",
       "database_name": "shiftcast",
-      // GitHub Actions(scripts/ensure-d1.sh)が実際のIDに置き換える。ローカル開発ではこのままでよい。
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Cloudflare上のD1 "shiftcast" のID
+      "database_id": "de6edbd7-daa6-477c-b981-5f6e26661650",
       "migrations_dir": "migrations"
     }
   ],

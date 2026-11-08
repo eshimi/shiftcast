@@ -14,5 +14,5 @@ if [ -z "$ID" ]; then
   ID=$(find_id)
 fi
 [ -n "$ID" ] || { echo "D1 database id not found" >&2; exit 1; }
-sed -i "s/00000000-0000-0000-0000-000000000000/$ID/" wrangler.jsonc
+[ "$ID" = "de6edbd7-daa6-477c-b981-5f6e26661650" ] || sed -i "s/de6edbd7-daa6-477c-b981-5f6e26661650/$ID/" wrangler.jsonc
 echo "D1 $NAME = $ID"

@@ -1,7 +1,6 @@
 name: Deploy to Cloudflare
+# 通常のデプロイはCloudflare Workers Builds(GitHub連携)が行う。これは手動実行用の予備。
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 concurrency: deploy
 jobs:
