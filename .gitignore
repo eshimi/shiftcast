@@ -153,3 +153,5 @@ data/app.db*
 .wrangler/
 .dev.vars
 data/drugs_import.sql
+
+hero/node_modules/

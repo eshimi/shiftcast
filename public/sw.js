@@ -1,6 +1,6 @@
 // アプリシェルのキャッシュ + FCM(Web Push)の受信
-const CACHE = 'kiatsu-shell-v2';
-const SHELL = ['/', '/style.css', '/app.js', '/manifest.json', '/terms.html', '/icon.svg', '/vendor/chart.js'];
+const CACHE = 'kiatsu-shell-v3';
+const SHELL = ['/', '/style.css', '/app.js', '/manifest.json', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/icon.svg', '/vendor/chart.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

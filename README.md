@@ -44,3 +44,8 @@ npx wrangler d1 execute DB --remote --file data/drugs_import.sql
 Workers Builds 連携の再確認（2026-11-08）。
 
 ビルド再試行の確認（17:31）。
+
+## HERO（React / Tailwind / shadcn）
+ダッシュボード上部のHEROは `hero/`（Vite + React + TypeScript + Tailwind、shadcn構成）で作り、
+ビルド済みの `public/hero/hero.js|css` を素のJSアプリに差し込んでいます（ビルド成果物はコミット済みなので、デプロイ時のビルド設定変更は不要）。
+編集したら `npm run build:hero` で再生成してください。モックアップの画像は `public/hero/shots/` のアプリ実画面です。
