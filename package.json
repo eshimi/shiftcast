@@ -1,0 +1,25 @@
+{
+  "name": "kiatsu",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "気圧・体調管理サービス（オープンデータ活用型）",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.js",
+    "dev": "node --watch --disable-warning=ExperimentalWarning src/server.js",
+    "batch:weather": "node --disable-warning=ExperimentalWarning scripts/run.js weather",
+    "batch:jma": "node --disable-warning=ExperimentalWarning scripts/run.js jma",
+    "batch:alert": "node --disable-warning=ExperimentalWarning scripts/run.js alert",
+    "batch:stats": "node --disable-warning=ExperimentalWarning scripts/run.js stats",
+    "import:drugs": "node --disable-warning=ExperimentalWarning scripts/import-drugs.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  },
+  "dependencies": {
+    "chart.js": "4.4.6",
+    "express": "4.21.1"
+  },
+  "optionalDependencies": {
+    "firebase-admin": "12.7.0"
+  }
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>気圧ノート</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/icon.svg">
+<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="top">
+  <h1>気圧ノート</h1>
+  <span id="demoBadge" class="badge" hidden>デモデータ</span>
+</header>
+
+<main>
+  <!-- ダッシュボード -->
+  <section id="view-dash" class="view">
+    <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
+    <div id="summary" class="card summary"></div>
+    <div class="card">
+      <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>
+      <div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div>
+      <div class="legend">
+        <i class="lg rise"></i>上昇注意 <i class="lg slight"></i>やや注意 <i class="lg caution"></i>注意 <i class="lg warning"></i>警戒
+        <span class="muted">／ 点線=気象庁アメダス実況</span>
+      </div>
+    </div>
+    <div id="stats" class="card"></div>
+    <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
+  </section>
+
+  <!-- 記録 -->
+  <section id="view-log" class="view" hidden>
+    <div class="card">
+      <div class="card-h"><b id="formTitle">体調を記録</b><button id="cancelEdit" class="link" hidden>編集をやめる</button></div>
+      <label class="lbl">痛みの度合い</label>
+      <div id="pain" class="pain" role="radiogroup" aria-label="痛みの度合い"></div>
+      <label class="lbl">症状</label>
+      <div id="tags" class="chips wrap"></div>
+      <div class="row"><input id="newTag" placeholder="独自タグを追加" maxlength="20"><button id="addTag" class="btn sm">追加</button></div>
+      <label class="lbl">服薬</label>
+      <div id="myMeds" class="chips wrap"></div>
+      <div class="row"><input id="medQ" placeholder="医薬品名で検索" autocomplete="off"></div>
+      <div id="medSug" class="sug"></div>
+      <div id="selMeds" class="chips wrap"></div>
+      <label class="lbl" for="when">日時</label>
+      <input id="when" type="datetime-local">
+      <label class="lbl" for="note">メモ</label>
+      <textarea id="note" rows="2" maxlength="500" placeholder="任意"></textarea>
+      <button id="save" class="btn primary block">記録する</button>
+    </div>
+    <div class="card">
+      <div class="card-h"><b>最近の記録</b></div>
+      <ul id="logList" class="list"></ul>
+    </div>
+  </section>
+
+  <!-- 分析 -->
+  <section id="view-insight" class="view" hidden>
+    <div class="card"><div class="card-h"><b>あなたの傾向</b></div><p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
+    <p class="disclaimer">簡易的な統計であり、医学的な診断ではありません。気になる症状は医療機関にご相談ください。</p>
+  </section>
+
+  <!-- 設定 -->
+  <section id="view-settings" class="view" hidden>
+    <div class="card">
+      <div class="card-h"><b>エリア</b></div>
+      <p class="muted">1つ目が主エリアです（通知・地域統計に使用）。位置情報は都道府県単位に丸め、GPS座標は保存しません。</p>
+      <ul id="areaList" class="list"></ul>
+      <div class="row"><select id="areaSel"></select><button id="addArea" class="btn sm">追加</button></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><b>プッシュ通知</b></div>
+      <p class="muted">毎晩、翌日に「注意」以上の気圧低下が予測されるときだけ通知します。</p>
+      <label class="switch"><input type="checkbox" id="notifyChk"> 気圧低下アラートを受け取る</label>
+      <div id="pushState" class="muted"></div>
+    </div>
+    <div class="card">
+      <div class="card-h"><b>マイ薬リスト</b></div>
+      <ul id="myMedList" class="list"></ul>
+    </div>
+    <div class="card">
+      <div class="card-h"><b>利用上の注意・プライバシー</b></div>
+      <ul class="notes">
+        <li>オープンAPIの気圧データは、標高や局地的な地形の影響を完全には反映できません。</li>
+        <li>本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</li>
+        <li>氏名・メールアドレス等は取得しません。端末ごとの匿名IDで記録を管理します。</li>
+        <li>地域の「不調割合」は都道府県単位の匿名集計で、人数が少ない地域は表示しません。</li>
+      </ul>
+      <button id="wipe" class="btn danger block">自分のデータをすべて削除</button>
+    </div>
+  </section>
+</main>
+
+<nav class="tabs">
+  <button data-v="dash" class="on"><span>📈</span>気圧</button>
+  <button data-v="log"><span>📝</span>記録</button>
+  <button data-v="insight"><span>🔍</span>分析</button>
+  <button data-v="settings"><span>⚙️</span>設定</button>
+</nav>
+<div id="toast" class="toast" hidden></div>
+
+<script src="/vendor/chart.js"></script>
+<script src="/app.js" type="module"></script>
+</body>
+</html>
