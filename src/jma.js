@@ -1,5 +1,6 @@
 // 気象庁アメダス実況による国内データの補完。最寄りの「気圧観測あり」観測所の海面気圧を実況値として保存する。
-import { batch, setMeta } from './db.js';
+import { batch, get, setMeta } from './db.js';
+import { HOUR } from './pressure.js';
 import { AREAS } from './areas.js';
 import { targetAreas } from './weather.js';
 
@@ -59,15 +60,62 @@ export function summarizeForecast(data) {
   });
   return w.timeDefines.map((t, i) => ({
     date: t.slice(0, 10),
+    code: w.areas[0].weatherCodes?.[i] ?? null,
     weather: String(w.areas[0].weathers?.[i] ?? '').replace(/[\u3000\s]+/g, ' ').trim(),
     pop: maxPop[t.slice(0, 10)] ?? null,
   }));
 }
 
+const num = (v) => (v === '' || v == null || Number.isNaN(Number(v)) ? null : Number(v));
+
+/** 週間天気予報（data[1]）の要約。主地域(areas[0])と代表地点の気温を採用。日付は予報の対象日(JST)。 */
+export function summarizeWeekly(data) {
+  const wk = data?.[1]?.timeSeries;
+  const w = wk?.[0];
+  const a = w?.areas?.[0];
+  if (!a) return [];
+  const t = wk.find((x) => x.areas?.[0]?.tempsMin);
+  const ta = t?.areas?.[0];
+  return w.timeDefines.map((td, i) => {
+    const date = td.slice(0, 10);
+    const ti = t ? t.timeDefines.findIndex((x) => x.slice(0, 10) === date) : -1;
+    return {
+      date,
+      code: a.weatherCodes?.[i] || null,
+      pop: num(a.pops?.[i]),
+      reliability: a.reliabilities?.[i] || '',
+      tmin: ti >= 0 ? num(ta.tempsMin?.[ti]) : null,
+      tmax: ti >= 0 ? num(ta.tempsMax?.[ti]) : null,
+    };
+  });
+}
+
 export async function refreshJmaForecastArea(env, code) {
   const a = AREAS.find((x) => x.code === code);
   const data = await getJson(`https://www.jma.go.jp/bosai/forecast/data/forecast/${a.jma}.json`);
-  await setMeta(env.DB, 'jmaFc:' + code, JSON.stringify({ at: Date.now(), office: data[0]?.publishingOffice, days: summarizeForecast(data) }));
+  await setMeta(
+    env.DB,
+    'jmaFc:' + code,
+    JSON.stringify({ at: Date.now(), office: data[0]?.publishingOffice, reported: data[1]?.reportDatetime ?? data[0]?.reportDatetime, days: summarizeForecast(data), week: summarizeWeekly(data) }),
+  );
+}
+
+/** 保存済みの気象庁予報を返す。未取得/6時間以上古ければその場で取得（失敗しても呼び出し側は続行できる）。 */
+export async function loadJmaCached(env, code) {
+  const read = async () => {
+    const raw = (await get(env.DB, 'SELECT v FROM meta WHERE k=?', 'jmaFc:' + code))?.v;
+    return raw ? JSON.parse(raw) : null;
+  };
+  let j = await read();
+  if (!j || Date.now() - j.at > 6 * HOUR || !j.week) {
+    try {
+      await refreshJmaForecastArea(env, code);
+      j = await read();
+    } catch (e) {
+      console.error('[jma:forecast:on-demand]', e.message);
+    }
+  }
+  return j && Date.now() - j.at < 24 * HOUR ? j : null;
 }
 
 export async function refreshJmaForecast(env) {

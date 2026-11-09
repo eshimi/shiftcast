@@ -67,3 +67,5 @@ input, select, textarea { width: 100%; font: inherit; color: var(--fg); backgrou
 .jma-day:last-child { border: 0; } .jma-day b { flex: none; width: 64px; }
 .jma-day .pop { flex: none; color: var(--muted); }
 a { color: var(--accent); }
+
+.top .home { text-decoration: none; color: var(--accent); font-size: 20px; padding: 2px 6px; margin-left: -6px; }

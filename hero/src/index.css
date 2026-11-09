@@ -49,3 +49,4 @@
 #hero-root :is(h1, h2, h3, p, ul) { margin: 0; }
 #hero-root img { display: block; max-width: 100%; }
 #hero-root button { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+#hero-root a { text-decoration: none; }

@@ -7,7 +7,10 @@ import { getAreaStats } from './stats.js';
 import { buildInsights } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
-import { refreshJmaForecastArea } from './jma.js';
+import { loadJmaCached } from './jma.js';
+import { buildWeek } from './week.js';
+import { columnList } from './columns.js';
+import { topPage, weatherPage, columnsPage, columnPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -17,7 +20,7 @@ app.use('/api/*', async (c, next) => {
   await next();
   c.header('X-Content-Type-Options', 'nosniff');
   c.header('Referrer-Policy', 'no-referrer');
-  c.header('Cache-Control', 'no-store');
+  if (!c.res.headers.get('Cache-Control')) c.header('Cache-Control', 'no-store'); // 公開データのAPIは各ルートで指定
 });
 
 // ---------- 認証（端末ごとの匿名ID。氏名・メール等は扱わない） ----------
@@ -41,6 +44,15 @@ app.get('/api/config', (c) => {
   } catch {}
   return c.json({ demo: isDemo(c.env), firebase, vapidKey: c.env.FIREBASE_VAPID_KEY || null, levels: LEVEL_LABEL });
 });
+// 週間天気（トップ/週間天気ページ用。認証不要・個人情報なし）
+app.get('/api/week', async (c) => {
+  const code = c.req.query('area') || '';
+  if (!isAreaCode(code)) return bad(c, 'bad_area');
+  c.header('Cache-Control', 'public, max-age=300'); // 5分キャッシュ（気象データは3時間ごとの更新）
+  return c.json(await buildWeek(c.env, code));
+});
+app.get('/api/columns', (c) => c.json(columnList()));
+
 app.get('/api/areas', (c) => c.json(AREAS.map(({ code, name }) => ({ code, name }))));
 app.get('/api/nearest', (c) => {
   const lat = Number(c.req.query('lat'));
@@ -95,24 +107,6 @@ app.delete('/api/me', async (c) => {
 });
 
 // ---------- ダッシュボード ----------
-async function jmaForecast(env, code) {
-  const read = async () => {
-    const raw = (await get(env.DB, 'SELECT v FROM meta WHERE k=?', 'jmaFc:' + code))?.v;
-    return raw ? JSON.parse(raw) : null;
-  };
-  let j = await read();
-  if (!j || Date.now() - j.at > 6 * HOUR) {
-    // 未取得/古い場合はその場で取得（失敗しても気圧表示は続ける）
-    try {
-      await refreshJmaForecastArea(env, code);
-      j = await read();
-    } catch (e) {
-      console.error('[jma:forecast:on-demand]', e.message);
-    }
-  }
-  return j && Date.now() - j.at < 24 * HOUR ? j : null;
-}
-
 app.get('/api/forecast', async (c) => {
   const code = c.req.query('area') || '';
   if (!isAreaCode(code)) return bad(c, 'bad_area');
@@ -129,7 +123,7 @@ app.get('/api/forecast', async (c) => {
     demo: rows.some((r) => r.source === 'demo'),
     points: annotate(rows).filter((p) => p.ts >= now - 7 * 24 * HOUR),
     observed,
-    jma: await jmaForecast(c.env, code),
+    jma: await loadJmaCached(c.env, code),
   });
 });
 
@@ -198,6 +192,19 @@ for (const [route, table, col, field, max] of [['/api/tags', 'user_tags', 'tag',
 
 app.get('/api/drugs', async (c) => c.json(await searchDrugs(c.env.DB, (c.req.query('q') || '').slice(0, 40))));
 app.get('/api/insights', async (c) => c.json(await buildInsights(c.env, c.get('user').id)));
+
+// ---------- ページ（サーバー描画） ----------
+const html = (c, body, status = 200) => {
+  c.header('Cache-Control', 'public, max-age=300');
+  return c.html(body, status);
+};
+app.get('/', (c) => html(c, topPage()));
+app.get('/weather', (c) => html(c, weatherPage()));
+app.get('/columns', (c) => html(c, columnsPage()));
+app.get('/columns/:slug', (c) => {
+  const page = columnPage(c.req.param('slug'));
+  return page ? html(c, page) : html(c, notFoundPage(), 404);
+});
 
 app.notFound((c) => (c.req.path.startsWith('/api/') ? bad(c, 'not_found', 404) : c.env.ASSETS.fetch(c.req.raw)));
 app.onError((err, c) => {

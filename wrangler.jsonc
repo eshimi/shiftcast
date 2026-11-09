@@ -4,8 +4,8 @@
   "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
   "observability": { "enabled": true },
-  // 静的ファイル(PWA)はAssetsで配信。/api/* のみWorkerを先に実行する。
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  // 静的ファイル(アプリ本体 /app/ など)はAssetsで配信。API と、サーバー描画ページ(トップ・週間天気・コラム)はWorkerを先に実行する。
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/", "/weather", "/weather/", "/columns", "/columns/*"] },
   "d1_databases": [
     {
       "binding": "DB",

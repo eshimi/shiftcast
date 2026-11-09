@@ -63,6 +63,8 @@ async function boot(force) {
   }
   S.me = await api('/me');
   S.sel = S.me.areas[0];
+  const hv = location.hash.slice(1); // トップページ等からの直リンク（例: /app/#log）
+  if (['dash', 'log', 'insight', 'settings'].includes(hv)) S.view = hv;
   renderAll();
 }
 

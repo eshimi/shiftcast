@@ -49,3 +49,13 @@ Workers Builds 連携の再確認（2026-11-08）。
 ダッシュボード上部のHEROは `hero/`（Vite + React + TypeScript + Tailwind、shadcn構成）で作り、
 ビルド済みの `public/hero/hero.js|css` を素のJSアプリに差し込んでいます（ビルド成果物はコミット済みなので、デプロイ時のビルド設定変更は不要）。
 編集したら `npm run build:hero` で再生成してください。モックアップの画像は `public/hero/shots/` のアプリ実画面です。
+
+## ページ構成
+| URL | 内容 |
+|---|---|
+| `/` | トップページ（HERO・今日の気圧・今週の天気と気圧・コラム・はじめかた） |
+| `/weather` | 週間天気（気象庁の週間予報 + 気圧の日別アラート + これからの3時間ごと） |
+| `/columns`, `/columns/:slug` | コラム「気象病を防ぐ方法」（本文は `src/columns.js`） |
+| `/app/` | 気圧グラフ・体調記録・分析・設定のアプリ本体（PWAの起点） |
+
+トップ/週間天気/コラムは Worker がサーバー側で描画します（`src/pages.js`）。データは公開API `/api/week?area=<都道府県コード>`（5分キャッシュ）から取得します。
