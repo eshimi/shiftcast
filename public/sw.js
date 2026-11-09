@@ -1,5 +1,5 @@
 // アプリシェルのキャッシュ + FCM(Web Push)の受信
-const CACHE = 'kiatsu-shell-v5';
+const CACHE = 'kiatsu-shell-v6';
 const SHELL = ['/app/', '/style.css', '/app.js', '/manifest.json', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/icon.svg', '/vendor/chart.js'];
 
 self.addEventListener('install', (e) => {

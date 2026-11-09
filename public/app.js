@@ -64,27 +64,35 @@ async function boot(force) {
   S.me = await api('/me');
   S.sel = S.me.areas[0];
   const hv = location.hash.slice(1); // トップページ等からの直リンク（例: /app/#log）
-  if (['dash', 'log', 'insight', 'settings'].includes(hv)) S.view = hv;
+  if (VIEWS.includes(hv)) S.view = hv;
   renderAll();
 }
 
 function renderAll() {
   renderChips(); renderPain(); renderTags(); renderMyMeds(); renderSelMeds(); renderSettings();
   $('#when').value = toLocalInput(Date.now());
-  show(S.view);
+  show(S.view, { push: false });
 }
 
 // ---------- タブ ----------
-function show(v) {
+// 画面はURLの # と連動する（/app/#log など）。ブラウザの戻る/進む、トップページや通知からの直リンクも同じ経路で切り替わる。
+const VIEWS = ['dash', 'log', 'insight', 'settings'];
+function show(v, { push = true } = {}) {
+  if (!VIEWS.includes(v)) v = 'dash';
   S.view = v;
   document.querySelectorAll('.view').forEach((e) => (e.hidden = e.id !== 'view-' + v));
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  if (push && location.hash !== '#' + v) { try { history.pushState(null, '', '#' + v); } catch { /* 無視 */ } }
   if (v === 'dash') loadDash();
   if (v === 'log') loadLogs();
   if (v === 'insight') loadInsight();
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => show(b.dataset.v)));
+// 戻る/進む・同じページ内の #リンク（ブラウザが hashchange / popstate を発火）
+const fromHash = () => { if (S.me) show(location.hash.slice(1), { push: false }); };
+window.addEventListener('hashchange', fromHash);
+window.addEventListener('popstate', fromHash);
 
 // ---------- ダッシュボード ----------
 function renderChips() {
