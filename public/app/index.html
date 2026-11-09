@@ -8,13 +8,21 @@
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon.svg">
+<link rel="stylesheet" href="/header.css">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<header class="top">
-  <a class="home" href="/" aria-label="トップページへ" title="トップへ">←</a>
-  <h1>気圧ノート</h1>
-  <span id="demoBadge" class="badge" hidden>デモデータ</span>
+<header class="site-h">
+  <div class="wrap h-in">
+    <a class="logo" href="/"><img src="/icon.svg" alt="" width="26" height="26"><span>気圧ノート</span></a>
+    <span id="demoBadge" class="badge" hidden>デモデータ</span>
+  </div>
+  <nav class="wrap nav" aria-label="メインメニュー">
+    <a href="/">トップ</a>
+    <a href="/weather">週間天気</a>
+    <a href="/columns">コラム</a>
+    <a href="/app/" aria-current="page">気圧・記録</a>
+  </nav>
 </header>
 
 <main>

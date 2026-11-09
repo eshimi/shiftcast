@@ -27,6 +27,7 @@ function layout({ title, description, page, body, extraHead = '', scripts = '' }
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/header.css">
 <link rel="stylesheet" href="/site.css">
 ${extraHead}
 </head>

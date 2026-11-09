@@ -16,18 +16,9 @@ img { max-width: 100%; }
 .small { font-size: 13px; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* header / nav */
-.site-h { position: sticky; top: 0; z-index: 20; background: var(--card); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top); }
-.h-in { display: flex; align-items: center; justify-content: space-between; padding-top: 8px; padding-bottom: 4px; }
-.logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; text-decoration: none; color: var(--fg); }
-.nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
-.nav::-webkit-scrollbar { display: none; }
-.nav a { flex: none; padding: 6px 14px; border-radius: 99px; text-decoration: none; color: var(--muted); font-size: 14px; }
-.nav a[aria-current="page"] { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 18px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--fg); font: inherit; font-size: 15px; text-decoration: none; cursor: pointer; }
 .btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
 .btn.sm { min-height: 36px; padding: 4px 14px; font-size: 14px; }
-.h-app { min-height: 34px; }
 
 main { padding-top: 14px; padding-bottom: 32px; }
 .pg-h { font-size: 24px; margin: 8px 0 4px; line-height: 1.4; }

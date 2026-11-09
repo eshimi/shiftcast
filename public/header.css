@@ -1,0 +1,20 @@
+/* 全ページ共通のヘッダー（トップ・週間天気・コラム・アプリ）。.site-h 配下だけに効かせ、各ページのCSSと干渉させない */
+.site-h {
+  --h-accent-fg: #fff;
+  position: sticky; top: 0; z-index: 20;
+  background: var(--card); color: var(--fg);
+  border-bottom: 1px solid var(--line);
+  padding-top: env(safe-area-inset-top);
+  font: 16px/1.7 -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) { .site-h { --h-accent-fg: #0f141b; } }
+.site-h *, .site-h *::before, .site-h *::after { box-sizing: border-box; }
+.site-h .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 16px; }
+.site-h .h-in { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding-top: 8px; padding-bottom: 4px; }
+.site-h .logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; line-height: 1.4; text-decoration: none; color: var(--fg); }
+.site-h .logo img { display: block; }
+.site-h .h-app { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 4px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--h-accent-fg); font: inherit; font-size: 14px; font-weight: 600; text-decoration: none; }
+.site-h .nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.site-h .nav::-webkit-scrollbar { display: none; }
+.site-h .nav a { flex: none; padding: 6px 14px; border-radius: 99px; text-decoration: none; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.site-h .nav a[aria-current="page"] { background: var(--accent); color: var(--h-accent-fg); font-weight: 600; }
