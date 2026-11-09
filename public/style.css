@@ -1,15 +1,16 @@
 :root {
-  --bg: #f3f5f9; --card: #fff; --fg: #1b2330; --muted: #6b7686; --line: #e3e7ee; --accent: #2563eb;
+  --bg: #fff9f6; --card: #fff; --fg: #1f2f36; --muted: #5f717a; --line: #eadfd9; --accent: #243d47; --accent-fg: #fff;
+  --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0f141b; --card: #182029; --fg: #e8edf4; --muted: #93a0b1; --line: #263140; --accent: #6ea0ff; }
+  :root { --bg: #10191e; --card: #1a272d; --fg: #eef3f4; --muted: #9fb0b8; --line: #263941; --accent: #9fc2d0; --accent-fg: #10191e; }
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
 .badge { font-size: 11px; background: var(--caution); color: #fff; padding: 2px 8px; border-radius: 99px; }
 main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; }
-.card { background: var(--card); border-radius: 14px; padding: 14px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(0,0,0,.05); }
+.card { background: var(--card); border-radius: 20px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--line); }
 .card-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
 .muted { color: var(--muted); font-size: 13px; }
 .big { font-size: 17px; margin: 4px 0 8px; }
@@ -17,13 +18,13 @@ main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 6
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
 .chip { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 7px 14px; border-radius: 99px; font-size: 14px; min-height: 36px; }
-.chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.chip.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 .chip.x::after { content: " ×"; opacity: .6; }
 .summary { display: flex; gap: 12px; align-items: center; border-left: 6px solid var(--line); }
 .summary .ico { font-size: 34px; }
 .summary b { font-size: 18px; }
-.summary.rise { border-color: var(--rise); } .summary.slight { border-color: var(--slight); }
-.summary.caution { border-color: var(--caution); } .summary.warning { border-color: var(--warning); }
+.summary.rise { border-left-color: var(--rise); } .summary.slight { border-left-color: var(--slight); }
+.summary.caution { border-left-color: var(--caution); } .summary.warning { border-left-color: var(--warning); }
 .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #chartWrap { height: 300px; position: relative; }
 .legend { font-size: 12px; margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
@@ -38,7 +39,7 @@ main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 6
 input, select, textarea { width: 100%; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
 .btn { border: 0; border-radius: 10px; padding: 10px 16px; font: inherit; background: var(--line); color: var(--fg); min-height: 44px; }
 .btn.sm { flex: none; }
-.btn.primary { background: var(--accent); color: #fff; font-weight: 600; }
+.btn.primary { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
 .btn.danger { background: transparent; color: var(--warning); border: 1px solid var(--warning); }
 .btn.block { display: block; width: 100%; margin-top: 14px; }
 .link { background: none; border: 0; color: var(--accent); font: inherit; font-size: 13px; }
@@ -66,3 +67,6 @@ input, select, textarea { width: 100%; font: inherit; color: var(--fg); backgrou
 .jma-day .pop { flex: none; color: var(--muted); }
 a { color: var(--accent); }
 
+
+/* 見出しだけ明朝体（数値・グラフ・フォームはゴシック体のまま） */
+.card-h b, .summary b { font-family: var(--serif); font-weight: 700; letter-spacing: .04em; }

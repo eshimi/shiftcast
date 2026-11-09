@@ -1,20 +1,23 @@
-/* 全ページ共通のヘッダー（トップ・週間天気・コラム・アプリ）。.site-h 配下だけに効かせ、各ページのCSSと干渉させない */
+/* 全ページ共通のヘッダー（トップ・週間天気・コラム・アプリ）。.site-h 配下だけに効かせ、各ページのCSSと干渉させない。
+   色はページ側の変数に頼らず、ここで持つ（サイト全体で同じ見た目にするため）。 */
 .site-h {
-  --h-accent-fg: #fff;
+  --h-bg: #fff9f6; --h-fg: #1f2f36; --h-muted: #5f717a; --h-line: #eadfd9; --h-accent: #243d47; --h-accent-fg: #fff;
   position: sticky; top: 0; z-index: 20;
-  background: var(--card); color: var(--fg);
-  border-bottom: 1px solid var(--line);
+  background: var(--h-bg); color: var(--h-fg);
+  border-bottom: 1px solid var(--h-line);
   padding-top: env(safe-area-inset-top);
   font: 16px/1.7 -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
 }
-@media (prefers-color-scheme: dark) { .site-h { --h-accent-fg: #0f141b; } }
+@media (prefers-color-scheme: dark) {
+  .site-h { --h-bg: #141f24; --h-fg: #eef3f4; --h-muted: #9fb0b8; --h-line: #263941; --h-accent: #cfe3ea; --h-accent-fg: #10191e; }
+}
 .site-h *, .site-h *::before, .site-h *::after { box-sizing: border-box; }
 .site-h .wrap { width: 100%; max-width: 760px; margin: 0 auto; padding: 0 16px; }
 .site-h .h-in { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 52px; padding-top: 8px; padding-bottom: 4px; }
-.site-h .logo { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; line-height: 1.4; text-decoration: none; color: var(--fg); }
+.site-h .logo { display: inline-flex; align-items: center; gap: 8px; font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 600; font-size: 19px; letter-spacing: .06em; line-height: 1.4; text-decoration: none; color: var(--h-fg); }
 .site-h .logo img { display: block; }
-.site-h .h-app { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 4px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--h-accent-fg); font: inherit; font-size: 14px; font-weight: 600; text-decoration: none; }
-.site-h .nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+.site-h .h-app { display: inline-flex; align-items: center; justify-content: center; min-height: 34px; padding: 4px 16px; border-radius: 4px; border: 1px solid var(--h-accent); background: var(--h-accent); color: var(--h-accent-fg); font: inherit; font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", serif; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-decoration: none; }
+.site-h .nav { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
 .site-h .nav::-webkit-scrollbar { display: none; }
-.site-h .nav a { flex: none; padding: 6px 14px; border-radius: 99px; text-decoration: none; color: var(--muted); font-size: 14px; line-height: 1.7; }
-.site-h .nav a[aria-current="page"] { background: var(--accent); color: var(--h-accent-fg); font-weight: 600; }
+.site-h .nav a { flex: none; padding: 6px 12px; text-decoration: none; color: var(--h-muted); font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", serif; font-size: 14.5px; font-weight: 500; letter-spacing: .06em; line-height: 1.7; border-bottom: 2px solid transparent; }
+.site-h .nav a[aria-current="page"] { color: var(--h-fg); font-weight: 700; border-bottom-color: var(--h-accent); }

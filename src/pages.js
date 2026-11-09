@@ -11,19 +11,22 @@ const NAV = [
   ['/columns', 'コラム', 'columns'],
 ];
 
-function layout({ title, description, page, body, extraHead = '', scripts = '' }) {
+function layout({ title, description, page, body, extraHead = '', scripts = '', wide = false }) {
   const full = title === SITE ? SITE : `${title} | ${SITE}`;
   return `<!doctype html>
 <html lang="ja">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2563eb">
+<meta name="theme-color" content="#fff9f6">
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 <meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -42,11 +45,12 @@ ${extraHead}
     <a href="/app/">気圧・記録</a>
   </nav>
 </header>
-<main class="wrap">
+<main${wide ? '' : ' class="wrap"'}>
 ${body}
 </main>
 <footer class="site-f">
   <div class="wrap">
+    <p class="f-logo">気圧ノート</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
     <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/app/">アプリ</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
@@ -69,8 +73,10 @@ const LEVELS = `<div class="legend" aria-label="気圧変化の凡例">
   <span><i class="dot lv-rise"></i>上昇注意</span><span><i class="dot lv-slight"></i>やや注意</span><span><i class="dot lv-caution"></i>注意</span><span><i class="dot lv-warning"></i>警戒</span>
 </div>`;
 
-const columnCard = (c) => `<a class="col-card" href="/columns/${esc(c.slug)}">
-  <span class="col-emoji" aria-hidden="true">${c.emoji}</span>
+const secHead = (en, ja, id) => `<div class="sec-h"><p class="en">${en}</p><h2 id="${id}">${ja}</h2></div>`;
+
+const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}">
+  <span class="col-no" aria-hidden="true">${String(COLUMNS.indexOf(c) + 1).padStart(2, '0')}</span>
   <span class="col-body"><b>${esc(c.title)}</b><span class="muted">${esc(c.summary)}</span><small class="muted">約${c.readMin}分で読めます</small></span>
 </a>`;
 
@@ -78,40 +84,65 @@ const columnCard = (c) => `<a class="col-card" href="/columns/${esc(c.slug)}">
 
 export function topPage() {
   const body = `
-<div id="hero-root" class="hero-slot"></div>
-
-<section class="sec" aria-labelledby="t-today">
-  <div class="sec-h"><h2 id="t-today">今日の気圧</h2></div>
-  ${areaBar}
-  <div id="today" class="card today" aria-live="polite"><p class="muted">読み込み中…</p></div>
+<section class="hero" aria-labelledby="hero-title">
+  <i class="bub b1" aria-hidden="true"></i><i class="bub b2" aria-hidden="true"></i><i class="bub b3" aria-hidden="true"></i><i class="bub b4" aria-hidden="true"></i><i class="bub b5" aria-hidden="true"></i>
+  <div class="wrap">
+    <div class="hero-in">
+      <div class="hero-copy">
+        <p class="hero-brand"><img src="/icon.svg" alt="" width="34" height="34">気圧ノート</p>
+        <p class="eyebrow">WEATHER &amp; WELLNESS</p>
+        <p class="hero-sub">気圧の低下を前の晩に通知。<br>体調を記録するほど、あなたの「不調になりやすい条件」が見えてきます。</p>
+        <p class="hero-btns"><a class="btn dark" href="/app/#log">体調を記録する</a><a class="btn ghost" href="/weather">週間天気を見る</a></p>
+      </div>
+      <h1 id="hero-title" class="hero-title">気圧の変化を、<br>先回りで知る。</h1>
+    </div>
+    <div id="hero-root" class="hero-phone"></div>
+  </div>
 </section>
 
-<section class="sec" aria-labelledby="t-week">
-  <div class="sec-h"><h2 id="t-week">今週の天気と気圧</h2><a href="/weather">週間天気をひらく →</a></div>
-  <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
-  ${LEVELS}
+<section class="band" aria-labelledby="t-today">
+  <div class="wrap">
+    ${secHead('Today', '今日の気圧', 't-today')}
+    ${areaBar}
+    <div id="today" class="card today" aria-live="polite"><p class="muted">読み込み中…</p></div>
+  </div>
 </section>
 
-<section class="sec" aria-labelledby="t-col">
-  <div class="sec-h"><h2 id="t-col">気象病を防ぐコラム</h2><a href="/columns">すべて見る →</a></div>
-  <div class="col-list">${COLUMNS.slice(0, 3).map(columnCard).join('')}</div>
+<section class="band blush" aria-labelledby="t-week">
+  <div class="wrap">
+    ${secHead('Weekly', '今週の天気と気圧', 't-week')}
+    <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
+    ${LEVELS}
+    <p class="sec-more"><a class="btn dark block" href="/weather">週間天気をひらく</a></p>
+  </div>
 </section>
 
-<section class="sec" aria-labelledby="t-how">
-  <div class="sec-h"><h2 id="t-how">はじめかた</h2></div>
-  <ol class="steps">
-    <li><b>地域を選ぶ</b><span class="muted">現在地や、よく過ごす地域の気圧の予報を確認します。</span></li>
-    <li><b>体調を記録する</b><span class="muted">痛みの度合い・症状・服薬を、ワンタップで残します。</span></li>
-    <li><b>傾向を知る</b><span class="muted">記録がたまると「自分が不調になりやすい条件」が見えてきます。</span></li>
-    <li><b>前の晩に通知</b><span class="muted">翌日に気圧が大きく下がる見込みのときだけ、お知らせします。</span></li>
-  </ol>
-  <p><a class="btn primary" href="/app/">アプリで気圧・記録を見る</a></p>
+<section class="band" aria-labelledby="t-col">
+  <div class="wrap">
+    ${secHead('Column', '気象病を防ぐコラム', 't-col')}
+    <div class="col-list">${COLUMNS.slice(0, 3).map((c) => columnCard(c)).join('')}</div>
+    <p class="sec-more"><a class="btn dark block" href="/columns">コラムをすべて見る</a></p>
+  </div>
+</section>
+
+<section class="band teal" aria-labelledby="t-how">
+  <div class="wrap">
+    ${secHead('How to', 'はじめかた', 't-how')}
+    <ol class="steps">
+      <li><b>地域を選ぶ</b><span class="muted">現在地や、よく過ごす地域の気圧の予報を確認します。</span></li>
+      <li><b>体調を記録する</b><span class="muted">痛みの度合い・症状・服薬を、ワンタップで残します。</span></li>
+      <li><b>傾向を知る</b><span class="muted">記録がたまると「自分が不調になりやすい条件」が見えてきます。</span></li>
+      <li><b>前の晩に通知</b><span class="muted">翌日に気圧が大きく下がる見込みのときだけ、お知らせします。</span></li>
+    </ol>
+    <p><a class="btn block" href="/app/">アプリで気圧・記録を見る</a></p>
+  </div>
 </section>`;
   return layout({
     title: SITE,
     description: '気圧の変化を先回りで知り、体調を記録して自分の傾向を見つける、気象病セルフケアのサービス。週間天気・コラムも。',
     page: 'top',
     body,
+    wide: true,
     extraHead: '<link rel="stylesheet" href="/hero/hero.css">',
     scripts: '<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
   });
@@ -121,31 +152,33 @@ export function topPage() {
 
 export function weatherPage() {
   const body = `
-<h1 class="pg-h">週間天気</h1>
-<p class="lead muted">気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p>
+<div class="page-head"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div></div>
+<div class="wrap">
 ${areaBar}
 
 <div id="today" class="card today" aria-live="polite"><p class="muted">読み込み中…</p></div>
 
 <section class="sec" aria-labelledby="w-days">
-  <div class="sec-h"><h2 id="w-days">7日間の予報</h2></div>
+  ${secHead('7 Days', '7日間の予報', 'w-days')}
   <div id="days" class="days" aria-live="polite"><p class="muted">読み込み中…</p></div>
   ${LEVELS}
   <p class="muted small">気圧の欄は、その日の予測される最低・最高気圧（海面気圧）と、1時間あたりの最大の低下の段階です。気圧の予報は約5日先までのため、それより先の日は表示されません。</p>
 </section>
 
 <section class="sec" aria-labelledby="w-hour">
-  <div class="sec-h"><h2 id="w-hour">これからの3時間ごと</h2></div>
+  ${secHead('Hourly', 'これからの3時間ごと', 'w-hour')}
   <div id="hourly" class="strip hourly" aria-live="polite"><p class="muted">読み込み中…</p></div>
 </section>
 
-<p><a class="btn primary" href="/app/">気圧グラフと体調の記録を見る</a></p>
-<p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>`;
+<p><a class="btn primary block" href="/app/">気圧グラフと体調の記録を見る</a></p>
+<p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
+</div>`;
   return layout({
     title: '週間天気と気圧',
     description: '1週間の天気・気温・降水確率と、気圧が下がる日の目安を都道府県別に確認できます。',
     page: 'weather',
     body,
+    wide: true,
     scripts: '<script src="/site.js" defer></script>',
   });
 }
@@ -154,15 +187,17 @@ ${areaBar}
 
 export function columnsPage() {
   const body = `
-<h1 class="pg-h">気象病を防ぐコラム</h1>
-<p class="lead muted">気圧の変化で崩れる体調との付き合い方を、やさしくまとめました。</p>
-<div class="col-list">${COLUMNS.map(columnCard).join('')}</div>
-<p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>`;
+<div class="page-head"><div class="wrap"><p class="en">COLUMN</p><h1>気象病を防ぐコラム</h1><p>気圧の変化で崩れる体調との付き合い方を、やさしくまとめました。</p></div></div>
+<div class="wrap">
+<div class="col-list">${COLUMNS.map((c) => columnCard(c)).join('')}</div>
+<p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
+</div>`;
   return layout({
     title: 'コラム｜気象病を防ぐ方法',
     description: '気象病（天気痛）の仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までをまとめたコラム。',
     page: 'columns',
     body,
+    wide: true,
   });
 }
 
@@ -185,7 +220,7 @@ export function columnPage(slug) {
   const body = `
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <a href="/columns">コラム</a></nav>
 <article class="article">
-  <p class="art-emoji" aria-hidden="true">${c.emoji}</p>
+  <p class="art-no">COLUMN ${String(i + 1).padStart(2, '0')}</p>
   <h1>${esc(c.title)}</h1>
   <p class="muted small">約${c.readMin}分 ・ 更新 ${COLUMN_UPDATED}</p>
   <p class="lead">${esc(c.summary)}</p>
