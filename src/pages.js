@@ -67,7 +67,6 @@ const NAV = [
   ['/', 'トップ', 'top'],
   ['/weather', '週間天気', 'weather'],
   ['/columns', 'コラム', 'columns'],
-  ['/about', 'サービス紹介', 'about'],
 ];
 
 // フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
@@ -148,7 +147,8 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 /* ---------- トップ ---------- */
 
 export function topPage() {
-  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/about">サービス紹介</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
+  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
+  const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
@@ -271,7 +271,7 @@ export function topPage() {
 
     <footer class="lp-f">
       <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
-      <nav class="lp-f-nav">${nav}</nav>
+      <nav class="lp-f-nav">${footNav}</nav>
       <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
       <p><a href="/terms.html">利用規約・プライバシー</a></p>
       <p class="muted">天気: 気象庁 / OpenWeatherMap　© Rio²（リオリオ）</p>
