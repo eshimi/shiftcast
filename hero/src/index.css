@@ -2,30 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
-/* shadcn のデザイントークン。トップのHEROは常に「空と海」の濃いグラデーション背景なので、
-   ライト/ダークに関わらず明るい文字色・クリーム色のスマホ枠にする（#hero-root 内だけに適用） */
+/* shadcn のデザイントークン。トップの Experience セクション（薄いベージュ背景）に置くので、
+   スマホ枠は深い青緑、文字も濃い色にする（#hero-root 内だけに適用） */
 #hero-root, #bento-root {
-  --background: 197 32% 21%;
-  --foreground: 24 100% 98%;
+  --background: 24 100% 98%;
+  --foreground: 197 32% 21%;
   --card: 0 0% 100%;
   --card-foreground: 197 30% 16%;
   --popover: 0 0% 100%;
   --popover-foreground: 197 30% 16%;
-  --primary: 24 100% 98%;
-  --primary-foreground: 197 32% 21%;
-  --secondary: 197 25% 30%;
-  --secondary-foreground: 24 100% 98%;
-  --muted: 197 25% 30%;
-  --muted-foreground: 200 25% 84%;
-  --accent: 197 28% 32%;
-  --accent-foreground: 24 100% 98%;
+  --primary: 197 32% 21%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 20 40% 93%;
+  --secondary-foreground: 197 30% 16%;
+  --muted: 20 40% 93%;
+  --muted-foreground: 200 12% 42%;
+  --accent: 20 40% 90%;
+  --accent-foreground: 197 30% 16%;
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 197 20% 40%;
-  --input: 197 20% 40%;
-  --ring: 24 100% 98%;
+  --border: 20 25% 86%;
+  --input: 20 25% 86%;
+  --ring: 197 32% 21%;
   --radius: 0.75rem;
   color: hsl(var(--foreground));
+}
+@media (prefers-color-scheme: dark) {
+  #hero-root, #bento-root {
+    --foreground: 24 100% 98%;
+    --primary: 24 100% 98%;
+    --primary-foreground: 197 32% 21%;
+    --muted-foreground: 200 25% 84%;
+    --secondary: 197 25% 28%;
+    --muted: 197 25% 28%;
+    --accent: 197 28% 32%;
+    --border: 197 20% 40%;
+    --ring: 24 100% 98%;
+    color: hsl(var(--foreground));
+  }
 }
 #hero-root *, #hero-root *::before, #hero-root *::after { box-sizing: border-box; border-width: 0; border-style: solid; border-color: hsl(var(--border)); }
 

@@ -16,7 +16,7 @@ function h(tag, attrs = {}, ...kids) {
   return e;
 }
 const pad = (n) => String(n).padStart(2, '0');
-const jstParts = (ts) => { const d = new Date(ts + 9 * 3600e3); return { m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; };
+const jstParts = (ts) => { const d = new Date(ts + 9 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; };
 const fmtTime = (ts) => { const p = jstParts(ts); return `${p.m}/${p.d} ${p.h}時`; };
 const sign = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
 const temp = (t) => (t == null ? '–' : `${t}°`);
@@ -73,6 +73,26 @@ function renderToday(w) {
   );
 }
 
+// トップの Today: 参考サイトの News のような「日付・カテゴリ・見出し」の1行
+function renderNews(w) {
+  const el = $('#todayNews');
+  const n = w.next24;
+  const t = jstParts(w.now);
+  const cur = w.current;
+  const d3 = cur?.d3;
+  el.replaceChildren(
+    h('div', { class: 'news-row' },
+      h('p', { class: 'news-meta' }, h('span', {}, `${t.y}/${pad(t.m)}/${pad(t.d)}`), h('span', { class: 'news-cat' }, 'Pressure'), w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+      h('p', { class: 'news-title' }, `${w.area.name}　今後24時間：${n.label}`),
+      h('p', { class: 'news-sub' },
+        cur ? ['現在の海面気圧 ', h('b', {}, `${Math.round(cur.pressure)} hPa`), d3 != null ? `（直近3時間 ${sign(d3)}${Math.abs(d3).toFixed(1)}）` : ''] : '現在の気圧を取得中です',
+        n.level !== 'none' && n.rate != null ? h('br') : null,
+        n.level !== 'none' && n.rate != null ? `${fmtTime(n.at)}ごろ ${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h で変化する見込みです。` : null,
+        n.severe ? h('br') : null,
+        n.severe ? '早めの休息と、いつもの薬の確認を。' : null)),
+  );
+}
+
 function cellFor(d) {
   const lv = d.pressure?.level ?? 'none';
   return h('div', { class: `cell lv-${lv}`, title: d.text || '' },
@@ -116,7 +136,8 @@ async function load() {
   try {
     const w = await getJson('/api/week?area=' + areaCode);
     if (mine !== seq) return; // 地域切替の競合
-    renderToday(w);
+    if (page === 'top') renderNews(w);
+    else renderToday(w);
     if (page === 'top') {
       $('#weekStrip').replaceChildren(...w.days.map(cellFor));
     } else {
@@ -126,9 +147,9 @@ async function load() {
     }
   } catch {
     if (mine !== seq) return;
-    $('#today').replaceChildren(h('p', { class: 'muted' }, 'データを取得できませんでした。しばらくしてからもう一度お試しください。'));
+    ($('#todayNews') || $('#today')).replaceChildren(h('p', { class: 'muted' }, 'データを取得できませんでした。しばらくしてからもう一度お試しください。'));
   }
 }
 
 const page = document.body.dataset.page;
-if (page === 'top' || page === 'weather') initArea(load).catch(() => $('#today')?.replaceChildren(h('p', { class: 'muted' }, '地域の一覧を取得できませんでした。')));
+if (page === 'top' || page === 'weather') initArea(load).catch(() => ($('#todayNews') || $('#today'))?.replaceChildren(h('p', { class: 'muted' }, '地域の一覧を取得できませんでした。')));
