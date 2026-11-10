@@ -93,3 +93,22 @@ body.ds {
 .ds .ab-faq details { border-bottom: 1px solid var(--border-strong); padding: 14px 0; }
 .ds .ab-faq summary { cursor: pointer; font-weight: 600; }
 .ds .ab-faq p { margin: 10px 0 0; font-size: 14px; line-height: 1.8; }
+
+.ds .ab-phone { width: min(260px, 70vw); margin: 0 auto; border: 8px solid var(--ink); border-radius: 30px; overflow: hidden; background: #fff; aspect-ratio: 390 / 780; box-shadow: 0 14px 30px rgba(0,0,0,.12); }
+.ds .ab-phone img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.ds .ab-shot { display: grid; gap: 20px; align-items: center; margin-bottom: 44px; }
+.ds .ab-txt .no { font-size: 12px; letter-spacing: .1em; }
+.ds .ab-txt h3 { margin: 4px 0 10px; font-size: 20px; }
+.ds .ab-txt p { font-size: 14px; line-height: 1.9; margin: 0 0 10px; }
+.ds .ab-txt ul { margin: 0; padding-left: 1.2em; font-size: 14px; line-height: 1.9; }
+.ds .ab-pages { display: grid; gap: 28px; grid-template-columns: 1fr 1fr; margin-top: 8px; }
+.ds .ab-pages a { display: block; text-decoration: none; color: inherit; text-align: center; }
+.ds .ab-pages .ab-phone { width: min(200px, 100%); }
+.ds .ab-pages b { display: block; margin-top: 12px; }
+.ds .ab-pages span { display: block; font-size: 13px; line-height: 1.7; margin-top: 4px; }
+@media (min-width: 760px) {
+  .ds .ab-shot { grid-template-columns: 300px 1fr; gap: 56px; max-width: 820px; margin-left: auto; margin-right: auto; }
+  .ds .ab-shot.rev { grid-template-columns: 1fr 300px; }
+  .ds .ab-shot.rev .ab-phone { order: 2; }
+  .ds .ab-pages { max-width: 620px; margin-left: auto; margin-right: auto; }
+}

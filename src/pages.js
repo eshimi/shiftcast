@@ -354,6 +354,18 @@ const ABOUT_FEATURES = [
   ['07', '気象病を防ぐコラム', '仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までを6本の記事で紹介しています。'],
   ['08', '地域ごとのみんなの傾向', '都道府県単位で匿名に集計した「今日つらい人の割合」を見られます。個人が特定される情報は出しません。'],
 ];
+
+const ABOUT_SHOTS = [
+  ['app-dash', '01', 'ホーム：気圧の推移と今日の見通し', '今後24時間でいちばん大きな気圧変化を、5段階のアイコンと文章でひと目で表示します。下のグラフでは過去の実測(点線)と予報、天気マークを時間ごとに確認できます。', ['4段階のアラート色', '過去と予報を連続表示', '地域の切り替え']],
+  ['app-log', '02', '記録：数タップで体調を残す', '痛みの度合いを5つの顔から選び、症状のタグと服薬を選ぶだけ。日時は自動で入るので、あとから過去の分を追加することもできます。', ['顔アイコンで痛みを選ぶ', '症状タグ・独自タグ', '薬の検索とマイ薬リスト']],
+  ['app-insight', '03', '分析：自分のパターンを知る', '記録と気圧の変化を照らし合わせ、「気圧が下がったあとに不調が出やすいか」を簡単な統計で示します。記録が5件以上たまると表示されます。', ['気圧低下との関連を文章で', '記録件数と該当件数', '通院時の参考に']],
+  ['app-settings', '04', '設定：地域と通知', '主な地域を最大3つまで登録でき、気圧低下アラートの通知をオン・オフできます。データはいつでもご自身で全削除できます。', ['地域は都道府県単位のみ', 'プッシュ通知の切り替え', 'データの全削除']],
+];
+const ABOUT_PAGES = [
+  ['weather', '/weather', '週間天気', '7日間の天気・気温・降水確率と、日ごとの気圧の見通しを一覧できます。'],
+  ['columns', '/columns', 'コラム', '気象病の仕組みやセルフケア、受診の目安を6本の記事で紹介しています。'],
+];
+const phoneImg = (n, alt) => `<div class="ab-phone"><img src="/about/${n}.webp" alt="${esc(alt)}" width="390" height="780" loading="lazy"></div>`;
 const ABOUT_STEPS = [
   ['地域を選ぶ', '都道府県を選ぶだけ。アカウント登録もメールアドレスも不要です。'],
   ['今日の見通しを見る', '気圧のグラフと、注意が必要な時間帯を確認します。'],
@@ -372,6 +384,9 @@ export function aboutPage() {
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>Rio²（リオリオ）とは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap about">
+<section><h2 class="en-h">SCREENS<small>画面で見る</small></h2>
+${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev' : ''}">${phoneImg(n, t)}<div class="ab-txt"><span class="no">${no}</span><h3>${esc(t)}</h3><p>${esc(d)}</p><ul>${li.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`).join('')}
+<div class="ab-pages">${ABOUT_PAGES.map(([n, h, t, d]) => `<a href="${h}">${phoneImg(n, t + 'のページ')}<b>${esc(t)} →</b><span>${esc(d)}</span></a>`).join('')}</div></section>
 <section><h2 class="en-h">FEATURES<small>主な機能</small></h2>
 <div class="ab-grid">${ABOUT_FEATURES.map(([n, t, d]) => `<article class="ab-card"><span class="no">${n}</span><h3>${esc(t)}</h3><p>${esc(d)}</p></article>`).join('')}</div></section>
 <section><h2 class="en-h">HOW TO USE<small>使い方</small></h2>
