@@ -286,3 +286,5 @@ body.lp { background: var(--bg); }
 .wx { display: block; flex: none; }
 .cell .ic, .hourly .cell .ic { display: flex; justify-content: center; align-items: center; height: 36px; font-size: 22px; line-height: 1; }
 .day .w .ic { display: flex; align-items: center; width: 36px; justify-content: center; font-size: 26px; line-height: 1; }
+
+.today .ico, .summary .ico { display: flex; align-items: center; justify-content: center; flex: none; width: 46px; height: 46px; font-size: 34px; line-height: 1; }

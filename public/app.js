@@ -141,7 +141,8 @@ function renderSummary(fc) {
   const worst = next.sort((a, b) => sev[b.level] - sev[a.level] || a.rate - b.rate)[0];
   const el = $('#summary'); el.className = 'card summary ' + (worst ? worst.level : '');
   const last = [...fc.points].reverse().find((p) => p.ts <= now) || fc.points[0];
-  const ico = { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼' }[worst?.level] || '✅';
+  const lvKey = worst?.level || 'none';
+  const ico = window.FACE ? window.FACE.level(lvKey, 46) : { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼' }[worst?.level] || '✅'; // faces.js(手描き風)が無ければ絵文字
   el.replaceChildren(
     h('div', { class: 'ico' }, ico),
     h('div', {},

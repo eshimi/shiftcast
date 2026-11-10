@@ -310,7 +310,7 @@ ${areaBar}
     page: 'weather',
     body,
     wide: true,
-    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>',
+    scripts: '<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/site.js" defer></script>',
   });
 }
 

@@ -61,7 +61,7 @@ function renderToday(w) {
   const cur = w.current;
   const d3 = cur?.d3;
   el.replaceChildren(
-    h('div', { class: 'ico', 'aria-hidden': 'true' }, { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼', none: '✅' }[n.level]),
+    h('div', { class: 'ico', 'aria-hidden': 'true' }, window.FACE ? window.FACE.level(n.level, 46) : { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼', none: '✅' }[n.level]),
     h('div', { class: 't-body' },
       h('div', { class: 'muted small' }, `${w.area.name}・現在の海面気圧 `, w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
       h('div', { class: 'big' }, cur ? `${Math.round(cur.pressure)}` : '–', h('small', {}, ' hPa'),
