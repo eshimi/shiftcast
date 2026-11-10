@@ -2,7 +2,8 @@
 const $ = (s) => document.querySelector(s);
 const LABEL = { none: '安定', rise: '上昇注意', slight: 'やや注意', caution: '注意', warning: '警戒' };
 const COLOR = { rise: '#3b82f6', slight: '#eab308', caution: '#f97316', warning: '#dc2626' };
-const FACES = ['🙂', '😕', '😣', '😖', '😫'];
+const FACES = ['🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読み込めない場合の代用
+const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level - 1]));
 const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
 const DEFAULT_TAGS = ['頭痛', 'だるさ', 'めまい', '肩こり', '吐き気', '関節痛', '眠気'];
 const HOUR = 3600e3;
@@ -187,7 +188,8 @@ const overlay = {
     (chart.$logs || []).forEach((l) => {
       const py = pressureAt(pts, l.ts);
       if (py == null) return;
-      ctx.fillText(FACES[l.pain - 1], x.getPixelForValue(l.ts), y.getPixelForValue(py) + 8);
+      if (window.FACE) window.FACE.draw(ctx, l.pain, x.getPixelForValue(l.ts), y.getPixelForValue(py), 28);
+      else ctx.fillText(FACES[l.pain - 1], x.getPixelForValue(l.ts), y.getPixelForValue(py) + 8);
     });
     ctx.restore();
   },
@@ -272,7 +274,7 @@ function renderStats(st) {
 // ---------- 記録 ----------
 function renderPain() {
   const box = $('#pain'); box.replaceChildren();
-  FACES.forEach((f, i) => box.append(h('button', { class: S.pain === i + 1 ? 'on' : '', role: 'radio', 'aria-checked': S.pain === i + 1, 'aria-label': FACE_LABEL[i], onclick: () => { S.pain = i + 1; renderPain(); } }, f, h('small', {}, FACE_LABEL[i]))));
+  FACES.forEach((f, i) => box.append(h('button', { class: S.pain === i + 1 ? 'on' : '', role: 'radio', 'aria-checked': S.pain === i + 1, 'aria-label': FACE_LABEL[i], onclick: () => { S.pain = i + 1; renderPain(); } }, faceEl(i + 1, 40), h('small', {}, FACE_LABEL[i]))));
 }
 function renderTags() {
   const box = $('#tags'); box.replaceChildren();
@@ -337,7 +339,7 @@ async function loadLogs() {
   const ul = $('#logList'); ul.replaceChildren();
   if (!S.logs.length) return ul.append(h('li', {}, h('span', { class: 'muted' }, 'まだ記録がありません')));
   S.logs.slice(0, 30).forEach((l) => ul.append(h('li', {},
-    h('div', {}, h('div', {}, `${FACES[l.pain - 1]} ${fmtDT(l.ts)}`), h('div', { class: 'meta' }, [...l.tags, ...l.meds.map((m) => '💊' + m)].join(' / ') || '—')),
+    h('div', {}, h('div', { class: 'logrow' }, faceEl(l.pain, 26), h('span', {}, fmtDT(l.ts))), h('div', { class: 'meta' }, [...l.tags, ...l.meds.map((m) => '💊' + m)].join(' / ') || '—')),
     h('div', { class: 'acts' },
       h('button', { class: 'link', onclick: () => editLog(l) }, '編集'),
       h('button', { class: 'link', onclick: async () => { if (confirm('この記録を削除しますか？')) { await api('/logs/' + l.id, { method: 'DELETE' }); loadLogs(); } } }, '削除')))));

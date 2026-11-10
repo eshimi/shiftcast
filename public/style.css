@@ -1,6 +1,7 @@
 /* デザインシステム「QRO Eyewear」(ds.css) に合わせる: モノクロ・直角・細い罫線。ds.css を先に読み込むこと。
    気圧の4段階の色(--rise など)は「データの意味」を表す色なので、そのまま使い、必ず文字と一緒に表示する。 */
 :root {
+  --face-stroke: #1d5fa6; /* 痛みの顔アイコンの線(インクブルー)。ダークモードでは明るい青 */
   --bg: var(--surface-100); --card: var(--surface-200); --fg: var(--ink); --muted: var(--ink-muted); --line: var(--border);
   --accent: var(--brand-black); --accent-fg: var(--on-brand);
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
@@ -31,7 +32,7 @@ main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 6
 .lbl { display: block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
 .pain { display: flex; gap: 6px; }
 .pain button { flex: 1; font-size: 28px; padding: 8px 0; border: 1px solid var(--border-strong); background: var(--surface-100); color: var(--fg); border-radius: var(--radius-none); }
-.pain button small { display: block; font-size: 11px; color: var(--muted); }
+.pain button small { display: block; font-size: 12px; color: var(--muted); }
 .pain button.on { border-color: var(--brand-black); background: var(--surface-100); outline: 2px solid var(--brand-black); outline-offset: -3px; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
 input, select, textarea { width: 100%; font: inherit; color: var(--fg); background: var(--surface-300); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px var(--space-3); }
@@ -70,3 +71,12 @@ a { color: var(--ink); }
 /* 見出しは太字のゴシック体(Noto Sans JP)。数値は Inter。 */
 .card-h b, .summary b { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
 .big, .yaxis, .summary .muted { font-variant-numeric: tabular-nums; }
+
+/* 痛みの顔アイコン(手描き風。public/faces.js) */
+@media (prefers-color-scheme: dark) { :root { --face-stroke: #8bbcf2; } }
+.pain button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0 6px; }
+.pain button svg { display: block; }
+.logrow { display: flex; align-items: center; gap: 8px; }
+.logrow svg { flex: none; }
+.pain { gap: 4px; }
+.pain button small { white-space: nowrap; letter-spacing: -.03em; }

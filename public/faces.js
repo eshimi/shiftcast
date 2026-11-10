@@ -1,0 +1,59 @@
+/* 痛みの度合い(1〜5)の顔アイコン。手描き風の落書きテイスト（ゆがんだ輪郭、二重線、太めの丸い線）。
+   64x64の座標で描いた線画で、インラインSVGにも canvas(グラフ)にも同じデータで描ける。window.FACE として使う。
+   色: 線は --face-stroke（既定は見本と同じインクブルー）、塗りは痛みが強いほど暖かい色の淡い半透明。
+   - FACE.el(level, size)               → <svg>
+   - FACE.draw(ctx, level, cx, cy, size) → canvas に描く */
+(function () {
+  var OUT = 'M32 5C46 3.5 59 15.5 59 31C60.5 47 47.5 59.5 31 59C15.5 60 4 47.5 5 32C4.5 16.5 17 6 32 5Z';
+  var OUT2 = 'M33 7.5C47 6.5 57 18 57 33C56 46.5 45 57 30 56.5C16 57 7 45 7.5 31C8.5 18 19 7.5 33 7.5Z';
+  var FILL = ['rgba(110,190,255,.22)', 'rgba(150,205,255,.26)', 'rgba(255,214,110,.34)', 'rgba(255,165,95,.34)', 'rgba(255,105,105,.34)'];
+  var LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
+  // 目・口・汗・涙。[パス, 線の太さの倍率]
+  var FACES = [
+    // 1 軽い: にこっと笑う
+    [['M22 24v6.5', 1], ['M42 24v6.5', 1], ['M19.5 38.5Q32 53 44.5 38.5', 1]],
+    // 2 ややいたい: 眉が少し下がり、口は平ら
+    [['M16 20.5l8.5 2.5', 1], ['M48 20.5l-8.5 2.5', 1], ['M22 29v4', 1], ['M42 29v4', 1], ['M23 46q4.5-3 9 0t9 0', 1], ['M52 12q3.5 5 0 8.5q-3.5-3.5 0-8.5z', 0.8]],
+    // 3 いたい: 眉をひそめて、口はへの字
+    [['M15.5 19l11.5 5.5', 1], ['M48.5 19L37 24.5', 1], ['M22 31v4.5', 1], ['M42 31v4.5', 1], ['M21.5 47.5Q32 38 42.5 47.5', 1]],
+    // 4 かなり痛い: ぎゅっと目をつぶり、歯をくいしばる
+    [['M17 22l10 6-10 6', 1], ['M47 22l-10 6 10 6', 1], ['M20 43h24v8H20z', 1], ['M26 43v8M32 43v8M38 43v8', 0.7], ['M53 13q3.5 5 0 8.5q-3.5-3.5 0-8.5z', 0.8]],
+    // 5 耐えがたい: 泣き顔（涙）
+    [['M17 21l10 6-10 6', 1], ['M47 21l-10 6 10 6', 1], ['M18.5 50Q25 39.5 32 46Q39 39.5 45.5 50', 1], ['M13 35q-3.5 7 0 11.5q3.5-4.5 0-11.5z', 0.8], ['M51 35q3.5 7 0 11.5q-3.5-4.5 0-11.5z', 0.8], ['M8 14l-4-3M56 14l4-3', 0.9]]
+  ];
+  var NS = 'http://www.w3.org/2000/svg';
+  var DEFAULT_STROKE = '#1d5fa6';
+
+  function el(level, size) {
+    var i = Math.min(5, Math.max(1, level | 0)) - 1;
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 64 64'); svg.setAttribute('width', size || 36); svg.setAttribute('height', size || 36);
+    svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', LABEL[i]); svg.setAttribute('class', 'face');
+    svg.style.cssText = 'fill:none;stroke:var(--face-stroke,' + DEFAULT_STROKE + ');stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;overflow:visible';
+    var base = document.createElementNS(NS, 'path');
+    base.setAttribute('d', OUT); base.style.fill = FILL[i]; svg.appendChild(base);
+    var two = document.createElementNS(NS, 'path');
+    two.setAttribute('d', OUT2); two.style.opacity = '.38'; two.style.strokeWidth = '2'; svg.appendChild(two);
+    FACES[i].forEach(function (f) {
+      var p = document.createElementNS(NS, 'path'); p.setAttribute('d', f[0]);
+      if (f[1] !== 1) p.style.strokeWidth = (3.2 * f[1]).toFixed(2);
+      svg.appendChild(p);
+    });
+    return svg;
+  }
+  var cache = {};
+  var path = function (d) { return cache[d] || (cache[d] = new Path2D(d)); };
+  function draw(ctx, level, cx, cy, size) {
+    var i = Math.min(5, Math.max(1, level | 0)) - 1;
+    var stroke = (getComputedStyle(document.documentElement).getPropertyValue('--face-stroke') || '').trim() || DEFAULT_STROKE;
+    ctx.save();
+    ctx.translate(cx - size / 2, cy - size / 2); ctx.scale(size / 64, size / 64);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = stroke; ctx.lineWidth = 3.4;
+    ctx.fillStyle = '#fff'; ctx.fill(path(OUT)); // 下地(グラフの線が透けないように)
+    ctx.fillStyle = FILL[i]; ctx.fill(path(OUT)); ctx.stroke(path(OUT));
+    ctx.globalAlpha = 0.38; ctx.lineWidth = 2; ctx.stroke(path(OUT2)); ctx.globalAlpha = 1;
+    FACES[i].forEach(function (f) { ctx.lineWidth = 3.4 * f[1]; ctx.stroke(path(f[0])); });
+    ctx.restore();
+  }
+  window.FACE = { el: el, draw: draw, LABEL: LABEL };
+})();
