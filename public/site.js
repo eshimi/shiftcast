@@ -74,9 +74,20 @@ function renderToday(w) {
 }
 
 // トップの Today: 参考サイトの News のような「日付・カテゴリ・見出し」の1行
+// 今日の見通し(24時間の気圧の変化)に合わせて、飾りの人物を変える（none=外で活動 / 注意以上=家でゆっくり）
+const MOOD_FIG = { none: '10-runner', rise: '01-hat-bag', slight: '23-bike-walk', caution: '15-reading', warning: '16-tent' };
+function setMoodFigure(level) {
+  const img = $('#todayFig');
+  if (!img) return;
+  const f = MOOD_FIG[level] || MOOD_FIG.none;
+  img.onload = () => { img.hidden = false; };
+  img.src = `/img/people/${f}.webp`;
+}
+
 function renderNews(w) {
   const el = $('#todayNews');
   const n = w.next24;
+  setMoodFigure(n.level);
   const t = jstParts(w.now);
   const cur = w.current;
   const d3 = cur?.d3;

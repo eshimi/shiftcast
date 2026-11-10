@@ -1,5 +1,6 @@
 // サーバー側で描画するページ（トップ / 週間天気 / コラム）。共通のヘッダー・フッターをここで持つ。
 import { COLUMNS, COLUMN_UPDATED, findColumn } from './columns.js';
+import { PEOPLE, PERSON } from './people.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -30,6 +31,32 @@ const HERO_PICKER = `<script>
   r.setProperty('--ov', c.v);
   r.setProperty('--o1', c.a[0]); r.setProperty('--o2', c.a[1]); r.setProperty('--o3', c.a[2]);
   var l = document.createElement('link'); l.rel = 'preload'; l.as = 'image'; l.href = c.s; document.head.appendChild(l);
+})();
+</script>`;
+
+// 人物イラスト（飾り）。alt は空で、スクリーンリーダーには読ませない。大きさ k は元画像に対する倍率(CSS px)。
+const person = (name, { k = 0.6, cls = '', style = '' } = {}) => {
+  const p = PERSON[name];
+  return `<img class="ppl ${cls}" src="/img/people/${p.file}" width="${Math.round(p.w * k)}" height="${Math.round(p.h * k)}" alt="" loading="lazy" decoding="async" aria-hidden="true"${style ? ` style="${style}"` : ''}>`;
+};
+// フッターの上に、毎回ランダムな人物を並べる（描画後にブラウザ側で選ぶ。HTMLはキャッシュされるため）
+const STREET_SCRIPT = `<script>
+(function () {
+  var el = document.querySelector('[data-street]');
+  if (!el) return;
+  var L = ${JSON.stringify(PEOPLE.map((p) => [p.file, p.w, p.h]))};
+  // 画面の幅に収まる人数だけ、重複なしでランダムに選ぶ（はみ出さない・重ならない）
+  var room = Math.min(window.innerWidth, 1100) - 40, used = 0, picked = [], tries = 0;
+  while (tries++ < 80 && picked.length < 8) {
+    var c = L[Math.floor(Math.random() * L.length)], w = c[1] * 0.5 + 14;
+    if (picked.indexOf(c) >= 0 || used + w > room) continue;
+    picked.push(c); used += w;
+  }
+  picked.forEach(function (c) {
+    var im = new Image(); im.className = 'ppl'; im.alt = ''; im.setAttribute('aria-hidden', 'true'); im.decoding = 'async';
+    im.width = Math.round(c[1] * 0.5); im.height = Math.round(c[2] * 0.5); im.src = '/img/people/' + c[0];
+    el.appendChild(im);
+  });
 })();
 </script>`;
 
@@ -79,6 +106,7 @@ ${chrome ? `<main${wide ? '' : ' class="wrap"'}>
 ${body}
 </main>` : body}
 ${chrome ? `<footer class="site-f">
+  <div class="street" data-street aria-hidden="true"></div>
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
@@ -86,6 +114,7 @@ ${chrome ? `<footer class="site-f">
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
+${chrome ? STREET_SCRIPT : ''}
 ${scripts}
 </body>
 </html>`;
@@ -144,6 +173,7 @@ export function topPage() {
 
     <section class="sx cream" id="today" aria-labelledby="t-today">
       <div class="sx-in">
+        <img id="todayFig" class="ppl fig-tr fig-live" alt="" aria-hidden="true" hidden>
         ${secHead2('Today', '今日の気圧', 't-today')}
         ${areaBar}
         <div id="todayNews" class="news" aria-live="polite"><p class="muted">読み込み中…</p></div>
@@ -164,6 +194,7 @@ export function topPage() {
           <p>痛みやだるさは、ワンタップで記録。<br>重ねるほど、あなたの<br>「なりやすい条件」が見えてくる。</p>
           <p>“ああ”と空を見上げるその前に、<br>備えられる毎日を。</p>
         </div>
+        <div class="ppl-row r" aria-hidden="true">${person('yoga', { k: 0.55 })}${person('reading', { k: 0.55 })}</div>
         <div id="hero-root" class="exp-phones"></div>
       </div>
     </section>
@@ -180,6 +211,7 @@ export function topPage() {
 
     <section class="sx cream" aria-labelledby="t-week">
       <div class="sx-in">
+        ${person('runner', { k: 0.5, cls: 'fig-tl' })}
         ${secHead2('Weekly', '今週の天気と気圧', 't-week')}
         <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
         ${LEVELS}
@@ -189,14 +221,16 @@ export function topPage() {
 
     <section class="sx blush" aria-labelledby="t-col">
       <div class="sx-in">
+        ${person('hiker', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Column', '気象病を防ぐコラム', 't-col')}
         <ul class="menu">${COLUMNS.map((c, i) => `<li><a href="/columns/${esc(c.slug)}"><span class="no">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(c.title)}</span><span class="m">${c.readMin}分</span></a></li>`).join('')}</ul>
         <p class="sx-btn"><a class="btn dark block" href="/columns">Column All</a></p>
       </div>
     </section>
 
-    <section class="sx cream" aria-labelledby="t-info">
+    <section class="sx cream room" aria-labelledby="t-info">
       <div class="sx-in">
+        ${person('suitcase', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Information', 'サービス情報', 't-info')}
         <dl class="info">
           <div><dt>サービス名</dt><dd>Rio²（リオリオ）</dd></div>
@@ -212,6 +246,7 @@ export function topPage() {
     </section>
 
     <section class="sx teal start" aria-labelledby="t-start">
+      <span class="walker" aria-hidden="true">${person('family', { k: 0.62 })}</span>
       <div class="sx-in">
         ${secHead2('Start', 'はじめる', 't-start')}
         <p class="center-copy">地域を選んで、今日の気圧を確認。<br>体調を記録して、自分の傾向を見つけましょう。</p>
@@ -245,7 +280,7 @@ export function topPage() {
 
 export function weatherPage() {
   const body = `
-<div class="page-head"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('hat-bag', { k: 0.5 })}${person('runner', { k: 0.5 })}${person('umbrella', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${areaBar}
 
@@ -280,7 +315,7 @@ ${areaBar}
 
 export function columnsPage() {
   const body = `
-<div class="page-head"><div class="wrap"><p class="en">COLUMN</p><h1>気象病を防ぐコラム</h1><p>気圧の変化で崩れる体調との付き合い方を、やさしくまとめました。</p></div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>気象病を防ぐコラム</h1><p>気圧の変化で崩れる体調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
 <div class="wrap">
 <div class="col-list">${COLUMNS.map((c) => columnCard(c)).join('')}</div>
 <p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
@@ -304,6 +339,8 @@ function renderBlock(b) {
   return '';
 }
 
+const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family' };
+
 export function columnPage(slug) {
   const c = findColumn(slug);
   if (!c) return null;
@@ -313,6 +350,7 @@ export function columnPage(slug) {
   const body = `
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <a href="/columns">コラム</a></nav>
 <article class="article">
+  ${person(ARTICLE_FIG[c.slug] || 'hat-bag', { k: 0.6, cls: 'art-fig' })}
   <p class="art-no">COLUMN ${String(i + 1).padStart(2, '0')}</p>
   <h1>${esc(c.title)}</h1>
   <p class="muted small">約${c.readMin}分 ・ 更新 ${COLUMN_UPDATED}</p>
