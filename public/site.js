@@ -167,3 +167,56 @@ async function load() {
 
 const page = document.body.dataset.page;
 if (page === 'top' || page === 'weather') initArea(load).catch(() => ($('#todayNews') || $('#today'))?.replaceChildren(h('p', { class: 'muted' }, '地域の一覧を取得できませんでした。')));
+
+/* ---------- トップ: スマホ枠の操作性（PC幅） ----------
+   枠(#phone)の中が縦にスクロールする。「続きがある」ことが伝わり、枠の外でも操作できるようにする。 */
+function initTop() {
+  const phone = $('#phone');
+  if (!phone) return;
+  const desk = () => window.matchMedia('(min-width: 900px)').matches;
+  const cue = $('.m-scroll');
+  const links = [...document.querySelectorAll('.side-index a')];
+  const secs = links.map((a) => document.getElementById(a.dataset.sec));
+
+  const update = () => {
+    const y = desk() ? phone.scrollTop : window.scrollY;
+    cue?.classList.toggle('gone', y > 40); // 少しスクロールしたら「SCROLL」を消す
+    const base = desk() ? phone.getBoundingClientRect().top : 0;
+    const h = desk() ? phone.clientHeight : window.innerHeight;
+    let cur = -1;
+    secs.forEach((el, i) => { if (el && el.getBoundingClientRect().top - base <= h * 0.35) cur = i; });
+    links.forEach((a, i) => a.setAttribute('aria-current', i === cur ? 'true' : 'false'));
+  };
+  phone.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+
+  // 目次をクリックすると、枠の中を該当セクションまでスクロール
+  links.forEach((a, i) => a.addEventListener('click', (e) => {
+    if (!desk() || !secs[i]) return;
+    e.preventDefault();
+    const delta = secs[i].getBoundingClientRect().top - phone.getBoundingClientRect().top - phone.clientTop;
+    phone.scrollTo({ top: phone.scrollTop + delta, behavior: 'smooth' });
+  }));
+
+  // 枠の外(左の紹介や背景)でホイールを回しても、枠の中が動く
+  $('.stage')?.addEventListener('wheel', (e) => {
+    if (!desk() || phone.contains(e.target)) return;
+    phone.scrollBy({ top: e.deltaY, behavior: 'instant' });
+  }, { passive: true });
+
+  // キー操作(スペース/PageDown/矢印/Home/End)でも枠の中が動く
+  document.addEventListener('keydown', (e) => {
+    if (!desk() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    const tag = document.activeElement?.tagName || '';
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(tag)) return; // 入力中は何もしない
+    if (/^(BUTTON|A)$/.test(tag) && e.key === ' ') return; // リンク/ボタンのスペースは、そちらの操作を優先
+    const page = phone.clientHeight * 0.85;
+    const map = { PageDown: page, ' ': e.shiftKey ? -page : page, PageUp: -page, ArrowDown: 80, ArrowUp: -80 };
+    if (e.key in map) { e.preventDefault(); phone.scrollBy({ top: map[e.key], behavior: 'smooth' }); }
+    else if (e.key === 'Home') { e.preventDefault(); phone.scrollTo({ top: 0, behavior: 'smooth' }); }
+    else if (e.key === 'End') { e.preventDefault(); phone.scrollTo({ top: phone.scrollHeight, behavior: 'smooth' }); }
+  });
+}
+if (page === 'top') initTop();

@@ -140,31 +140,52 @@ body.lp { background: var(--bg); }
 .lp-f .muted { color: #9db3bc; }
 .lp-f-nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 14px; font-family: var(--serif); letter-spacing: .08em; }
 
-/* ---- PC幅: 左に固定の紹介、右にスマホ幅の本編（枠の中でスクロール） ---- */
+/* ---- PC幅: 左に固定の紹介、右にスマホ幅の本編（枠の中でスクロール） ----
+   「下に続きがある」ことが伝わるよう、枠を画面の下端からはみ出させ、最初の画面の下に次の見出しをのぞかせる。
+   さらに、左に現在位置が分かる目次を置き、枠の外でホイールを回しても中が動くようにしている(site.js)。 */
 @media (min-width: 900px) {
-  body.lp { min-height: 100vh; background: linear-gradient(180deg, rgba(var(--ov), calc(var(--o1) + .1)), rgba(var(--ov), calc(var(--o3) - .06))), var(--hero-img) var(--hero-pos) / cover fixed; background-color: #3a5a78; }
-  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 6vw; align-items: center; max-width: 1180px; min-height: 100vh; margin: 0 auto; padding: 28px 28px; }
-  .side { display: block; color: #fff; align-self: center; }
-  .side-top { display: flex; gap: 6vw; align-items: flex-start; margin-bottom: 34px; }
+  body.lp { height: 100vh; overflow: hidden; background: linear-gradient(180deg, rgba(var(--ov), calc(var(--o1) + .1)), rgba(var(--ov), calc(var(--o3) - .06))), var(--hero-img) var(--hero-pos) / cover fixed; background-color: #3a5a78; }
+  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 6vw; align-items: start; max-width: 1180px; height: 100vh; margin: 0 auto; padding: 28px 28px 0; overflow: hidden; }
+  .side { display: block; color: #fff; align-self: center; max-height: calc(100vh - 28px); }
+  .side-top { display: flex; gap: 6vw; align-items: flex-start; margin-bottom: 28px; }
   .side-logo { display: flex; flex-direction: column; gap: 10px; color: #fff; text-decoration: none; text-shadow: 0 2px 16px rgba(10, 30, 50, .45); }
   .side-logo img { border-radius: 18px; }
   .brand-ln { display: flex; flex-direction: column; line-height: 1.15; font-family: var(--serif); }
   .brand-ln b { font-size: 40px; font-weight: 700; letter-spacing: .1em; }
   .brand-ln small { font-size: 12px; letter-spacing: .5em; margin-top: 4px; }
-  .side-title { margin: 0; font-family: var(--serif); font-size: 36px; font-weight: 600; line-height: 1.9; letter-spacing: .32em; writing-mode: vertical-rl; text-shadow: 0 2px 20px rgba(10, 30, 50, .5); height: 330px; }
-  .side-copy { font-family: var(--serif); font-size: 17px; line-height: 2.1; letter-spacing: .08em; text-shadow: 0 1px 14px rgba(10, 30, 50, .5); }
-  .side-copy p { margin: 0 0 14px; }
-  .side-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 30px; font-family: var(--serif); letter-spacing: .08em; }
+  .side-title { margin: 0; font-family: var(--serif); font-size: 34px; font-weight: 600; line-height: 1.9; letter-spacing: .32em; writing-mode: vertical-rl; text-shadow: 0 2px 20px rgba(10, 30, 50, .5); height: 300px; }
+  .side-copy { font-family: var(--serif); font-size: 16px; line-height: 2; letter-spacing: .08em; text-shadow: 0 1px 14px rgba(10, 30, 50, .5); }
+  .side-copy p { margin: 0 0 10px; }
+  .side-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 22px; font-family: var(--serif); letter-spacing: .08em; }
   .side-nav a:not(.btn) { color: #fff; text-decoration: none; font-weight: 600; font-size: 16px; border-bottom: 1px solid transparent; }
   .side-nav a:not(.btn):hover { border-bottom-color: #fff; }
   .side-nav .btn.dark { background: var(--teal); border-color: var(--teal); color: #fff; }
+  /* 現在位置が分かる目次 */
+  .side-index { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, max-content); gap: 2px 34px; font-family: var(--serif); }
+  .side-index a { display: flex; align-items: baseline; gap: 10px; padding: 4px 0 4px 16px; position: relative; color: rgba(255, 255, 255, .72); text-decoration: none; font-size: 14px; letter-spacing: .12em; transition: color .25s; }
+  .side-index a::before { content: ""; position: absolute; left: 0; top: 50%; width: 8px; height: 1px; background: currentColor; transition: width .3s; }
+  .side-index small { font-size: 11px; letter-spacing: .2em; opacity: .75; }
+  .side-index a:hover { color: #fff; }
+  .side-index a[aria-current="true"] { color: #fff; font-weight: 700; text-shadow: 0 1px 10px rgba(10, 30, 50, .5); }
+  .side-index a[aria-current="true"]::before { width: 14px; height: 2px; }
 
-  .phone { --ph: min(880px, calc(100vh - 56px)); height: var(--ph); overflow-y: auto; overflow-x: hidden; border: 10px solid #fff9f6; border-radius: 38px; box-shadow: 0 24px 70px rgba(10, 25, 40, .45); scrollbar-width: none; overscroll-behavior: contain; scroll-behavior: smooth; }
-  .phone::-webkit-scrollbar { display: none; }
-  .m-hero { height: calc(var(--ph) - 20px); min-height: 0; }
-  .m-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } /* PCでは左側の見出しを見せ、こちらは読み上げ用に残す */
+  /* 枠: 画面の下端からはみ出す(下の角は見せない)。スクロールバーを細く見せる */
+  .phone { --ph: calc(100vh - 28px + 70px); height: var(--ph); overflow-y: auto; overflow-x: hidden; border: 10px solid #fff9f6; border-bottom: 0; border-radius: 38px 38px 0 0; box-shadow: 0 24px 70px rgba(10, 25, 40, .45); scrollbar-width: thin; scrollbar-color: rgba(31, 47, 54, .4) transparent; overscroll-behavior: contain; scroll-behavior: smooth; }
+  .phone::-webkit-scrollbar { width: 5px; }
+  .phone::-webkit-scrollbar-track { background: transparent; }
+  .phone::-webkit-scrollbar-thumb { background: rgba(31, 47, 54, .4); border-radius: 3px; }
+  /* 最初の画面: 下に次のセクションの見出しを約100pxのぞかせる */
+  .m-hero { height: calc(100vh - 28px - 10px - 104px); min-height: 0; }
+  .m-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   .m-nav { display: none; }
+  .lp-f { padding-bottom: calc(28px + 84px); } /* 枠が画面の下にはみ出す分、最後まで読めるように余白を足す */
 }
+/* 「SCROLL」の線をゆっくり動かして、下に続くことを示す。少しスクロールしたら消える */
+.m-scroll::after { animation: scroll-cue 2s ease-in-out infinite; transform-origin: top; }
+@keyframes scroll-cue { 0% { transform: scaleY(.15); opacity: .4; } 55% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+.m-scroll { transition: opacity .4s; }
+.m-scroll.gone { opacity: 0; pointer-events: none; }
+@media (prefers-reduced-motion: reduce) { .m-scroll::after { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .phone { scroll-behavior: auto; } }
 
 /* カード */

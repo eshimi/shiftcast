@@ -159,6 +159,15 @@ export function topPage() {
       <p>体調を記録するほど、あなたの<br>「不調になりやすい条件」が見えてきます。</p>
     </div>
     <nav class="side-nav" aria-label="メインメニュー">${nav}<a class="btn dark sm" href="/app/">アプリを開く ↗</a></nav>
+    <ol class="side-index" aria-label="このページの内容">
+      <li><a href="#today" data-sec="today">Today<small>今日の気圧</small></a></li>
+      <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
+      <li><a href="#features" data-sec="features">Three Features<small>三つの機能</small></a></li>
+      <li><a href="#weekly" data-sec="weekly">Weekly<small>今週の天気</small></a></li>
+      <li><a href="#column" data-sec="column">Column<small>コラム</small></a></li>
+      <li><a href="#info" data-sec="info">Information<small>サービス情報</small></a></li>
+      <li><a href="#start" data-sec="start">Start<small>はじめる</small></a></li>
+    </ol>
   </aside>
 
   <div class="phone" id="phone">
@@ -184,7 +193,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx blush" aria-labelledby="t-exp">
+    <section class="sx blush" id="exp" aria-labelledby="t-exp">
       <div class="sx-in">
         ${secHead2('Experience', '体験', 't-exp')}
         <svg class="arc" viewBox="0 0 340 96" role="img" aria-label="Calm in Every Change">
@@ -202,7 +211,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx teal" aria-labelledby="t-three">
+    <section class="sx teal" id="features" aria-labelledby="t-three">
       <div class="sx-in">
         ${secHead2('Three Features', '三つの機能', 't-three')}
         <p class="center-copy">Rio²は、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
@@ -212,7 +221,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx cream" aria-labelledby="t-week">
+    <section class="sx cream" id="weekly" aria-labelledby="t-week">
       <div class="sx-in">
         ${person('runner', { k: 0.5, cls: 'fig-tl' })}
         ${secHead2('Weekly', '今週の天気と気圧', 't-week')}
@@ -222,7 +231,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx blush" aria-labelledby="t-col">
+    <section class="sx blush" id="column" aria-labelledby="t-col">
       <div class="sx-in">
         ${person('hiker', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Column', '気象病を防ぐコラム', 't-col')}
@@ -231,7 +240,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx cream room" aria-labelledby="t-info">
+    <section class="sx cream room" id="info" aria-labelledby="t-info">
       <div class="sx-in">
         ${person('suitcase', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Information', 'サービス情報', 't-info')}
@@ -248,7 +257,7 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx teal start" aria-labelledby="t-start">
+    <section class="sx teal start" id="start" aria-labelledby="t-start">
       <span class="walker" aria-hidden="true">${person('family', { k: 0.62 })}</span>
       <div class="sx-in">
         ${secHead2('Start', 'はじめる', 't-start')}
