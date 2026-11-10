@@ -33,7 +33,7 @@ async function initArea(onChange) {
   const sel = $('#areaSel');
   const areas = await getJson('/api/areas');
   sel.replaceChildren(...areas.map((a) => h('option', { value: a.code }, a.name)));
-  let code = store.get('area');
+  let code = new URLSearchParams(location.search).get('area') || store.get('area');
   if (!code) {
     const uid = store.get('uid');
     if (uid) { try { code = (await getJson('/api/me', { headers: { 'x-user-id': uid } })).areas?.[0]; } catch { /* 未ログイン */ } }

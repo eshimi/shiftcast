@@ -119,3 +119,9 @@ body.ds {
 .ds .related li a { font-weight: 600; display: block; }
 .ds .related li span { display: block; margin-top: 4px; }
 .ds .article a { text-decoration: underline; text-underline-offset: 3px; }
+/* 都道府県別 */
+.ds .chips-l { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.ds .chips-l a { display: inline-block; padding: 8px 14px; background: var(--surface-200); text-decoration: none; color: inherit; font-size: 14px; }
+.ds .chips-l a:hover { outline: 1px solid var(--ink); outline-offset: -1px; }
+.ds .plain { padding-left: 1.2em; line-height: 1.9; }
+.ds .plain a { text-decoration: underline; text-underline-offset: 3px; }

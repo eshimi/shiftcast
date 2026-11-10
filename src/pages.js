@@ -2,6 +2,7 @@
 import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.js';
 import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, OG_IMAGE } from './siteconfig.js';
+import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -127,7 +128,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/app/">アプリ</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/app/">アプリ</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -368,6 +369,97 @@ export function columnsPage() {
   });
 }
 
+/* ---------- 都道府県別の気圧(/pressure) ---------- */
+
+const jstHM = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCHours()}時${String(d.getUTCMinutes()).padStart(2, '0')}分`; };
+const jstMD = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日 ${d.getUTCHours()}時`; };
+const sgn = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
+const LV_ORDER = ['none', 'rise', 'slight', 'caution', 'warning'];
+
+function dayRowHtml(d) {
+  const p = d.pressure;
+  const lv = p?.level ?? 'none';
+  const t = (v) => (v == null ? '–' : `${Math.round(v)}°`);
+  return `<div class="day lv-${lv}">
+  <div class="d"><b>${esc(d.label)}</b><small>(${esc(d.dow)})</small></div>
+  <div class="w"><span>${esc(d.text || '予報なし')}</span></div>
+  <div class="t"><span class="hi">${t(d.tmax)}</span> / <span class="lo">${t(d.tmin)}</span>${d.pop != null ? `<small>降水確率 ${d.pop}%</small>` : ''}</div>
+  <div class="p">${p ? `<span class="pill lv-${lv}">気圧 ${esc(p.label)}</span><span>${Math.round(p.min)}〜${Math.round(p.max)} hPa</span>${lv !== 'none' && p.rate != null ? `<span>${jstHM(p.at)}ごろ ${sgn(p.rate)}${Math.abs(p.rate).toFixed(1)}hPa/h</span>` : ''}` : '<span>気圧の予報は約5日先までです</span>'}</div>
+</div>`;
+}
+
+export function pressurePage(pref, w) {
+  const name = pref.name;
+  const n = w?.next24 ?? { level: 'none', label: '安定', rate: null, at: null, severe: false };
+  const cur = w?.current;
+  const risky = (w?.days ?? []).filter((d) => d.pressure && LV_ORDER.indexOf(d.pressure.level) >= 3);
+  const near = neighbors(pref);
+  const lead = cur
+    ? `${name}の現在の海面気圧は約${Math.round(cur.pressure)}hPa${cur.d3 != null ? `（直近3時間で${sgn(cur.d3)}${Math.abs(cur.d3).toFixed(1)}hPa）` : ''}。今後24時間の気圧の変化は「${n.label}」の見込みです。`
+    : `${name}の気圧の予報を準備中です。しばらくしてからもう一度ご覧ください。`;
+  const detail = n.level !== 'none' && n.rate != null ? `${jstMD(n.at)}ごろに、1時間あたり${sgn(n.rate)}${Math.abs(n.rate).toFixed(1)}hPaの変化が見込まれます。` : n.level === 'none' && cur ? '大きな気圧の変化は見込まれていません。' : '';
+  const weekNote = risky.length ? `1週間のうち、気圧が「注意」以上で下がる見込みの日は${risky.map((d) => `${d.label}（${d.dow}）`).join('、')}です。前日の夜に、早めの休息と睡眠、いつもの薬の確認をしておくと安心です。` : '1週間のうち、気圧が「注意」以上で大きく下がる見込みの日は、いまのところありません（気圧の予報は約5日先まで）。';
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE · ${esc(regionOf(pref.code))}</p><h1>${esc(name)}の気圧予報｜天気痛・気象病の頭痛の目安</h1><p>${esc(name)}の今日の気圧と1週間の見通しで、天気痛・気象病・気圧による頭痛に備えましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('hat-bag', { k: 0.5 })}</div></div>
+<div class="wrap">
+<div class="card today lv-${n.level}">
+  <div class="t-body">
+    <div class="muted small">${esc(name)}・今日の気圧${w?.demo ? ' <span class="badge">デモデータ</span>' : ''}${w?.fetchedAt ? `（${jstMD(w.fetchedAt)}更新）` : ''}</div>
+    <div class="big">${cur ? Math.round(cur.pressure) : '–'}<small> hPa</small></div>
+    <div>今後24時間：<span class="pill lv-${n.level}">${esc(n.label)}</span></div>
+    <p>${esc(lead)}${esc(detail)}</p>
+  </div>
+</div>
+<section class="sec" aria-labelledby="p-days"><h2 id="p-days" class="pg-h">${esc(name)}の7日間の天気と気圧</h2>
+  <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>
+  ${LEVELS}
+  <p>${esc(weekNote)}</p>
+  <p class="muted small">気圧は海面気圧の変化の目安です（気象庁・OpenWeatherMap）。診断や医学的な基準ではありません。</p>
+</section>
+<section class="sec"><h2 class="pg-h">${esc(name)}で天気痛・気象病に備えるには</h2>
+  <ul class="plain">
+    <li>気圧が下がる前日の夜は、睡眠と予定に余裕を。<a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li>
+    <li>頭痛が出たら、早めに休んでセルフケアを。<a href="/columns/when-it-hurts">気圧で頭痛・不調を感じたら</a></li>
+    <li>頭痛と気圧の関係を知りたいときは。<a href="/columns/kiatsu-zutsu">気圧で頭痛が起こるのはなぜ？</a> ・ <a href="/columns/headache-diary">頭痛ダイアリーのつけ方</a></li>
+    <li>仕組みを知りたいときは。<a href="/columns/what-is-kishobyo">気象病（天気痛）とは？</a></li>
+  </ul>
+  <p class="row"><a class="btn primary" href="/app/">頭痛・体調を記録する</a><a class="btn" href="/weather?area=${pref.code}">${esc(name)}の1時間ごとの気圧を見る</a></p>
+</section>
+<section class="sec"><h2 class="pg-h">近くの都道府県の気圧予報</h2>
+  <ul class="chips-l">${near.map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">すべての都道府県</a></li></ul>
+</section>
+<p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。症状が強い・続くときは医療機関に相談してください。</p>
+</div>`;
+  return layout({
+    title: `${name}の気圧予報｜今日の気圧と天気痛・頭痛の目安`,
+    description: `${name}の今日の気圧と7日間の天気・気圧の変化を掲載。天気痛・気象病・気圧による頭痛に備えて、気圧が下がる日の前に準備できます。${cur ? `現在は約${Math.round(cur.pressure)}hPa、今後24時間は「${n.label}」。` : ''}`,
+    keywords: [`${name} 気圧`, `${name} 天気痛`, `${name} 気象病`, '気圧 頭痛'],
+    page: 'pressure',
+    path: `/pressure/${pref.slug}`,
+    jsonld: [{ '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['都道府県別の気圧', '/pressure'], [`${name}の気圧予報`, `/pressure/${pref.slug}`]].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) }],
+    body,
+    wide: true,
+  });
+}
+
+export function pressureIndexPage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('hiker', { k: 0.5 })}${person('couple', { k: 0.5 })}${person('runner', { k: 0.5 })}</div></div>
+<div class="wrap">
+${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</h2><ul class="chips-l">${codes.map((c) => PREFS.find((p) => p.code === c)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}</ul></section>`).join('\n')}
+<p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。</p>
+</div>`;
+  return layout({
+    title: '都道府県別の気圧予報｜天気痛・気象病・気圧と頭痛',
+    description: '全国47都道府県の今日の気圧と7日間の気圧予報。天気痛・気象病・気圧による頭痛に備えて、お住まいの地域を選べます。',
+    keywords: COLUMN_KEYWORDS,
+    page: 'pressure',
+    path: '/pressure',
+    body,
+    wide: true,
+  });
+}
+
 /* ---------- サービス紹介 ---------- */
 
 const ABOUT_FEATURES = [
@@ -377,7 +469,7 @@ const ABOUT_FEATURES = [
   ['04', '自分のパターンを見つける分析', '記録と気圧の変化を重ねて、「気圧が下がり始めて何時間後に痛みが出やすいか」などの傾向を振り返れます。通院時に見せられる履歴としても使えます。'],
   ['05', '前日20:00のお知らせ', '翌日に気圧が大きく動きそうなとき、前日の夜20:00(日本時間)にプッシュ通知でお知らせします。通知はオン・オフを選べます。'],
   ['06', '週間天気と気圧', '気象庁の週間予報をもとに、7日間の天気・気温・降水確率と気圧の見通しをまとめて確認できます。予定を立てるときの目安にどうぞ。'],
-  ['07', '気象病を防ぐコラム', '天気痛・気象病・気圧頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、受診の目安までを9本の記事で紹介しています。'],
+  ['07', '気象病を防ぐコラム', '天気痛・気象病・気圧頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、受診の目安までを15本の記事で紹介しています。'],
   ['08', '地域ごとのみんなの傾向', '都道府県単位で匿名に集計した「今日つらい人の割合」を見られます。個人が特定される情報は出しません。'],
 ];
 
@@ -391,7 +483,7 @@ const ABOUT_SHOTS = [
 ];
 const ABOUT_PAGES = [
   ['weather', '/weather', '週間天気', '7日間の天気・気温・降水確率と、日ごとの気圧の見通しを一覧できます。'],
-  ['columns', '/columns', 'コラム', '天気痛・気象病・気圧頭痛の仕組みやセルフケア、受診の目安を9本の記事で紹介しています。'],
+  ['columns', '/columns', 'コラム', '天気痛・気象病・気圧頭痛の仕組みやセルフケア、受診の目安を15本の記事で紹介しています。'],
 ];
 const phoneImg = (n, alt) => `<div class="ab-phone"><img src="/about/${n}.webp" alt="${esc(alt)}" width="390" height="780" loading="lazy"></div>`;
 const ABOUT_STEPS = [
@@ -447,7 +539,7 @@ function renderBlock(b) {
   return '';
 }
 
-const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker' };
+const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker', 'how-long': 'reading', 'which-department': 'family', 'otc-medicine': 'hat-bag', 'typhoon-headache': 'umbrella', 'sleepy-dizzy': 'yoga', 'old-injury': 'runner' };
 
 export function columnPage(slug) {
   const c = findColumn(slug);
