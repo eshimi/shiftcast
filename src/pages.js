@@ -12,7 +12,8 @@ const HERO_PICKER = `<script>
 (function () {
   var L = [
     { s: '/hero/bg/dusk.webp', p: '41% center', v: '20, 40, 62', a: [0.34, 0.10, 0.78] },
-    { s: '/hero/bg/sea.webp', p: '58% 55%', v: '6, 52, 72', a: [0.30, 0.22, 0.74] },
+    { s: '/hero/bg/water.webp', p: '30% 50%', v: '12, 56, 92', a: [0.34, 0.24, 0.76] },
+    { s: '/hero/bg/sky.webp', p: '50% 50%', v: '40, 92, 158', a: [0.30, 0.22, 0.72] },
     { s: '/hero/bg/mist.webp', p: '50% 55%', v: '34, 60, 100', a: [0.50, 0.46, 0.84] }
   ];
   var i = Math.floor(Math.random() * L.length);
