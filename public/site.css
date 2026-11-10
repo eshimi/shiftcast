@@ -51,25 +51,22 @@ main.wrap { padding-top: 6px; }
 .disclaimer { color: var(--muted); font-size: 12px; margin: 16px 0; }
 .row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-/* ---- HERO: 背景画像(public/hero/hero-bg.webp)。480x270と小さいため、スマホでは幅いっぱい(拡大しすぎない)で上部に置き、
-   下へ向かって暗く溶け込ませて、その下に文字を載せる。広い画面では全面に敷き、暗いオーバーレイで文字を読みやすくする。 ---- */
-.hero { position: relative; overflow: hidden; color: #fff; background-color: #06101a;
-  background-image: linear-gradient(180deg, rgba(6, 16, 26, 0) 0, rgba(6, 16, 26, 0) calc(56.25vw - 150px), rgba(6, 16, 26, .55) calc(56.25vw - 60px), #06101a calc(56.25vw + 4px), #06101a 62%, #12303c 100%), url("/hero/hero-bg.webp");
-  background-size: 100% 100%, 100% auto; background-position: 0 0, center top; background-repeat: no-repeat;
-  padding: calc(56.25vw - 6px) 0 30px; }
+/* ---- HERO: 背景の夕空の写真(public/hero/hero-sky.webp)。白い文字が読めるよう、青緑がかった暗いオーバーレイを重ねる。
+   月が見えるよう、画像の位置を左寄り(41%)にそろえている。 ---- */
+.hero { position: relative; overflow: hidden; color: #fff; background-color: #3a5a78;
+  background-image: linear-gradient(180deg, rgba(22, 44, 66, .3) 0%, rgba(24, 48, 68, .42) 38%, rgba(30, 56, 70, .74) 74%, #243d47 100%), url("/hero/hero-sky.webp");
+  background-size: 100% 100%, cover; background-position: 0 0, 41% center; background-repeat: no-repeat;
+  padding: 36px 0 30px; }
 .hero .wrap { position: relative; z-index: 2; }
 .hero-in { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
-.hero-title { margin: 0; font-size: 30px; line-height: 1.9; letter-spacing: .32em; font-weight: 600; writing-mode: vertical-rl; text-shadow: 0 2px 18px rgba(0, 0, 0, .5); height: 300px; }
-.hero-copy .eyebrow { margin: 0 0 12px; font-family: var(--serif); letter-spacing: .3em; font-size: 12.5px; opacity: .9; }
-.hero-brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; font-family: var(--serif); font-size: 21px; letter-spacing: .12em; font-weight: 600; }
-.hero-sub { margin: 0 0 20px; font-family: var(--serif); font-weight: 500; font-size: 16px; line-height: 2; letter-spacing: .06em; text-shadow: 0 1px 12px rgba(0, 0, 0, .5); }
+.hero-title { margin: 0; font-size: 30px; line-height: 1.9; letter-spacing: .32em; font-weight: 600; writing-mode: vertical-rl; text-shadow: 0 2px 20px rgba(10, 30, 50, .55); height: 300px; }
+.hero-copy .eyebrow { margin: 0 0 12px; font-family: var(--serif); letter-spacing: .3em; font-size: 12.5px; opacity: .95; }
+.hero-brand { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 18px; font-family: var(--serif); font-size: 21px; letter-spacing: .12em; font-weight: 600; text-shadow: 0 1px 14px rgba(10, 30, 50, .5); }
+.hero-sub { margin: 0 0 20px; font-family: var(--serif); font-weight: 500; font-size: 16px; line-height: 2; letter-spacing: .06em; text-shadow: 0 1px 14px rgba(10, 30, 50, .6); }
 .hero-btns { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; }
 .hero .btn.dark { background: #fff9f6; border-color: #fff9f6; color: #1f2f36; }
 .hero-phone { margin-top: 14px; }
-@media (min-width: 700px) {
-  .hero { padding: 64px 0 44px; background-image: linear-gradient(180deg, rgba(6, 16, 26, .55) 0%, rgba(6, 16, 26, .62) 55%, #12303c 100%), url("/hero/hero-bg.webp"); background-size: 100% 100%, cover; background-position: 0 0, center; }
-  .hero-title { font-size: 38px; height: 340px; } .hero-sub { font-size: 17px; }
-}
+@media (min-width: 700px) { .hero { padding: 64px 0 44px; } .hero-title { font-size: 38px; height: 340px; } .hero-sub { font-size: 17px; } }
 
 /* カード */
 .card { background: var(--card); border-radius: 22px; padding: 18px; border: 1px solid var(--line); }

@@ -142,7 +142,7 @@ export function topPage() {
     page: 'top',
     body,
     wide: true,
-    extraHead: '<link rel="stylesheet" href="/hero/hero.css">\n<link rel="preload" as="image" href="/hero/hero-bg.webp">',
+    extraHead: '<link rel="stylesheet" href="/hero/hero.css">\n<link rel="preload" as="image" href="/hero/hero-sky.webp">',
     scripts: '<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
   });
 }
