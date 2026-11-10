@@ -125,3 +125,9 @@ body.ds {
 .ds .chips-l a:hover { outline: 1px solid var(--ink); outline-offset: -1px; }
 .ds .plain { padding-left: 1.2em; line-height: 1.9; }
 .ds .plain a { text-decoration: underline; text-underline-offset: 3px; }
+
+.ds .pref-d { margin: 28px 0; background: var(--surface-200); padding: 14px 16px; }
+.ds .pref-d summary { cursor: pointer; font-weight: 600; }
+.ds .pref-r { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-size: 14px; }
+.ds .pref-r b { flex: none; min-width: 5.5em; }
+.ds .pref-r a { text-decoration: underline; text-underline-offset: 3px; }

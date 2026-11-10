@@ -245,6 +245,8 @@ export function topPage() {
         <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
         ${LEVELS}
         <p class="sx-btn"><a class="btn dark block" href="/weather">Weekly All</a></p>
+        <div class="sx-pref"><p class="sx-pref-h">都道府県別の気圧予報</p>
+          <ul>${['hokkaido', 'miyagi', 'tokyo', 'aichi', 'osaka', 'hiroshima', 'fukuoka'].map((sl) => PREFS.find((q) => q.slug === sl)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">全国47都道府県</a></li></ul></div>
       </div>
     </section>
 
@@ -562,10 +564,13 @@ export function columnPage(slug) {
   ${c.blocks.map(renderBlock).join('\n  ')}
 </article>
 ${related.length ? `<section class="related" aria-labelledby="rel-h"><h2 id="rel-h">あわせて読みたい</h2><ul>${related.map((r) => `<li><a href="/columns/${esc(r.slug)}">${esc(r.title)}</a><span class="muted small">${esc(r.summary)}</span></li>`).join('')}</ul></section>` : ''}
+<details class="pref-d"><summary>お住まいの地域の気圧予報を見る（全国47都道府県）</summary>
+${REGIONS.map(([r, codes]) => `<p class="pref-r"><b>${esc(r)}</b>${codes.map((cd) => PREFS.find((q) => q.code === cd)).map((q) => `<a href="/pressure/${q.slug}">${esc(q.name)}</a>`).join('')}</p>`).join('')}
+</details>
 <div class="cta card">
   <b>気圧の変化を先回りでチェック</b>
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
-  <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/app/">アプリを開く</a></p>
+  <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">アプリを開く</a></p>
 </div>
 <nav class="pager" aria-label="前後のコラム">
   ${prev ? `<a href="/columns/${esc(prev.slug)}"><small class="muted">← 前の記事</small><b>${esc(prev.title)}</b></a>` : '<span></span>'}
