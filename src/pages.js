@@ -68,9 +68,9 @@ const NAV = [
   ['/columns', 'コラム', 'columns'],
 ];
 
-// フォント: トップは明朝体(Shippori)、それ以外のページはデザインシステム「QRO Eyewear」の Noto Sans JP + Inter
+// フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
 const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">';
-const DS_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap">';
+const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
 function layout({ title, description, page, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
   const full = title === SITE ? `${SITE}｜${TAGLINE}` : `${title} | ${SITE}`;

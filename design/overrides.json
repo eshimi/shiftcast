@@ -1,0 +1,9 @@
+{
+  "note": "デザインシステム「QRO Eyewear」はゴシック体(Noto Sans JP + Inter)だが、サイト全体の統一のため、フォントだけ明朝体に上書きする。元に戻すにはこのファイルの type.families を削除して scripts/build-ds-css.mjs を実行する。",
+  "type": {
+    "families": {
+      "sans": "\"Shippori Mincho B1\", \"Hiragino Mincho ProN\", \"Yu Mincho\", \"Noto Serif JP\", serif",
+      "latin": "\"Shippori Mincho B1\", \"Hiragino Mincho ProN\", \"Yu Mincho\", \"Noto Serif JP\", serif"
+    }
+  }
+}

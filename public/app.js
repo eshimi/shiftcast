@@ -6,6 +6,7 @@ const FACES = ['🙂', '😕', '😣', '😖', '😫'];
 const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
 const DEFAULT_TAGS = ['頭痛', 'だるさ', 'めまい', '肩こり', '吐き気', '関節痛', '眠気'];
 const HOUR = 3600e3;
+const FONT = getComputedStyle(document.body).fontFamily; // グラフ内の文字も、ページと同じフォント(明朝体)にそろえる
 
 const S = {
   uid: null, me: null, areas: [], areaName: {}, cur: null /* 現在地の都道府県 */, view: 'dash',
@@ -174,14 +175,14 @@ const overlay = {
     pts.forEach((p, i) => {
       if (i % 2) return;
       const px = x.getPixelForValue(p.ts);
-      ctx.font = '16px sans-serif'; ctx.fillText(wxIcon(p.icon), px, a.top + 14);
-      if (p.temp != null) { ctx.font = '11px sans-serif'; ctx.fillText(Math.round(p.temp) + '°', px, a.top + 30); }
+      ctx.font = `16px ${FONT}`; ctx.fillText(wxIcon(p.icon), px, a.top + 14);
+      if (p.temp != null) { ctx.font = `12px ${FONT}`; ctx.fillText(Math.round(p.temp) + '°', px, a.top + 30); }
     });
     // 現在時刻線
     const nx = x.getPixelForValue(chart.$now);
     ctx.strokeStyle = '#888'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(nx, a.top); ctx.lineTo(nx, a.bottom); ctx.stroke(); ctx.setLineDash([]);
     // 過去の痛み記録アイコン
-    ctx.font = '22px sans-serif';
+    ctx.font = `22px ${FONT}`;
     (chart.$logs || []).forEach((l) => {
       const py = pressureAt(pts, l.ts);
       if (py == null) return;
@@ -224,6 +225,7 @@ function drawChart(fc, logs) {
     },
     plugins: { legend: { display: false }, tooltip: { callbacks: { title: (it) => fmtDT(it[0].parsed.x), label: (it) => { const p = pts.find((q) => q.ts === it.parsed.x); return `${it.parsed.y.toFixed(1)} hPa` + (p?.rate != null ? ` (${p.rate > 0 ? '+' : ''}${p.rate.toFixed(1)}/h ${LABEL[p.level]})` : ''); } } } },
   };
+  Chart.defaults.font.family = FONT;
   if (S.chart) S.chart.destroy();
   S.chart = new Chart($('#chart'), { type: 'line', data, options: opts, plugins: [overlay] });
   S.chart.$pts = pts; S.chart.$now = fc.now; S.chart.$logs = logs;

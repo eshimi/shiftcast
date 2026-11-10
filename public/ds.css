@@ -1,4 +1,4 @@
-/* QRO Eyewear — generated from design/qro-eyewear.tokens.json (scripts/build-ds-css.mjs). 手で編集しないこと。 */
+/* QRO Eyewear — generated from design/qro-eyewear.tokens.json + design/overrides.json (scripts/build-ds-css.mjs). 手で編集しないこと。 */
 :root {
   --surface-100: #ffffff;
   --surface-200: #f4f4f5;
@@ -21,8 +21,8 @@
   --radius-none: 0px;
   --radius-sm: 2px;
   --radius-pill: 999px;
-  --font-sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
-  --font-latin: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --font-latin: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   --fs-display: 56px; --lh-display: 64px; --fw-display: 700;
   --fs-heading: 28px; --lh-heading: 36px; --fw-heading: 700;
   --fs-subheading: 18px; --lh-subheading: 28px; --fw-subheading: 600;

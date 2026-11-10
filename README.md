@@ -61,7 +61,7 @@ Workers Builds 連携の再確認（2026-11-08）。
 トップ/週間天気/コラムは Worker がサーバー側で描画します（`src/pages.js`）。データは公開API `/api/week?area=<都道府県コード>`（5分キャッシュ）から取得します。
 
 ## デザインシステム（トップページ以外）
-トップページ以外（週間天気・コラム・利用規約・アプリ）は、デザインシステム「QRO Eyewear」に合わせています（モノクロ・直角・細い罫線・Noto Sans JP / Inter）。
+トップページ以外（週間天気・コラム・利用規約・アプリ）は、デザインシステム「QRO Eyewear」に合わせています（モノクロ・直角・細い罫線。フォントは全ページ共通で明朝体に上書き: `design/overrides.json`）。
 - 元データ: `design/qro-eyewear.tokens.json`、ルール: `design/qro-eyewear.README.md`
 - `node scripts/build-ds-css.mjs` で `public/ds.css`（色・余白・角丸・文字の変数）を生成します。手で編集しないでください。
 - ページごとの適用: `public/ds-pages.css`（週間天気・コラム）、`public/header.css`（共通ヘッダー）、`public/style.css`（アプリ・利用規約）
