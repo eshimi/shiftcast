@@ -1,5 +1,5 @@
 // サーバー側で描画するページ（トップ / 週間天気 / コラム）。共通のヘッダー・フッターをここで持つ。
-import { COLUMNS, COLUMN_UPDATED, findColumn } from './columns.js';
+import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.js';
 import { PEOPLE, PERSON } from './people.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -73,7 +73,7 @@ const NAV = [
 const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">';
 const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
-function layout({ title, description, page, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
+function layout({ title, description, keywords, page, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
   const full = title === SITE ? `${SITE}｜${TAGLINE}` : `${title} | ${SITE}`;
   return `<!doctype html>
 <html lang="ja">
@@ -83,6 +83,7 @@ function layout({ title, description, page, body, extraHead = '', scripts = '', 
 <meta name="theme-color" content="#fff9f6">
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
+${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : ''}
 <meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="website">
@@ -219,7 +220,7 @@ export function topPage() {
         <p class="center-copy">Rio²は、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
         <a class="feat" href="/weather" style="--img: url('/hero/bg/mist.webp'); --pos: 30% 50%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
         <a class="feat" href="/app/" style="--img: url('/hero/bg/dusk.webp'); --pos: 41% 40%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
-        <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">気象病を防ぐ、暮らしのヒント</span></a>
+        <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">天気痛・気象病・気圧頭痛の対策</span></a>
       </div>
     </section>
 
@@ -236,7 +237,7 @@ export function topPage() {
     <section class="sx blush" id="column" aria-labelledby="t-col">
       <div class="sx-in">
         ${person('hiker', { k: 0.5, cls: 'fig-tr' })}
-        ${secHead2('Column', '気象病を防ぐコラム', 't-col')}
+        ${secHead2('Column', '天気痛・気象病のコラム', 't-col')}
         <ul class="menu">${COLUMNS.map((c, i) => `<li><a href="/columns/${esc(c.slug)}"><span class="no">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(c.title)}</span><span class="m">${c.readMin}分</span></a></li>`).join('')}</ul>
         <p class="sx-btn"><a class="btn dark block" href="/columns">Column All</a></p>
       </div>
@@ -329,14 +330,15 @@ ${areaBar}
 
 export function columnsPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>気象病を防ぐコラム</h1><p>気圧の変化で崩れる体調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>天気痛・気象病のコラム</h1><p>気圧の変化による頭痛や不調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
 <div class="wrap">
 <div class="col-list">${COLUMNS.map((c) => columnCard(c)).join('')}</div>
 <p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
 </div>`;
   return layout({
-    title: 'コラム｜気象病を防ぐ方法',
-    description: '気象病（天気痛）の仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までをまとめたコラム。',
+    title: 'コラム｜天気痛・気象病・気圧と頭痛の対策',
+    description: '天気痛・気象病・気圧による頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、季節ごとの特徴、受診の目安までをまとめたコラム。',
+    keywords: COLUMN_KEYWORDS,
     page: 'columns',
     body,
     wide: true,
@@ -352,7 +354,7 @@ const ABOUT_FEATURES = [
   ['04', '自分のパターンを見つける分析', '記録と気圧の変化を重ねて、「気圧が下がり始めて何時間後に痛みが出やすいか」などの傾向を振り返れます。通院時に見せられる履歴としても使えます。'],
   ['05', '前日20:00のお知らせ', '翌日に気圧が大きく動きそうなとき、前日の夜20:00(日本時間)にプッシュ通知でお知らせします。通知はオン・オフを選べます。'],
   ['06', '週間天気と気圧', '気象庁の週間予報をもとに、7日間の天気・気温・降水確率と気圧の見通しをまとめて確認できます。予定を立てるときの目安にどうぞ。'],
-  ['07', '気象病を防ぐコラム', '仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までを6本の記事で紹介しています。'],
+  ['07', '気象病を防ぐコラム', '天気痛・気象病・気圧頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、受診の目安までを9本の記事で紹介しています。'],
   ['08', '地域ごとのみんなの傾向', '都道府県単位で匿名に集計した「今日つらい人の割合」を見られます。個人が特定される情報は出しません。'],
 ];
 
@@ -366,7 +368,7 @@ const ABOUT_SHOTS = [
 ];
 const ABOUT_PAGES = [
   ['weather', '/weather', '週間天気', '7日間の天気・気温・降水確率と、日ごとの気圧の見通しを一覧できます。'],
-  ['columns', '/columns', 'コラム', '気象病の仕組みやセルフケア、受診の目安を6本の記事で紹介しています。'],
+  ['columns', '/columns', 'コラム', '天気痛・気象病・気圧頭痛の仕組みやセルフケア、受診の目安を9本の記事で紹介しています。'],
 ];
 const phoneImg = (n, alt) => `<div class="ab-phone"><img src="/about/${n}.webp" alt="${esc(alt)}" width="390" height="780" loading="lazy"></div>`;
 const ABOUT_STEPS = [
@@ -418,7 +420,7 @@ function renderBlock(b) {
   return '';
 }
 
-const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family' };
+const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker' };
 
 export function columnPage(slug) {
   const c = findColumn(slug);
@@ -446,7 +448,7 @@ export function columnPage(slug) {
   ${next ? `<a href="/columns/${esc(next.slug)}" class="r"><small class="muted">次の記事 →</small><b>${esc(next.title)}</b></a>` : '<span></span>'}
 </nav>
 <p class="disclaimer">このコラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>`;
-  return layout({ title: c.title, description: c.summary, page: 'column', body });
+  return layout({ title: c.title, description: c.summary, keywords: c.keywords || COLUMN_KEYWORDS, page: 'column', body });
 }
 
 export const notFoundPage = () =>
