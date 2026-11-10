@@ -9,7 +9,15 @@ const JST = 9 * H;
 const at = (date, hh) => Date.parse(`${date}T00:00:00+09:00`) + hh * H;
 
 test('weatherInfo: 既知コードと未知コード', () => {
-  assert.deepEqual(weatherInfo('100'), { text: '晴れ', icon: '☀️' });
+  assert.deepEqual(weatherInfo('100'), { text: '晴れ', icon: '☀️', key: 'sun' });
+  assert.equal(weatherInfo('101').key, 'cloud-sun');
+  assert.equal(weatherInfo('102').key, 'rain-sun');
+  assert.equal(weatherInfo('200').key, 'cloud');
+  assert.equal(weatherInfo('202').key, 'rain');
+  assert.equal(weatherInfo('209').key, 'fog');
+  assert.equal(weatherInfo('140').key, 'thunder');
+  assert.equal(weatherInfo('400').key, 'snow');
+  assert.equal(weatherInfo('304').key, 'sleet');
   assert.equal(weatherInfo('202').icon, '🌦️');
   assert.equal(weatherInfo('300').icon, '🌧️');
   assert.equal(weatherInfo('140').icon, '⛈️');
@@ -17,6 +25,7 @@ test('weatherInfo: 既知コードと未知コード', () => {
   assert.equal(weatherInfo('999').text, ''); // 範囲外は空
   assert.equal(weatherInfo('117').text, '晴れのち雪');
   assert.equal(weatherInfo('').icon, '·');
+  assert.equal(weatherInfo('').key, null);
 });
 
 test('summarizeWeekly: 週間予報の要約（空文字は null）', () => {

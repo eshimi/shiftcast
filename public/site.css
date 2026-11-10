@@ -281,3 +281,8 @@ body.lp { background: var(--bg); }
 .art-fig { float: right; margin: 0 0 6px 10px; }
 @media (min-width: 640px) { .fig-live { height: 70px; } }
 @media (prefers-color-scheme: dark) { .ppl, .walker, .pg-ppl, .street { display: none; } .sx.room { padding-bottom: 52px; } .page-head.has-ppl { padding-bottom: 28px; } }
+
+/* 天気マーク(線画SVG: public/wx.js)。色は文字色に従う */
+.wx { display: block; flex: none; }
+.cell .ic, .hourly .cell .ic { display: flex; justify-content: center; align-items: center; height: 36px; font-size: 22px; line-height: 1; }
+.day .w .ic { display: flex; align-items: center; width: 36px; justify-content: center; font-size: 26px; line-height: 1; }

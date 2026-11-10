@@ -104,11 +104,14 @@ function renderNews(w) {
   );
 }
 
+// 天気マーク: public/wx.js の線画アイコン。読み込めない場合は絵文字で代用する
+const wxIcon = (key, emoji, size) => (window.WX && key && window.WX.ICONS[key] ? window.WX.el(key, size) : h('span', { 'aria-hidden': 'true' }, emoji || ''));
+
 function cellFor(d) {
   const lv = d.pressure?.level ?? 'none';
   return h('div', { class: `cell lv-${lv}`, title: d.text || '' },
     h('b', {}, d.label), h('div', { class: 'muted small' }, `(${d.dow})`),
-    h('div', { class: 'ic', 'aria-hidden': 'true' }, d.icon),
+    h('div', { class: 'ic' }, wxIcon(d.key, d.icon, 34)),
     h('div', { class: 'tt' }, h('span', { class: 'hi' }, temp(d.tmax)), ' / ', h('span', { class: 'lo' }, temp(d.tmin))),
     h('div', { class: 'pp' }, d.pop != null ? `☂${d.pop}%` : ' '),
     h('div', { class: 'pp' }, d.pressure ? LABEL[lv] : ' '));
@@ -119,7 +122,7 @@ function dayRow(d) {
   const lv = p?.level ?? 'none';
   return h('div', { class: `day lv-${lv}` },
     h('div', { class: 'd' }, h('b', {}, d.label), h('small', {}, `(${d.dow})`)),
-    h('div', { class: 'w' }, h('span', { class: 'ic', 'aria-hidden': 'true' }, d.icon), h('span', {}, d.text || '予報なし')),
+    h('div', { class: 'w' }, h('span', { class: 'ic' }, wxIcon(d.key, d.icon, 36)), h('span', {}, d.text || '予報なし')),
     h('div', { class: 't' }, h('span', { class: 'hi' }, temp(d.tmax)), ' / ', h('span', { class: 'lo' }, temp(d.tmin)),
       d.pop != null ? h('small', {}, `降水確率 ${d.pop}%`) : null),
     h('div', { class: 'p' },
@@ -134,7 +137,7 @@ function dayRow(d) {
 function hourCell(p) {
   const t = jstParts(p.ts);
   return h('div', { class: `cell lv-${p.level}` },
-    h('b', {}, `${t.h}時`), h('div', { class: 'ic', 'aria-hidden': 'true' }, p.icon),
+    h('b', {}, `${t.h}時`), h('div', { class: 'ic' }, wxIcon(p.key, p.icon, 30)),
     h('div', { class: 'tt' }, p.temp != null ? `${Math.round(p.temp)}°` : '–'),
     h('div', { class: 'pp' }, `${Math.round(p.pressure)}`),
     h('div', { class: 'pp' }, p.rate != null && p.level !== 'none' ? LABEL[p.level] : ' '));

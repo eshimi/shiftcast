@@ -275,7 +275,7 @@ export function topPage() {
     chrome: false,
     bodyClass: 'lp',
     extraHead: `<link rel="stylesheet" href="/hero/hero.css">\n${HERO_PICKER}`,
-    scripts: '<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
+    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
   });
 }
 
@@ -310,7 +310,7 @@ ${areaBar}
     page: 'weather',
     body,
     wide: true,
-    scripts: '<script src="/site.js" defer></script>',
+    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>',
   });
 }
 

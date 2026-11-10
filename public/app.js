@@ -175,8 +175,9 @@ const overlay = {
     pts.forEach((p, i) => {
       if (i % 2) return;
       const px = x.getPixelForValue(p.ts);
-      ctx.font = `16px ${FONT}`; ctx.fillText(wxIcon(p.icon), px, a.top + 14);
-      if (p.temp != null) { ctx.font = `12px ${FONT}`; ctx.fillText(Math.round(p.temp) + '°', px, a.top + 30); }
+      if (window.WX) window.WX.draw(ctx, window.WX.fromOwm(p.icon), px, a.top + 1, 26, getComputedStyle(document.body).color, 2.4);
+      else { ctx.font = `16px ${FONT}`; ctx.fillText(wxIcon(p.icon), px, a.top + 14); }
+      if (p.temp != null) { ctx.font = `12px ${FONT}`; ctx.fillText(Math.round(p.temp) + '°', px, a.top + 40); }
     });
     // 現在時刻線
     const nx = x.getPixelForValue(chart.$now);
@@ -209,7 +210,7 @@ function drawChart(fc, logs) {
   if (!wrap.querySelector('canvas')) wrap.replaceChildren(h('canvas', { id: 'chart' }));
   const spanH = (pts[pts.length - 1].ts - pts[0].ts) / HOUR;
   wrap.style.width = Math.max(wrap.parentElement.clientWidth, spanH * 12) + 'px';
-  const min = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 3), max = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 3);
+  const min = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 3), max = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 9);
   const data = {
     datasets: [
       { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#0b0b0c', borderWidth: 2.5, pointRadius: 2, tension: 0.3 },
@@ -218,7 +219,7 @@ function drawChart(fc, logs) {
   };
   const opts = {
     responsive: true, maintainAspectRatio: false, animation: false,
-    layout: { padding: { top: 38 } },
+    layout: { padding: { top: 48 } },
     scales: {
       x: { type: 'linear', min: pts[0].ts, max: pts[pts.length - 1].ts, ticks: { stepSize: 6 * HOUR, maxRotation: 0, font: { size: 10 }, callback: (v) => { const d = new Date(v); return [`${d.getMonth() + 1}/${d.getDate()}`, `${d.getHours()}時`]; } }, grid: { color: 'rgba(128,128,128,.15)' } },
       y: { min, max, ticks: { display: false } }, // 縦軸は横スクロールしても残るよう、HTML側(#yAxis)に描画

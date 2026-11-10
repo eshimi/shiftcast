@@ -20,10 +20,10 @@ const CODE_TEXT = {
 };
 const CATEGORY = { 1: '晴れ', 2: 'くもり', 3: '雨', 4: '雪' };
 
-/** 気象庁の天気コード → {text, icon}。未知のコードでも百の位から推定する。 */
+/** 気象庁の天気コード → {text, icon(絵文字・互換用), key(public/wx.js の線画アイコンのキー)}。未知のコードでも百の位から推定する。 */
 export function weatherInfo(code) {
   const c = Number(code);
-  if (!Number.isFinite(c) || c < 100) return { text: '', icon: '·' };
+  if (!Number.isFinite(c) || c < 100) return { text: '', icon: '·', key: null };
   const major = Math.floor(c / 100);
   const text = CODE_TEXT[c] || CATEGORY[major] || '';
   let icon;
@@ -35,11 +35,22 @@ export function weatherInfo(code) {
   else if (major === 2) icon = /晴れ/.test(text) ? '⛅' : '☁️';
   else icon = '☁️';
   if (c === 209) icon = '🌫️';
-  return { text, icon };
+  let key;
+  if (c === 209) key = 'fog';
+  else if (/雷/.test(text)) key = 'thunder';
+  else if (/雨か雪|雪か雨|みぞれ/.test(text)) key = 'sleet';
+  else if (major === 4 || (/雪/.test(text) && !/雨/.test(text))) key = 'snow';
+  else if (/雨/.test(text)) key = major === 1 ? 'rain-sun' : 'rain';
+  else if (major === 1) key = /くもり/.test(text) ? 'cloud-sun' : 'sun';
+  else if (major === 2) key = /晴れ/.test(text) ? 'cloud-sun' : 'cloud';
+  else key = 'cloud';
+  return { text, icon, key };
 }
 
 const OWM_ICON = { '01': '☀️', '02': '⛅', '03': '☁️', '04': '☁️', '09': '🌧️', '10': '🌦️', '11': '⛈️', '13': '❄️', '50': '🌫️' };
 const owmIcon = (c) => OWM_ICON[(c || '').slice(0, 2)] || '·';
+const OWM_KEY = { '01d': 'sun', '01n': 'moon', '02d': 'cloud-sun', '02n': 'cloud-moon', '03': 'cloud', '04': 'cloud', '09': 'rain', '10d': 'rain-sun', '10n': 'rain-moon', '11': 'thunder', '13': 'snow', '50': 'fog' };
+export const owmKey = (c) => OWM_KEY[c] || OWM_KEY[(c || '').slice(0, 2)] || 'cloud';
 
 /**
  * 気圧の点列(ts昇順, annotate済み)を日本時間の日付ごとに集計する。
@@ -66,6 +77,7 @@ export function dailyPressure(points) {
       rate: drop ? drop.rate : rise ? rise.rate : null,
       at: drop ? drop.ts : rise ? rise.ts : null,
       icon: owmIcon(noon.icon),
+      key: owmKey(noon.icon),
       partial: pts.length < 6, // 3時間おき8点のうち6点未満=一部の時間帯のみ
     };
   }
@@ -85,7 +97,7 @@ export function mergeWeek({ today, jma, pressure }) {
     const s = short[date];
     const p = pressure[date];
     const code = w?.code || s?.code || null;
-    const info = code ? weatherInfo(code) : { text: s?.weather || '', icon: p?.icon || '·' };
+    const info = code ? weatherInfo(code) : { text: s?.weather || '', icon: p?.icon || '·', key: p?.key || null };
     const dow = DOW[new Date(date + 'T00:00:00Z').getUTCDay()];
     return {
       date,
@@ -93,6 +105,7 @@ export function mergeWeek({ today, jma, pressure }) {
       label: i === 0 ? '今日' : i === 1 ? '明日' : `${Number(date.slice(5, 7))}/${Number(date.slice(8))}`,
       text: info.text || s?.weather || '',
       icon: info.icon,
+      key: info.key,
       pop: w?.pop ?? s?.pop ?? null,
       tmax: w?.tmax ?? p?.tmax ?? null,
       tmin: w?.tmin ?? p?.tmin ?? null,
@@ -131,7 +144,7 @@ export async function buildWeek(env, code, now = Date.now()) {
     next24: worst
       ? { level: worst.level, label: LEVEL_LABEL[worst.level], rate: worst.rate, at: worst.ts, severe: SEVERITY[worst.level] >= SEVERITY.caution }
       : { level: 'none', label: LEVEL_LABEL.none, rate: null, at: null, severe: false },
-    hourly: ann.filter((p) => p.ts >= now - 3 * HOUR && p.ts <= now + 27 * HOUR).map((p) => ({ ts: p.ts, temp: p.temp, pressure: p.pressure, icon: owmIcon(p.icon), rate: p.rate, level: p.level })),
+    hourly: ann.filter((p) => p.ts >= now - 3 * HOUR && p.ts <= now + 27 * HOUR).map((p) => ({ ts: p.ts, temp: p.temp, pressure: p.pressure, icon: owmIcon(p.icon), key: owmKey(p.icon), rate: p.rate, level: p.level })),
     days,
   };
 }
