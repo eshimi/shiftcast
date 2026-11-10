@@ -156,3 +156,10 @@ main.wrap { padding-top: 6px; }
 .sec { margin: 34px 0; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* HERO・フッターのロゴ（ヘッダーは header.css） */
+.hero-brand img { border-radius: 10px; }
+.brand-ln { display: flex; flex-direction: column; line-height: 1.15; }
+.brand-ln b { font-size: 28px; font-weight: 700; letter-spacing: .08em; }
+.brand-ln small { font-size: 11px; letter-spacing: .34em; font-weight: 500; opacity: .92; margin-top: 2px; }
+.hero-brand sup, .site-f sup { font-size: .5em; line-height: 0; position: relative; top: -.42em; margin-left: -.12em; letter-spacing: 0; }

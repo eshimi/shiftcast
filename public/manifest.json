@@ -1,6 +1,6 @@
 {
-  "name": "気圧ノート",
-  "short_name": "気圧ノート",
+  "name": "Rio²（リオリオ）",
+  "short_name": "リオリオ",
   "description": "気圧の変化と体調を記録して、気象病を予防",
   "start_url": "/app/",
   "scope": "/",

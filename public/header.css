@@ -21,3 +21,11 @@
 .site-h .nav::-webkit-scrollbar { display: none; }
 .site-h .nav a { flex: none; padding: 6px 12px; text-decoration: none; color: var(--h-muted); font-family: "Shippori Mincho B1", "Hiragino Mincho ProN", serif; font-size: 14.5px; font-weight: 500; letter-spacing: .06em; line-height: 1.7; border-bottom: 2px solid transparent; }
 .site-h .nav a[aria-current="page"] { color: var(--h-fg); font-weight: 700; border-bottom-color: var(--h-accent); }
+
+/* ロゴ: 大きな「Rio²」の下に、読みの「リオリオ」 */
+.site-h .logo { gap: 10px; }
+.site-h .logo img { border-radius: 9px; }
+.site-h .ln { display: flex; flex-direction: column; line-height: 1.15; }
+.site-h .ln b { font-size: 24px; font-weight: 700; letter-spacing: .08em; }
+.site-h .ln small { font-size: 10.5px; font-weight: 500; letter-spacing: .32em; color: var(--h-muted); margin-top: 2px; }
+.site-h sup { font-size: .5em; line-height: 0; position: relative; top: -.42em; margin-left: -.12em; letter-spacing: 0; font-weight: 600; }

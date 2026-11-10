@@ -3,7 +3,9 @@ import { COLUMNS, COLUMN_UPDATED, findColumn } from './columns.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
-const SITE = '気圧ノート';
+const SITE = 'Rio²（リオリオ）';
+const TAGLINE = '気圧と体調のノート';
+const LOGO = '<span class="ln"><b>Rio<sup>2</sup></b><small>リオリオ</small></span>';
 
 const NAV = [
   ['/', 'トップ', 'top'],
@@ -12,7 +14,7 @@ const NAV = [
 ];
 
 function layout({ title, description, page, body, extraHead = '', scripts = '', wide = false }) {
-  const full = title === SITE ? SITE : `${title} | ${SITE}`;
+  const full = title === SITE ? `${SITE}｜${TAGLINE}` : `${title} | ${SITE}`;
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -37,7 +39,7 @@ ${extraHead}
 <body data-page="${page}">
 <header class="site-h">
   <div class="wrap h-in">
-    <a class="logo" href="/"><img src="/icon.svg" alt="" width="26" height="26"><span>${SITE}</span></a>
+    <a class="logo" href="/" aria-label="Rio²（リオリオ） トップへ"><img src="/icon.svg" alt="" width="36" height="36">${LOGO}</a>
     <a class="btn sm primary h-app" href="/app/">アプリを開く</a>
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
@@ -50,7 +52,7 @@ ${body}
 </main>
 <footer class="site-f">
   <div class="wrap">
-    <p class="f-logo">気圧ノート</p>
+    <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
     <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/app/">アプリ</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
@@ -88,7 +90,7 @@ export function topPage() {
   <div class="wrap">
     <div class="hero-in">
       <div class="hero-copy">
-        <p class="hero-brand"><img src="/icon.svg" alt="" width="34" height="34">気圧ノート</p>
+        <p class="hero-brand"><img src="/icon.svg" alt="" width="40" height="40"><span class="brand-ln"><b>Rio<sup>2</sup></b><small>リオリオ</small></span></p>
         <p class="eyebrow">WEATHER &amp; WELLNESS</p>
         <p class="hero-sub">気圧の低下を前の晩に通知。<br>体調を記録するほど、あなたの「不調になりやすい条件」が見えてきます。</p>
         <p class="hero-btns"><a class="btn dark" href="/app/#log">体調を記録する</a><a class="btn ghost" href="/weather">週間天気を見る</a></p>
