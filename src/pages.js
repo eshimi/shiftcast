@@ -1,6 +1,7 @@
 // サーバー側で描画するページ（トップ / 週間天気 / コラム）。共通のヘッダー・フッターをここで持つ。
 import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.js';
 import { PEOPLE, PERSON } from './people.js';
+import { SITE_URL, OG_IMAGE } from './siteconfig.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
@@ -73,8 +74,12 @@ const NAV = [
 const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">';
 const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
-function layout({ title, description, keywords, page, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
-  const full = title === SITE ? `${SITE}｜${TAGLINE}` : `${title} | ${SITE}`;
+const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
+
+function layout({ title, rawTitle, description, keywords, page, path, jsonld = [], body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
+  const full = rawTitle || `${title} | ${SITE}`;
+  const url = path ? SITE_URL + path : '';
+  const ogType = page === 'column' ? 'article' : 'website';
   return `<!doctype html>
 <html lang="ja">
 <head>
@@ -84,9 +89,16 @@ function layout({ title, description, keywords, page, body, extraHead = '', scri
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 ${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : ''}
-<meta property="og:title" content="${esc(full)}">
+${url ? `<link rel="canonical" href="${esc(url)}">\n<meta property="og:url" content="${esc(url)}">\n` : ''}<meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
-<meta property="og:type" content="website">
+<meta property="og:type" content="${ogType}">
+<meta property="og:site_name" content="${esc(SITE)}">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:image" content="${SITE_URL}${OG_IMAGE}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+${page === 'none' ? '<meta name="robots" content="noindex">\n' : ''}${jsonLd(jsonld)}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${chrome ? DS_FONTS : TOP_FONTS}
@@ -158,6 +170,7 @@ export function topPage() {
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">
+      <p>天気痛・気象病に備える、気圧予報と頭痛の記録ノート。</p>
       <p>気圧の低下を前の晩に通知。</p>
       <p>体調を記録するほど、あなたの<br>「不調になりやすい条件」が見えてきます。</p>
     </div>
@@ -176,7 +189,7 @@ export function topPage() {
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
       <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">アプリを開く</a></nav>
-      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。</h1>
+      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（Rio²：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
         <img src="/icon.svg" alt="" width="56" height="56">
         <span class="m-word">Rio<sup>2</sup></span>
@@ -280,9 +293,15 @@ export function topPage() {
   </div>
 </div>`;
   return layout({
-    title: SITE,
-    description: '気圧の変化を先回りで知り、体調を記録して自分の傾向を見つける、気象病セルフケアのサービス。週間天気・コラムも。',
+    rawTitle: `${SITE}｜天気痛・気象病の気圧予報と頭痛の記録ノート`,
+    description: '天気痛・気象病で気圧の変化に頭痛や不調が出やすい人のための、気圧予報と体調の記録ノート。気圧が下がる前の晩に通知し、記録から自分の傾向を見つけます。週間天気・コラムも。無料・登録不要。',
+    keywords: COLUMN_KEYWORDS,
     page: 'top',
+    path: '/',
+    jsonld: [
+      { '@type': 'WebSite', name: SITE, url: SITE_URL + '/', inLanguage: 'ja' },
+      { '@type': 'WebApplication', name: SITE, url: SITE_URL + '/app/', applicationCategory: 'HealthApplication', operatingSystem: 'Web', inLanguage: 'ja', description: '天気痛・気象病の気圧予報と、頭痛・体調の記録ノート', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } },
+    ],
     body,
     chrome: false,
     bodyClass: 'lp',
@@ -317,9 +336,11 @@ ${areaBar}
 <p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    title: '週間天気と気圧',
-    description: '1週間の天気・気温・降水確率と、気圧が下がる日の目安を都道府県別に確認できます。',
+    title: '週間天気と気圧予報｜天気痛・気象病の頭痛に備える',
+    description: '1週間の天気・気温・降水確率と、気圧が下がる日の目安を都道府県別に確認できます。天気痛・気象病・気圧による頭痛に備えて、崩れる日の前に準備できます。',
+    keywords: COLUMN_KEYWORDS,
     page: 'weather',
+    path: '/weather',
     body,
     wide: true,
     scripts: '<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/site.js" defer></script>',
@@ -340,6 +361,8 @@ export function columnsPage() {
     description: '天気痛・気象病・気圧による頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、季節ごとの特徴、受診の目安までをまとめたコラム。',
     keywords: COLUMN_KEYWORDS,
     page: 'columns',
+    path: '/columns',
+    jsonld: [{ '@type': 'CollectionPage', name: 'コラム｜天気痛・気象病・気圧と頭痛の対策', url: SITE_URL + '/columns', inLanguage: 'ja', hasPart: COLUMNS.map((c) => ({ '@type': 'Article', headline: c.title, url: `${SITE_URL}/columns/${c.slug}` })) }],
     body,
     wide: true,
   });
@@ -402,21 +425,25 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 <p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    title: 'サービス紹介｜Rio²（リオリオ）の機能と使い方',
-    description: 'Rio²（リオリオ）は気圧の予報と体調の記録で気象病に備えるWebアプリ。機能、使い方、よくある質問を紹介します。',
+    rawTitle: `${SITE}とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
+    description: 'Rio²（リオリオ）は、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
+    keywords: COLUMN_KEYWORDS,
     page: 'about',
+    path: '/about',
+    jsonld: [{ '@type': 'FAQPage', mainEntity: ABOUT_FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }],
     body,
     wide: true,
   });
 }
 
+const ref = (t) => esc(t).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, (_, slug, label) => (findColumn(slug) ? `<a href="/columns/${slug}">${label}</a>` : label));
 function renderBlock(b) {
   if (b.h) return `<h2>${esc(b.h)}</h2>`;
-  if (b.p) return `<p>${esc(b.p)}</p>`;
-  if (b.ul) return `<ul>${b.ul.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>`;
+  if (b.p) return `<p>${ref(b.p)}</p>`;
+  if (b.ul) return `<ul>${b.ul.map((x) => `<li>${ref(x)}</li>`).join('')}</ul>`;
   if (b.ol) return `<ol>${b.ol.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>`;
-  if (b.note) return `<aside class="callout note"><b>メモ</b><p>${esc(b.note)}</p></aside>`;
-  if (b.warn) return `<aside class="callout warn" role="note"><b>ご注意</b><p>${esc(b.warn)}</p></aside>`;
+  if (b.note) return `<aside class="callout note"><b>メモ</b><p>${ref(b.note)}</p></aside>`;
+  if (b.warn) return `<aside class="callout warn" role="note"><b>ご注意</b><p>${ref(b.warn)}</p></aside>`;
   return '';
 }
 
@@ -428,6 +455,10 @@ export function columnPage(slug) {
   const i = COLUMNS.indexOf(c);
   const prev = COLUMNS[i - 1];
   const next = COLUMNS[i + 1];
+  const kw = new Set(c.keywords || []);
+  const related = COLUMNS.filter((x) => x !== c)
+    .map((x, n) => ({ x, n, sc: (x.keywords || []).filter((k) => kw.has(k)).length }))
+    .sort((a, b) => b.sc - a.sc || a.n - b.n).slice(0, 3).map((o) => o.x);
   const body = `
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <a href="/columns">コラム</a></nav>
 <article class="article">
@@ -438,6 +469,7 @@ export function columnPage(slug) {
   <p class="lead">${esc(c.summary)}</p>
   ${c.blocks.map(renderBlock).join('\n  ')}
 </article>
+${related.length ? `<section class="related" aria-labelledby="rel-h"><h2 id="rel-h">あわせて読みたい</h2><ul>${related.map((r) => `<li><a href="/columns/${esc(r.slug)}">${esc(r.title)}</a><span class="muted small">${esc(r.summary)}</span></li>`).join('')}</ul></section>` : ''}
 <div class="cta card">
   <b>気圧の変化を先回りでチェック</b>
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
@@ -448,7 +480,14 @@ export function columnPage(slug) {
   ${next ? `<a href="/columns/${esc(next.slug)}" class="r"><small class="muted">次の記事 →</small><b>${esc(next.title)}</b></a>` : '<span></span>'}
 </nav>
 <p class="disclaimer">このコラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>`;
-  return layout({ title: c.title, description: c.summary, keywords: c.keywords || COLUMN_KEYWORDS, page: 'column', body });
+  return layout({
+    title: c.title, description: c.summary, keywords: c.keywords || COLUMN_KEYWORDS, page: 'column', path: `/columns/${c.slug}`,
+    jsonld: [
+      { '@type': 'Article', headline: c.title, description: c.summary, inLanguage: 'ja', dateModified: COLUMN_UPDATED, mainEntityOfPage: `${SITE_URL}/columns/${c.slug}`, image: `${SITE_URL}${OG_IMAGE}`, keywords: (c.keywords || COLUMN_KEYWORDS).join(','), author: { '@type': 'Organization', name: SITE }, publisher: { '@type': 'Organization', name: SITE } },
+      { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['コラム', '/columns'], [c.title, `/columns/${c.slug}`]].map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE_URL + path })) },
+    ],
+    body,
+  });
 }
 
 export const notFoundPage = () =>

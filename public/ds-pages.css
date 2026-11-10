@@ -112,3 +112,10 @@ body.ds {
   .ds .ab-shot.rev .ab-phone { order: 2; }
   .ds .ab-pages { max-width: 620px; margin-left: auto; margin-right: auto; }
 }
+.ds .related { margin: 40px 0 24px; }
+.ds .related h2 { font-size: 16px; letter-spacing: .1em; border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
+.ds .related ul { list-style: none; padding: 0; margin: 0; }
+.ds .related li { padding: 12px 0; border-bottom: 1px solid var(--border-strong); }
+.ds .related li a { font-weight: 600; display: block; }
+.ds .related li span { display: block; margin-top: 4px; }
+.ds .article a { text-decoration: underline; text-underline-offset: 3px; }
