@@ -1,36 +1,5 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<title>Rio²（リオリオ）｜気圧と体調のノート</title>
-<link rel="manifest" href="/manifest.json">
-<link rel="icon" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/ds.css">
-<link rel="stylesheet" href="/header.css">
-<link rel="stylesheet" href="/style.css">
-</head>
-<body>
-<header class="site-h">
-  <div class="wrap h-in">
-    <a class="logo" href="/" aria-label="Rio²（リオリオ） トップへ"><img src="/icon.svg" alt="" width="36" height="36"><span class="ln"><b>Rio<sup>2</sup></b><small>リオリオ</small></span></a>
-    <span id="demoBadge" class="badge" hidden>デモデータ</span>
-  </div>
-  <nav class="wrap nav" aria-label="メインメニュー">
-    <a href="/">トップ</a>
-    <a href="/weather">週間天気</a>
-    <a href="/columns">コラム</a>
-    <a href="/app/" aria-current="page">気圧・記録</a>
-  </nav>
-</header>
-
-<main>
-  <!-- ダッシュボード -->
+// /app/ の画面本体（共通のヘッダー・フッターは pages.js の layout が付ける）。client は public/app.js
+export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-dash" class="view">
         <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
     <div id="summary" class="card summary"></div>
@@ -54,13 +23,13 @@
       <label class="lbl">痛みの度合い</label>
       <div id="pain" class="pain" role="radiogroup" aria-label="痛みの度合い"></div>
       <label class="lbl">症状</label>
-      <div id="tags" class="chips wrap"></div>
+      <div id="tags" class="chips multiline"></div>
       <div class="row"><input id="newTag" placeholder="独自タグを追加" maxlength="20"><button id="addTag" class="btn sm">追加</button></div>
       <label class="lbl">服薬</label>
-      <div id="myMeds" class="chips wrap"></div>
+      <div id="myMeds" class="chips multiline"></div>
       <div class="row"><input id="medQ" placeholder="医薬品名で検索" autocomplete="off"></div>
       <div id="medSug" class="sug"></div>
-      <div id="selMeds" class="chips wrap"></div>
+      <div id="selMeds" class="chips multiline"></div>
       <label class="lbl" for="when">日時</label>
       <input id="when" type="datetime-local">
       <label class="lbl" for="note">メモ</label>
@@ -114,20 +83,11 @@
       <p><a href="/terms.html">利用規約・プライバシーの詳細</a></p>
       <button id="wipe" class="btn danger block">自分のデータをすべて削除</button>
     </div>
-  </section>
-</main>
-
-<nav class="tabs">
-  <button data-v="dash" class="on"><span>📈</span>気圧</button>
-  <button data-v="log"><span>📝</span>記録</button>
-  <button data-v="insight"><span>🔍</span>分析</button>
-  <button data-v="settings"><span>⚙️</span>設定</button>
+  </section>`;
+export const APP_TABS = `<nav class="tabs" aria-label="気圧・記録のメニュー">
+  <button data-v="dash" class="on"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5c3-.3 4-6 6.5-6.5s3.5 3.5 6 1.5 3-8.5 4.5-9"/><path d="M3.5 4.5v15.2h17"/></svg></span>気圧</button>
+  <button data-v="log"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8M4.5 21h15"/></svg></span>記録</button>
+  <button data-v="insight"><span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="M15.4 15.6l5 5"/></svg></span>分析</button>
+  <button data-v="settings"><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg></span>設定</button>
 </nav>
-<div id="toast" class="toast" hidden></div>
-
-<script src="/vendor/chart.js"></script>
-<script src="/wx.js"></script>
-<script src="/faces.js"></script>
-<script src="/app.js" type="module"></script>
-</body>
-</html>
+<div id="toast" class="toast" hidden></div>`;

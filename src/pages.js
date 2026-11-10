@@ -2,6 +2,7 @@
 import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.js';
 import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, OG_IMAGE } from './siteconfig.js';
+import { APP_BODY, APP_TABS } from './appbody.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -113,11 +114,11 @@ ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
     <a class="logo" href="/" aria-label="Rio²（リオリオ） トップへ"><img src="/icon.svg" alt="" width="36" height="36">${LOGO}</a>
-    <a class="btn sm primary h-app" href="/app/">アプリを開く</a>
+    ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : '<a class="btn sm primary h-app" href="/app/">気圧・記録へ</a>'}
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
     ${NAV.map(([href, label, id]) => `<a href="${href}"${id === page || (id === 'columns' && page === 'column') ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
-    <a href="/app/">気圧・記録</a>
+    <a href="/app/"${page === 'app' ? ' aria-current="page"' : ''}>気圧・記録</a>
   </nav>
 </header>` : ''}
 ${chrome ? `<main${wide ? '' : ' class="wrap"'}>
@@ -128,7 +129,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/app/">アプリ</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -175,7 +176,7 @@ export function topPage() {
       <p>気圧の低下を前の晩に通知。</p>
       <p>体調を記録するほど、あなたの<br>「不調になりやすい条件」が見えてきます。</p>
     </div>
-    <nav class="side-nav" aria-label="メインメニュー">${nav}<a class="btn dark sm" href="/app/">アプリを開く ↗</a></nav>
+    <nav class="side-nav" aria-label="メインメニュー">${nav}<a class="btn dark sm" href="/app/">気圧・記録へ ↗</a></nav>
     <ol class="side-index" aria-label="このページの内容">
       <li><a href="#today" data-sec="today">Today<small>今日の気圧</small></a></li>
       <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
@@ -189,7 +190,7 @@ export function topPage() {
 
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
-      <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">アプリを開く</a></nav>
+      <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">気圧・記録へ</a></nav>
       <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（Rio²：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
         <img src="/icon.svg" alt="" width="56" height="56">
@@ -281,7 +282,7 @@ export function topPage() {
       <div class="sx-in">
         ${secHead2('Start', 'はじめる', 't-start')}
         <p class="center-copy">地域を選んで、今日の気圧を確認。<br>体調を記録して、自分の傾向を見つけましょう。</p>
-        <p class="sx-btn"><a class="btn cream block" href="/app/">アプリを開く</a></p>
+        <p class="sx-btn"><a class="btn cream block" href="/app/">気圧・記録へ</a></p>
         <p class="sx-btn"><a class="btn ghost block" href="/app/#log">体調を記録する</a></p>
       </div>
     </section>
@@ -462,6 +463,27 @@ ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</
   });
 }
 
+/* ---------- 気圧・記録(/app/) ---------- */
+
+export function appPage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="wrap app-main">
+${APP_BODY}
+</div>
+${APP_TABS}`;
+  return layout({
+    title: '気圧・記録｜気圧の予報と頭痛・体調の記録',
+    description: '気圧の推移と予報を見て、頭痛・症状・服薬を記録できます。記録と気圧の傾向を分析し、気圧が下がる前の晩に通知。天気痛・気象病の備えに。',
+    page: 'app',
+    path: '/app/',
+    body,
+    wide: true,
+    extraHead: '<link rel="stylesheet" href="/style.css">',
+    scripts: '<script src="/vendor/chart.js"></script>\n<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/app.js" type="module"></script>',
+  });
+}
+
 /* ---------- サービス紹介 ---------- */
 
 const ABOUT_FEATURES = [
@@ -513,7 +535,7 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 <div class="ab-grid">${ABOUT_FEATURES.map(([n, t, d]) => `<article class="ab-card"><span class="no">${n}</span><h3>${esc(t)}</h3><p>${esc(d)}</p></article>`).join('')}</div></section>
 <section><h2 class="en-h">HOW TO USE<small>使い方</small></h2>
 <ol class="ab-steps">${ABOUT_STEPS.map(([t, d]) => `<li><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join('')}</ol>
-<p class="ab-cta"><a class="btn primary" href="/app/">アプリを開く</a> <a class="btn" href="/columns/how-to-use-app">くわしい使い方を読む</a></p></section>
+<p class="ab-cta"><a class="btn primary" href="/app/">気圧・記録へ</a> <a class="btn" href="/columns/how-to-use-app">くわしい使い方を読む</a></p></section>
 <section><h2 class="en-h">FAQ<small>よくある質問</small></h2>
 <div class="ab-faq">${ABOUT_FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>
 <p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
@@ -570,7 +592,7 @@ ${REGIONS.map(([r, codes]) => `<p class="pref-r"><b>${esc(r)}</b>${codes.map((cd
 <div class="cta card">
   <b>気圧の変化を先回りでチェック</b>
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
-  <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">アプリを開く</a></p>
+  <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">気圧・記録へ</a></p>
 </div>
 <nav class="pager" aria-label="前後のコラム">
   ${prev ? `<a href="/columns/${esc(prev.slug)}"><small class="muted">← 前の記事</small><b>${esc(prev.title)}</b></a>` : '<span></span>'}

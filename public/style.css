@@ -17,7 +17,7 @@ main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 6
 .big { font-size: 17px; margin: 4px 0 8px; }
 .disclaimer { color: var(--muted); font-size: 12px; margin: 4px 8px 12px; }
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
-.chips.wrap { flex-wrap: wrap; overflow: visible; }
+.chips.multiline { flex-wrap: wrap; overflow: visible; }
 .chip { flex: none; border: 1px solid var(--border-strong); background: var(--surface-100); color: var(--fg); padding: 7px 14px; border-radius: var(--radius-pill); font-size: var(--fs-body); min-height: 36px; }
 .chip.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 .chip.x::after { content: " ×"; opacity: .6; }
@@ -97,3 +97,10 @@ a { color: var(--ink); }
 .cal-d.sel { outline: 2px solid var(--brand-black, #111); outline-offset: -2px; }
 .cal-d:disabled { opacity: .55; }
 .cal-h { font-weight: 600; }
+
+/* /app/ を共通レイアウト(ヘッダー・見出し・フッター)に載せたときの調整 */
+body[data-page="app"] main { max-width: none; margin: 0; padding: 0; }
+.app-main { max-width: 640px; margin: 0 auto; padding: 0 12px 24px; }
+body[data-page="app"] .site-f { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+.tabs button span { display: flex; justify-content: center; line-height: 1; margin-bottom: 3px; }
+.tabs button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

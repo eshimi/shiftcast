@@ -12,7 +12,7 @@ import { buildWeek } from './week.js';
 import { SITE_URL } from './siteconfig.js';
 import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
-import { topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
+import { appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -222,6 +222,8 @@ app.get('/pressure/:slug', async (c) => {
   c.header('Cache-Control', 'public, max-age=600');
   return c.html(pressurePage(pref, week));
 });
+app.get('/app', (c) => c.redirect('/app/', 301));
+app.get('/app/', (c) => html(c, appPage()));
 app.get('/about', (c) => html(c, aboutPage()));
 app.get('/columns', (c) => html(c, columnsPage()));
 app.get('/columns/:slug', (c) => {
