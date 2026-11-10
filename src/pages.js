@@ -5,6 +5,34 @@ export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', 
 
 const SITE = 'Rio²（リオリオ）';
 const TAGLINE = '気圧と体調のノート';
+// トップのHERO背景をランダムに選ぶ（描画前に実行）。直前に見たものとは別の写真にする。?hero=0|1|2 で固定表示も可能。
+// 写真ごとに、文字が読めるよう暗いオーバーレイの色・濃さ(a=[上,中,下])と、画面に見せたい位置(p)を設定している。
+const HERO_PICKER = `<script>
+(function () {
+  var L = [
+    { s: '/hero/bg/dusk.webp', p: '41% center', v: '20, 40, 62', a: [0.34, 0.10, 0.78] },
+    { s: '/hero/bg/sea.webp', p: '58% 55%', v: '6, 52, 72', a: [0.30, 0.22, 0.74] },
+    { s: '/hero/bg/mist.webp', p: '50% 55%', v: '34, 60, 100', a: [0.50, 0.46, 0.84] }
+  ];
+  var i = Math.floor(Math.random() * L.length);
+  var q = /[?&]hero=(\\d)/.exec(location.search);
+  if (q && L[+q[1]]) { i = +q[1]; }
+  else {
+    try {
+      var last = parseInt(localStorage.getItem('heroLast'), 10);
+      if (i === last) i = (i + 1 + Math.floor(Math.random() * (L.length - 1))) % L.length;
+      localStorage.setItem('heroLast', i);
+    } catch (e) {}
+  }
+  var c = L[i], r = document.documentElement.style;
+  r.setProperty('--hero-img', 'url("' + c.s + '")');
+  r.setProperty('--hero-pos', c.p);
+  r.setProperty('--ov', c.v);
+  r.setProperty('--o1', c.a[0]); r.setProperty('--o2', c.a[1]); r.setProperty('--o3', c.a[2]);
+  var l = document.createElement('link'); l.rel = 'preload'; l.as = 'image'; l.href = c.s; document.head.appendChild(l);
+})();
+</script>`;
+
 const LOGO = '<span class="ln"><b>Rio<sup>2</sup></b><small>リオリオ</small></span>';
 
 const NAV = [
@@ -144,9 +172,9 @@ export function topPage() {
       <div class="sx-in">
         ${secHead2('Three Features', '三つの機能', 't-three')}
         <p class="center-copy">Rio²は、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
-        <a class="feat" href="/weather" style="--pos: 8% 78%; --zoom: 300%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
-        <a class="feat" href="/app/" style="--pos: 86% 18%; --zoom: 280%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
-        <a class="feat" href="/columns" style="--pos: 48% 52%; --zoom: 320%"><span class="en">COLUMN</span><b>コラム</b><span class="d">気象病を防ぐ、暮らしのヒント</span></a>
+        <a class="feat" href="/weather" style="--img: url('/hero/bg/mist.webp'); --pos: 30% 50%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
+        <a class="feat" href="/app/" style="--img: url('/hero/bg/dusk.webp'); --pos: 41% 40%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
+        <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">気象病を防ぐ、暮らしのヒント</span></a>
       </div>
     </section>
 
@@ -208,7 +236,7 @@ export function topPage() {
     body,
     chrome: false,
     bodyClass: 'lp',
-    extraHead: '<link rel="stylesheet" href="/hero/hero.css">\n<link rel="preload" as="image" href="/hero/hero-sky.webp">',
+    extraHead: `<link rel="stylesheet" href="/hero/hero.css">\n${HERO_PICKER}`,
     scripts: '<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
   });
 }

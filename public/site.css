@@ -2,6 +2,7 @@
    デザイン: クリーム地 × 深い青緑、明朝体の見出し、帯状に色を切り替えるセクション。
    データ（数値・グラフ・フォーム）はゴシック体のまま、見出しと読み物だけを明朝体にする。 */
 :root {
+  --hero-img: url("/hero/bg/dusk.webp"); --hero-pos: 41% center; --ov: 20, 40, 62; --o1: .34; --o2: .1; --o3: .78; /* HERO背景(ランダム。pages.jsの先頭スクリプトが上書き) */
   --bg: #fff9f6; --card: #ffffff; --fg: #1f2f36; --muted: #5f717a; --line: #eadfd9;
   --blush: #f5ebe6; --teal: #243d47; --teal-2: #3a5865; --accent: #243d47; --accent-fg: #ffffff;
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
@@ -53,7 +54,7 @@ main.wrap { padding-top: 6px; }
 
 /* ===== トップページ =====
    参考サイトのような二画面構成: スマホ幅では1本の縦スクロール。PC幅では、左に固定の紹介(ロゴ・縦書きの見出し・メニュー)、
-   右にスマホ幅の本編が枠の中でスクロールする。背景の写真は public/hero/hero-sky.webp。 */
+   右にスマホ幅の本編が枠の中でスクロールする。背景の写真は public/hero/bg/*.webp（開くたびにランダム。選択は pages.js の HERO_PICKER）。 */
 body.lp { background: var(--bg); }
 .stage { display: block; }
 .side { display: none; }
@@ -61,8 +62,8 @@ body.lp { background: var(--bg); }
 
 /* 全画面のヒーロー（スマホ幅） */
 .m-hero { position: relative; overflow: hidden; height: 100vh; height: 100svh; min-height: 560px; color: #fff; background-color: #3a5a78;
-  background-image: linear-gradient(180deg, rgba(20, 40, 62, .34) 0%, rgba(20, 40, 62, .1) 34%, rgba(20, 40, 62, .5) 74%, rgba(20, 40, 62, .78) 100%), url("/hero/hero-sky.webp");
-  background-size: 100% 100%, cover; background-position: 0 0, 41% center; background-repeat: no-repeat; }
+  background-image: linear-gradient(180deg, rgba(var(--ov), var(--o1)) 0%, rgba(var(--ov), var(--o2)) 36%, rgba(var(--ov), var(--o3)) 100%), var(--hero-img);
+  background-size: 100% 100%, cover; background-position: 0 0, var(--hero-pos); background-repeat: no-repeat; }
 .m-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 18px; padding: calc(16px + env(safe-area-inset-top)) 18px 0; font-family: var(--serif); font-size: 14px; letter-spacing: .1em; }
 .m-nav a { color: #fff; text-decoration: none; text-shadow: 0 1px 10px rgba(10, 30, 50, .5); }
 .m-nav .m-app { margin-left: auto; padding: 6px 14px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 4px; text-shadow: none; }
@@ -109,8 +110,8 @@ body.lp { background: var(--bg); }
 
 /* 三つの機能（写真風のカード） */
 .feat { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; height: 230px; margin-bottom: 14px; padding: 18px; border-radius: 22px; overflow: hidden; color: #fff; text-decoration: none; border: 1px solid rgba(255, 255, 255, .3);
-  background-image: linear-gradient(180deg, rgba(20, 40, 58, 0) 24%, rgba(20, 40, 58, .74) 100%), url("/hero/hero-sky.webp");
-  background-size: 100% 100%, var(--zoom, 280%) auto; background-position: 0 0, var(--pos, 40% 40%); background-repeat: no-repeat; }
+  background-image: linear-gradient(180deg, rgba(20, 40, 58, 0) 20%, rgba(20, 40, 58, .78) 100%), var(--img);
+  background-size: 100% 100%, cover; background-position: 0 0, var(--pos, 50% 50%); background-repeat: no-repeat; background-color: #3a5a78; }
 .feat .en { font-family: var(--serif); font-size: 11.5px; letter-spacing: .3em; opacity: .95; }
 .feat b { font-family: var(--serif); font-size: 26px; font-weight: 700; letter-spacing: .12em; line-height: 1.4; }
 .feat .d { font-size: 13.5px; line-height: 1.7; opacity: .95; }
@@ -141,7 +142,7 @@ body.lp { background: var(--bg); }
 
 /* ---- PC幅: 左に固定の紹介、右にスマホ幅の本編（枠の中でスクロール） ---- */
 @media (min-width: 900px) {
-  body.lp { min-height: 100vh; background: linear-gradient(180deg, rgba(20, 40, 62, .42), rgba(20, 40, 62, .62)), url("/hero/hero-sky.webp") 41% center / cover fixed; background-color: #3a5a78; }
+  body.lp { min-height: 100vh; background: linear-gradient(180deg, rgba(var(--ov), calc(var(--o1) + .1)), rgba(var(--ov), calc(var(--o3) - .06))), var(--hero-img) var(--hero-pos) / cover fixed; background-color: #3a5a78; }
   .stage { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 6vw; align-items: center; max-width: 1180px; min-height: 100vh; margin: 0 auto; padding: 28px 28px; }
   .side { display: block; color: #fff; align-self: center; }
   .side-top { display: flex; gap: 6vw; align-items: flex-start; margin-bottom: 34px; }
