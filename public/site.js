@@ -42,12 +42,15 @@ async function initArea(onChange) {
   sel.value = areaCode;
   const set = (c) => { areaCode = c; sel.value = c; store.set('area', c); onChange(); };
   sel.addEventListener('change', () => set(sel.value));
-  $('#locate')?.addEventListener('click', () => {
-    if (!navigator.geolocation) return alert('この端末では現在地を取得できません');
+  const loc = $('#locate');
+  loc?.addEventListener('click', () => {
+    if (!navigator.geolocation) return alert('この端末では現在地を取得できません。地域は一覧から選べます');
+    const label = loc.textContent; loc.disabled = true; loc.textContent = '取得中…';
+    const done = () => { loc.disabled = false; loc.textContent = label; };
     navigator.geolocation.getCurrentPosition(
-      async (p) => { try { set((await getJson(`/api/nearest?lat=${p.coords.latitude}&lon=${p.coords.longitude}`)).code); } catch { alert('現在地から地域を判定できませんでした'); } },
-      () => alert('位置情報を取得できませんでした。地域は一覧から選べます'),
-      { timeout: 10000, maximumAge: 600000 }, // 座標は都道府県の判定にだけ使い、保存しない
+      async (p) => { try { set((await getJson(`/api/nearest?lat=${p.coords.latitude}&lon=${p.coords.longitude}`)).code); } catch { alert('現在地から地域を判定できませんでした'); } done(); },
+      (err) => { done(); alert(err && err.code === 1 ? '位置情報の利用が許可されていません。ブラウザ・端末の設定で許可するか、地域を一覧から選んでください' : '現在地を取得できませんでした。電波の良い場所でもう一度お試しください'); },
+      { timeout: 20000, maximumAge: 600000 }, // 座標は都道府県の判定にだけ使い、保存しない
     );
   });
   onChange();

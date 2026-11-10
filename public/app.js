@@ -33,7 +33,7 @@ function h(tag, attrs = {}, ...kids) {
 function toast(msg) {
   const t = $('#toast');
   t.textContent = msg; t.hidden = false;
-  clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 2600);
+  clearTimeout(toast.t); toast.t = setTimeout(() => (t.hidden = true), 4200);
 }
 async function api(path, opt = {}) {
   const res = await fetch('/api' + path, {
@@ -105,16 +105,28 @@ function renderChips() {
   codes.forEach((c) => box.append(mk(c, S.areaName[c])));
 }
 
+let locating = false;
 function locate() {
-  if (!navigator.geolocation) return toast('この端末では現在地を取得できません');
+  if (locating) return;
+  if (!navigator.geolocation) return toast('この端末では現在地を取得できません。設定からエリアを登録してください');
+  locating = true; toast('現在地を取得しています…');
+  const done = () => { locating = false; };
   navigator.geolocation.getCurrentPosition(
     async (p) => {
       // 座標は都道府県の判定にだけ使い、サーバーにも保存されない
-      const a = await api(`/nearest?lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
-      S.cur = a.code; S.sel = a.code; renderChips(); loadDash();
+      try {
+        const a = await api(`/nearest?lat=${p.coords.latitude}&lon=${p.coords.longitude}`);
+        S.cur = a.code; S.sel = a.code; renderChips(); loadDash(); toast(`現在地: ${a.name}`);
+      } catch { toast('現在地から地域を判定できませんでした'); }
+      done();
     },
-    () => toast('位置情報を取得できませんでした。設定からエリアを登録できます'),
-    { timeout: 10000, maximumAge: 600000 },
+    (err) => {
+      done();
+      toast(err && err.code === 1
+        ? '位置情報の利用が許可されていません。ブラウザ・端末の設定で許可するか、設定からエリアを登録してください'
+        : '現在地を取得できませんでした。電波の良い場所でもう一度お試しください');
+    },
+    { timeout: 20000, maximumAge: 600000 },
   );
 }
 
