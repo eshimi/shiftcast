@@ -75,3 +75,21 @@ body.ds {
 .ds .site-f a { color: var(--ink); }
 .ds .site-f .muted { color: var(--ink-muted); }
 .ds .site-f .f-logo { font-family: var(--font-latin); font-weight: 700; letter-spacing: .04em; color: var(--ink); }
+
+/* サービス紹介 */
+.ds .about section { margin: 0 0 56px; }
+.ds .en-h { font-size: 13px; letter-spacing: .2em; margin: 0 0 20px; border-bottom: 1px solid var(--ink); padding-bottom: 10px; }
+.ds .en-h small { margin-left: 12px; letter-spacing: .05em; font-size: 14px; }
+.ds .ab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.ds .ab-card { background: var(--surface-200); padding: 20px; }
+.ds .ab-card .no { font-size: 12px; color: var(--muted, #777); letter-spacing: .1em; }
+.ds .ab-card h3 { margin: 6px 0 8px; font-size: 17px; }
+.ds .ab-card p { margin: 0; font-size: 14px; line-height: 1.8; }
+.ds .ab-steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; gap: 12px; }
+.ds .ab-steps li { counter-increment: s; display: grid; grid-template-columns: 40px 1fr; gap: 4px 8px; padding: 14px 0; border-bottom: 1px solid var(--border-strong); }
+.ds .ab-steps li::before { content: counter(s, decimal-leading-zero); grid-row: span 2; font-size: 20px; }
+.ds .ab-steps span { font-size: 14px; }
+.ds .ab-cta { margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap; }
+.ds .ab-faq details { border-bottom: 1px solid var(--border-strong); padding: 14px 0; }
+.ds .ab-faq summary { cursor: pointer; font-weight: 600; }
+.ds .ab-faq p { margin: 10px 0 0; font-size: 14px; line-height: 1.8; }

@@ -10,7 +10,7 @@ import { scheduled } from './cron.js';
 import { loadJmaCached } from './jma.js';
 import { buildWeek } from './week.js';
 import { columnList } from './columns.js';
-import { topPage, weatherPage, columnsPage, columnPage, notFoundPage } from './pages.js';
+import { topPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -200,6 +200,7 @@ const html = (c, body, status = 200) => {
 };
 app.get('/', (c) => html(c, topPage()));
 app.get('/weather', (c) => html(c, weatherPage()));
+app.get('/about', (c) => html(c, aboutPage()));
 app.get('/columns', (c) => html(c, columnsPage()));
 app.get('/columns/:slug', (c) => {
   const page = columnPage(c.req.param('slug'));

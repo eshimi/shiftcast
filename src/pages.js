@@ -66,6 +66,7 @@ const NAV = [
   ['/', 'トップ', 'top'],
   ['/weather', '週間天気', 'weather'],
   ['/columns', 'コラム', 'columns'],
+  ['/about', 'サービス紹介', 'about'],
 ];
 
 // フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
@@ -113,7 +114,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/app/">アプリ</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/app/">アプリ</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -146,7 +147,7 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 /* ---------- トップ ---------- */
 
 export function topPage() {
-  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
+  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/about">サービス紹介</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
@@ -336,6 +337,54 @@ export function columnsPage() {
     title: 'コラム｜気象病を防ぐ方法',
     description: '気象病（天気痛）の仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までをまとめたコラム。',
     page: 'columns',
+    body,
+    wide: true,
+  });
+}
+
+/* ---------- サービス紹介 ---------- */
+
+const ABOUT_FEATURES = [
+  ['01', '気圧の変化をやさしく予報', '気象庁のアメダスと天気予報、OpenWeatherMapをもとに、お住まいの都道府県の気圧を時間ごとに見られます。グラフには過去の実測と今後の予測が並び、いつ下がるのかが一目で分かります。'],
+  ['02', '4段階の「見通し」アイコン', '1時間あたりの気圧変化を「上昇注意（+1.0hPa/h以上）」「やや注意（-0.5〜-1.0）」「注意（-1.0〜-1.5）」「警戒（-1.5以下）」で表示。安定しているときは「安定」と表示します。'],
+  ['03', '痛み・症状・服薬の記録', '痛みの度合いを5つの顔アイコンから選び、頭痛・めまい・だるさなどの症状やメモ、飲んだ薬もまとめて記録できます。数秒で書けるので続けやすい作りです。'],
+  ['04', '自分のパターンを見つける分析', '記録と気圧の変化を重ねて、「気圧が下がり始めて何時間後に痛みが出やすいか」などの傾向を振り返れます。通院時に見せられる履歴としても使えます。'],
+  ['05', '前日20:00のお知らせ', '翌日に気圧が大きく動きそうなとき、前日の夜20:00(日本時間)にプッシュ通知でお知らせします。通知はオン・オフを選べます。'],
+  ['06', '週間天気と気圧', '気象庁の週間予報をもとに、7日間の天気・気温・降水確率と気圧の見通しをまとめて確認できます。予定を立てるときの目安にどうぞ。'],
+  ['07', '気象病を防ぐコラム', '仕組み、前日の準備、不調を感じたときのセルフケア、受診の目安までを6本の記事で紹介しています。'],
+  ['08', '地域ごとのみんなの傾向', '都道府県単位で匿名に集計した「今日つらい人の割合」を見られます。個人が特定される情報は出しません。'],
+];
+const ABOUT_STEPS = [
+  ['地域を選ぶ', '都道府県を選ぶだけ。アカウント登録もメールアドレスも不要です。'],
+  ['今日の見通しを見る', '気圧のグラフと、注意が必要な時間帯を確認します。'],
+  ['体調を記録する', '痛みの度合い・症状・服薬をその日のうちに残します。'],
+  ['傾向を振り返る', '続けるほど、自分に合った備え方が見えてきます。'],
+];
+const ABOUT_FAQ = [
+  ['利用料金は?', '無料でお使いいただけます。'],
+  ['アカウント登録は必要?', '不要です。端末ごとに匿名のIDで保存されます。'],
+  ['どんな個人情報を扱いますか?', '位置情報は使わず、選んだ都道府県のみを利用します。氏名・メールアドレスは取得しません。詳しくは利用規約・プライバシーをご覧ください。'],
+  ['医療アプリですか?', 'いいえ。気圧データは海面気圧の変動傾向を示す目安で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関にご相談ください。'],
+  ['スマホのホーム画面に置けますか?', 'はい。ブラウザの「ホーム画面に追加」でアプリのように使えます。'],
+];
+
+export function aboutPage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>Rio²（リオリオ）とは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="wrap about">
+<section><h2 class="en-h">FEATURES<small>主な機能</small></h2>
+<div class="ab-grid">${ABOUT_FEATURES.map(([n, t, d]) => `<article class="ab-card"><span class="no">${n}</span><h3>${esc(t)}</h3><p>${esc(d)}</p></article>`).join('')}</div></section>
+<section><h2 class="en-h">HOW TO USE<small>使い方</small></h2>
+<ol class="ab-steps">${ABOUT_STEPS.map(([t, d]) => `<li><b>${esc(t)}</b><span>${esc(d)}</span></li>`).join('')}</ol>
+<p class="ab-cta"><a class="btn primary" href="/app/">アプリを開く</a> <a class="btn" href="/columns/how-to-use-app">くわしい使い方を読む</a></p></section>
+<section><h2 class="en-h">FAQ<small>よくある質問</small></h2>
+<div class="ab-faq">${ABOUT_FAQ.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>
+<p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
+</div>`;
+  return layout({
+    title: 'サービス紹介｜Rio²（リオリオ）の機能と使い方',
+    description: 'Rio²（リオリオ）は気圧の予報と体調の記録で気象病に備えるWebアプリ。機能、使い方、よくある質問を紹介します。',
+    page: 'about',
     body,
     wide: true,
   });
