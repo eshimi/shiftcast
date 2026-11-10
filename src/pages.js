@@ -85,7 +85,6 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 export function topPage() {
   const body = `
 <section class="hero" aria-labelledby="hero-title">
-  <i class="bub b1" aria-hidden="true"></i><i class="bub b2" aria-hidden="true"></i><i class="bub b3" aria-hidden="true"></i><i class="bub b4" aria-hidden="true"></i><i class="bub b5" aria-hidden="true"></i>
   <div class="wrap">
     <div class="hero-in">
       <div class="hero-copy">
@@ -143,7 +142,7 @@ export function topPage() {
     page: 'top',
     body,
     wide: true,
-    extraHead: '<link rel="stylesheet" href="/hero/hero.css">',
+    extraHead: '<link rel="stylesheet" href="/hero/hero.css">\n<link rel="preload" as="image" href="/hero/hero-bg.webp">',
     scripts: '<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
   });
 }
