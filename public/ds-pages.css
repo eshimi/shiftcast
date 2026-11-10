@@ -1,0 +1,77 @@
+/* トップページ以外のページ(週間天気・コラム)を、デザインシステム「QRO Eyewear」に合わせる。<body class="ds"> にだけ効く。
+   ルール(design/qro-eyewear.README.md): モノクロ / 直角 / 細い罫線 / カードに枠線を付けず余白で分ける / フォーカスは2pxのリング。
+   気圧の4段階の色(青・黄・橙・赤)は、ブランドカラーではなく「データの意味」を表す色なので残し、必ず文字(「警戒」など)と一緒に表示する。 */
+body.ds {
+  --bg: var(--surface-100); --card: var(--surface-200); --fg: var(--ink); --muted: var(--ink-muted); --line: var(--border);
+  --accent: var(--brand-black); --accent-fg: var(--on-brand); --blush: var(--surface-200); --teal: var(--brand-black); --teal-2: var(--ink-muted);
+  --serif: var(--font-sans); --sans: var(--font-sans);
+  background: var(--surface-100); color: var(--ink);
+  font: var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-sans);
+}
+.ds h1, .ds h2, .ds h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
+.ds a { color: var(--ink); text-underline-offset: 3px; }
+.ds :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.ds .muted { color: var(--ink-muted); }
+.ds .small, .ds .disclaimer { font-size: 12px; line-height: 18px; }
+
+/* ボタン: 主=黒の塗り、副=枠線(border-strong) */
+.ds .btn { border-radius: var(--radius-none); font: 500 var(--fs-body)/var(--lh-body) var(--font-sans); letter-spacing: 0; background: var(--surface-100); color: var(--ink); border: 1px solid var(--border-strong); }
+.ds .btn.primary, .ds .btn.dark { background: var(--brand-black); color: var(--on-brand); border-color: var(--brand-black); }
+.ds .btn.primary:hover, .ds .btn.dark:hover { background: color-mix(in srgb, var(--brand-black) 90%, var(--ink-muted)); }
+.ds .btn.sm { font-size: var(--fs-label); line-height: var(--lh-label); }
+.ds select { border-radius: var(--radius-sm); background: var(--surface-300); color: var(--ink); border: 1px solid var(--border-strong); font-family: var(--font-sans); }
+
+/* 見出し帯: 灰色の帯に、左右中央の見出し */
+.ds .page-head { background: var(--surface-200); }
+.ds .page-head .en, .ds .sec-h .en { font-family: var(--font-latin); font-size: 12px; font-weight: 500; letter-spacing: .16em; color: var(--ink-muted); }
+.ds .page-head h1 { font-size: var(--fs-heading); line-height: var(--lh-heading); letter-spacing: 0; }
+.ds .page-head p { font-family: var(--font-sans); font-weight: 400; font-size: var(--fs-body); line-height: var(--lh-body); }
+.ds .sec-h h2 { font-size: var(--fs-subheading); line-height: var(--lh-subheading); font-weight: 600; letter-spacing: 0; }
+.ds .lead { font-family: var(--font-sans); font-weight: 400; letter-spacing: 0; line-height: var(--lh-body); }
+
+/* カード: 枠線・角丸・左の色帯をなくし、面(surface-200)と余白で分ける */
+.ds .card, .ds .cell, .ds .col-card, .ds .article, .ds .pager a, .ds .callout { border: 0; border-radius: var(--radius-none); box-shadow: none; }
+.ds .today { border-left: 0; }
+.ds .today .big { font-family: var(--font-latin); }
+.ds .badge { border-radius: var(--radius-pill); font-weight: 500; }
+.ds .pill { font-family: var(--font-sans); font-weight: 500; }
+.ds .pill.lv-none { border-color: var(--border-strong); color: var(--ink-muted); }
+
+/* 7日間: 枠なしの行(細い罫線で区切る) */
+.ds .days { gap: 0; border-top: 1px solid var(--border); }
+.ds .day { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-left: 0; border-radius: var(--radius-none); padding: var(--space-3) 0; }
+.ds .day .d b, .ds .cell b { font-family: var(--font-sans); font-weight: 700; }
+.ds .day .p { border-top: 0; margin-top: 0; padding-top: 2px; }
+.ds .day .t, .ds .cell .tt, .ds .today .big, .ds .day .p span { font-variant-numeric: tabular-nums; }
+.ds .day .t .hi, .ds .cell .tt .hi { color: var(--ink); font-weight: 700; }
+.ds .day .t .lo, .ds .cell .tt .lo { color: var(--ink-muted); }
+.ds .cell { border-bottom: 3px solid var(--border-strong); }
+.ds .cell.lv-rise { border-bottom-color: var(--rise); } .ds .cell.lv-slight { border-bottom-color: var(--slight); }
+.ds .cell.lv-caution { border-bottom-color: var(--caution); } .ds .cell.lv-warning { border-bottom-color: var(--warning); }
+.ds .dot { border-radius: var(--radius-none); }
+
+/* コラム */
+.ds .col-list { gap: var(--space-3); }
+.ds .col-card:hover { outline: 1px solid var(--ink); outline-offset: -1px; }
+.ds .col-no { font-family: var(--font-latin); font-weight: 700; color: var(--ink); font-size: 22px; }
+.ds .col-body b { font-family: var(--font-sans); font-size: var(--fs-subheading); line-height: var(--lh-subheading); font-weight: 600; letter-spacing: 0; }
+.ds .article { background: transparent; padding: var(--space-4) 0; font-family: var(--font-sans); font-weight: 400; }
+.ds .article .art-no { font-family: var(--font-latin); letter-spacing: .16em; font-size: 12px; font-weight: 500; }
+.ds .article h1 { font-size: var(--fs-heading); line-height: var(--lh-heading); letter-spacing: 0; }
+.ds .article h2 { font-size: var(--fs-subheading); line-height: var(--lh-subheading); font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: var(--space-2); }
+.ds .article p, .ds .article ul, .ds .article ol { line-height: var(--lh-body); letter-spacing: 0; }
+.ds .article .lead { font-size: var(--fs-body); }
+.ds .callout { background: var(--surface-200); font-family: var(--font-sans); }
+.ds .callout b { font-family: var(--font-sans); letter-spacing: 0; }
+.ds .callout.warn { border-left: 0; background: var(--surface-200); outline: 1px solid var(--border-strong); outline-offset: -1px; }
+.ds .cta { text-align: left; }
+.ds .cta .row { justify-content: flex-start; }
+.ds .pager a { background: var(--surface-200); }
+.ds .pager a b { font-family: var(--font-sans); font-weight: 600; }
+.ds .crumb a { color: var(--ink-muted); }
+
+/* フッター: 灰色の面に黒い文字、上に細い罫線 */
+.ds .site-f { background: var(--surface-200); color: var(--ink); border-top: 1px solid var(--border); }
+.ds .site-f a { color: var(--ink); }
+.ds .site-f .muted { color: var(--ink-muted); }
+.ds .site-f .f-logo { font-family: var(--font-latin); font-weight: 700; letter-spacing: .04em; color: var(--ink); }

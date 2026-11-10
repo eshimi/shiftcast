@@ -1,0 +1,46 @@
+/* QRO Eyewear — generated from design/qro-eyewear.tokens.json (scripts/build-ds-css.mjs). 手で編集しないこと。 */
+:root {
+  --surface-100: #ffffff;
+  --surface-200: #f4f4f5;
+  --surface-300: #e6e6e8;
+  --ink: #0b0b0c;
+  --ink-muted: #5c5c63;
+  --brand-black: #0b0b0c;
+  --on-brand: #ffffff;
+  --border: #e0e0e4;
+  --border-strong: #76767e;
+  --focus: #1f4fd1;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-none: 0px;
+  --radius-sm: 2px;
+  --radius-pill: 999px;
+  --font-sans: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Helvetica Neue", Arial, sans-serif;
+  --font-latin: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --fs-display: 56px; --lh-display: 64px; --fw-display: 700;
+  --fs-heading: 28px; --lh-heading: 36px; --fw-heading: 700;
+  --fs-subheading: 18px; --lh-subheading: 28px; --fw-subheading: 600;
+  --fs-body: 15px; --lh-body: 24px; --fw-body: 400;
+  --fs-label: 13px; --lh-label: 18px; --fw-label: 500;
+  --fs-caption: 12px; --lh-caption: 18px; --fw-caption: 400;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-100: #0b0b0c;
+    --surface-200: #151517;
+    --surface-300: #222226;
+    --ink: #f5f5f6;
+    --ink-muted: #a1a1a8;
+    --brand-black: #ffffff;
+    --on-brand: #0b0b0c;
+    --border: #2e2e34;
+    --border-strong: #8e8e96;
+    --focus: #8fb3ff;
+  }
+}

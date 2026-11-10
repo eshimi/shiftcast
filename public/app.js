@@ -211,7 +211,7 @@ function drawChart(fc, logs) {
   const min = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 3), max = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 3);
   const data = {
     datasets: [
-      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: '#2f6a8a', borderWidth: 2.5, pointRadius: 2, tension: 0.3 },
+      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#0b0b0c', borderWidth: 2.5, pointRadius: 2, tension: 0.3 },
       { label: 'アメダス実況', data: fc.observed.map((o) => ({ x: o.ts, y: o.pressure })), borderColor: '#10b981', borderDash: [4, 4], borderWidth: 2, pointRadius: 3, hidden: !fc.observed.length },
     ],
   };

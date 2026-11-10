@@ -1,50 +1,49 @@
+/* デザインシステム「QRO Eyewear」(ds.css) に合わせる: モノクロ・直角・細い罫線。ds.css を先に読み込むこと。
+   気圧の4段階の色(--rise など)は「データの意味」を表す色なので、そのまま使い、必ず文字と一緒に表示する。 */
 :root {
-  --bg: #fff9f6; --card: #fff; --fg: #1f2f36; --muted: #5f717a; --line: #eadfd9; --accent: #243d47; --accent-fg: #fff;
-  --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", serif;
+  --bg: var(--surface-100); --card: var(--surface-200); --fg: var(--ink); --muted: var(--ink-muted); --line: var(--border);
+  --accent: var(--brand-black); --accent-fg: var(--on-brand);
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
 }
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #10191e; --card: #1a272d; --fg: #eef3f4; --muted: #9fb0b8; --line: #263941; --accent: #9fc2d0; --accent-fg: #10191e; }
-}
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-sans); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .badge { font-size: 11px; background: var(--caution); color: #fff; padding: 2px 8px; border-radius: 99px; }
 main { padding: 12px 12px calc(84px + env(safe-area-inset-bottom)); max-width: 640px; margin: 0 auto; }
-.card { background: var(--card); border-radius: 20px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--line); }
+.card { background: var(--card); border-radius: var(--radius-none); padding: var(--space-4); margin-bottom: var(--space-3); border: 0; }
 .card-h { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-.muted { color: var(--muted); font-size: 13px; }
+.muted { color: var(--muted); font-size: var(--fs-label); line-height: var(--lh-label); }
 .big { font-size: 17px; margin: 4px 0 8px; }
 .disclaimer { color: var(--muted); font-size: 12px; margin: 4px 8px 12px; }
 .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; }
 .chips.wrap { flex-wrap: wrap; overflow: visible; }
-.chip { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 7px 14px; border-radius: 99px; font-size: 14px; min-height: 36px; }
+.chip { flex: none; border: 1px solid var(--border-strong); background: var(--surface-100); color: var(--fg); padding: 7px 14px; border-radius: var(--radius-pill); font-size: var(--fs-body); min-height: 36px; }
 .chip.on { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
 .chip.x::after { content: " ×"; opacity: .6; }
-.summary { display: flex; gap: 12px; align-items: center; border-left: 6px solid var(--line); }
+.summary { display: flex; gap: 12px; align-items: center; }
 .summary .ico { font-size: 34px; }
 .summary b { font-size: 18px; }
-.summary.rise { border-left-color: var(--rise); } .summary.slight { border-left-color: var(--slight); }
-.summary.caution { border-left-color: var(--caution); } .summary.warning { border-left-color: var(--warning); }
 .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 #chartWrap { height: 300px; position: relative; }
 .legend { font-size: 12px; margin-top: 6px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-.lg { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.lg { display: inline-block; width: 12px; height: 12px; border-radius: var(--radius-none); }
 .lg.rise { background: var(--rise); } .lg.slight { background: var(--slight); } .lg.caution { background: var(--caution); } .lg.warning { background: var(--warning); }
 .lbl { display: block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
 .pain { display: flex; gap: 6px; }
-.pain button { flex: 1; font-size: 28px; padding: 8px 0; border: 2px solid var(--line); background: var(--card); border-radius: 12px; }
+.pain button { flex: 1; font-size: 28px; padding: 8px 0; border: 1px solid var(--border-strong); background: var(--surface-100); color: var(--fg); border-radius: var(--radius-none); }
 .pain button small { display: block; font-size: 11px; color: var(--muted); }
-.pain button.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--card)); }
+.pain button.on { border-color: var(--brand-black); background: var(--surface-100); outline: 2px solid var(--brand-black); outline-offset: -3px; }
 .row { display: flex; gap: 8px; margin-top: 8px; }
-input, select, textarea { width: 100%; font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
-.btn { border: 0; border-radius: 10px; padding: 10px 16px; font: inherit; background: var(--line); color: var(--fg); min-height: 44px; }
+input, select, textarea { width: 100%; font: inherit; color: var(--fg); background: var(--surface-300); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 10px var(--space-3); }
+.btn { border: 1px solid var(--border-strong); border-radius: var(--radius-none); padding: 10px var(--space-4); font: inherit; background: var(--surface-100); color: var(--fg); min-height: 44px; }
 .btn.sm { flex: none; }
-.btn.primary { background: var(--accent); color: var(--accent-fg); font-weight: 600; }
+.btn.primary { background: var(--brand-black); color: var(--on-brand); border-color: var(--brand-black); font-weight: 500; }
+.btn.primary:hover { background: color-mix(in srgb, var(--brand-black) 90%, var(--ink-muted)); }
 .btn.danger { background: transparent; color: var(--warning); border: 1px solid var(--warning); }
 .btn.block { display: block; width: 100%; margin-top: 14px; }
-.link { background: none; border: 0; color: var(--accent); font: inherit; font-size: 13px; }
+.link { background: none; border: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; font: inherit; font-size: var(--fs-label); }
 .sug { display: flex; flex-direction: column; }
-.sug button { text-align: left; padding: 10px 12px; border: 0; border-bottom: 1px solid var(--line); background: var(--card); color: var(--fg); font: inherit; }
+.sug button { text-align: left; padding: 10px var(--space-3); border: 0; border-bottom: 1px solid var(--line); background: var(--surface-200); color: var(--fg); font: inherit; }
 .sug small { color: var(--muted); }
 .list { list-style: none; margin: 0; padding: 0; }
 .list li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); }
@@ -53,11 +52,11 @@ input, select, textarea { width: 100%; font: inherit; color: var(--fg); backgrou
 .list .acts { display: flex; gap: 4px; flex: none; }
 .notes { padding-left: 18px; font-size: 13px; color: var(--muted); }
 .switch { display: flex; gap: 10px; align-items: center; } .switch input { width: 22px; height: 22px; }
-.tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--card); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; display: flex; background: var(--surface-100); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
 .tabs button { flex: 1; border: 0; background: none; color: var(--muted); padding: 8px 0 6px; font-size: 11px; }
 .tabs button span { display: block; font-size: 22px; line-height: 1.2; }
-.tabs button.on { color: var(--accent); font-weight: 600; }
-.toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: #1b2330; color: #fff; padding: 10px 16px; border-radius: 10px; font-size: 14px; z-index: 20; max-width: 90%; }
+.tabs button.on { color: var(--ink); font-weight: 700; box-shadow: inset 0 2px 0 var(--brand-black); }
+.toast { position: fixed; left: 50%; bottom: calc(80px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--brand-black); color: var(--on-brand); padding: 10px var(--space-4); border-radius: var(--radius-none); font-size: var(--fs-body); z-index: 20; max-width: 90%; }
 .chart-box { display: flex; }
 .yaxis { position: relative; flex: none; width: 38px; font-size: 10px; color: var(--muted); }
 .yaxis span { position: absolute; right: 4px; transform: translateY(-50%); }
@@ -65,8 +64,9 @@ input, select, textarea { width: 100%; font: inherit; color: var(--fg); backgrou
 .jma-day { display: flex; justify-content: space-between; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); font-size: 14px; }
 .jma-day:last-child { border: 0; } .jma-day b { flex: none; width: 64px; }
 .jma-day .pop { flex: none; color: var(--muted); }
-a { color: var(--accent); }
+a { color: var(--ink); }
 
 
-/* 見出しだけ明朝体（数値・グラフ・フォームはゴシック体のまま） */
-.card-h b, .summary b { font-family: var(--serif); font-weight: 700; letter-spacing: .04em; }
+/* 見出しは太字のゴシック体(Noto Sans JP)。数値は Inter。 */
+.card-h b, .summary b { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
+.big, .yaxis, .summary .muted { font-variant-numeric: tabular-nums; }

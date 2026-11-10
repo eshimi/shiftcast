@@ -68,6 +68,10 @@ const NAV = [
   ['/columns', 'コラム', 'columns'],
 ];
 
+// フォント: トップは明朝体(Shippori)、それ以外のページはデザインシステム「QRO Eyewear」の Noto Sans JP + Inter
+const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">';
+const DS_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700&display=swap">';
+
 function layout({ title, description, page, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
   const full = title === SITE ? `${SITE}｜${TAGLINE}` : `${title} | ${SITE}`;
   return `<!doctype html>
@@ -83,15 +87,14 @@ function layout({ title, description, page, body, extraHead = '', scripts = '', 
 <meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">
+${chrome ? DS_FONTS : TOP_FONTS}
 <link rel="icon" href="/icon.svg">
 <link rel="apple-touch-icon" href="/icon.svg">
 <link rel="manifest" href="/manifest.json">
-<link rel="stylesheet" href="/header.css">
-<link rel="stylesheet" href="/site.css">
-${extraHead}
+${chrome ? '<link rel="stylesheet" href="/ds.css">\n<link rel="stylesheet" href="/header.css">\n' : ''}<link rel="stylesheet" href="/site.css">
+${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 </head>
-<body data-page="${page}"${bodyClass ? ` class="${bodyClass}"` : ''}>
+<body data-page="${page}" class="${[chrome ? 'ds' : '', bodyClass].filter(Boolean).join(' ')}">
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
     <a class="logo" href="/" aria-label="Rio²（リオリオ） トップへ"><img src="/icon.svg" alt="" width="36" height="36">${LOGO}</a>

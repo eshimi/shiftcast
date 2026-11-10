@@ -1,0 +1,58 @@
+{
+  "name": "QRO Eyewear",
+  "version": 1,
+  "color": {
+    "themes": [
+      {"id": "light", "name": "Light"},
+      {"id": "dark", "name": "Dark"}
+    ],
+    "tokens": [
+      {"name": "surface-100", "value": {"light": "#ffffff", "dark": "#0b0b0c"}, "usage": "Page background."},
+      {"name": "surface-200", "value": {"light": "#f4f4f5", "dark": "#151517"}, "usage": "Alternate sections and cards."},
+      {"name": "surface-300", "value": {"light": "#e6e6e8", "dark": "#222226"}, "usage": "Input fills and subtle panels."},
+      {"name": "ink", "value": {"light": "#0b0b0c", "dark": "#f5f5f6"}, "usage": "Primary text and headings on surface-100 and surface-200."},
+      {"name": "ink-muted", "value": {"light": "#5c5c63", "dark": "#a1a1a8"}, "usage": "Secondary text, captions. Meets 4.5:1 on surface-100 in both themes."},
+      {"name": "brand-black", "value": {"light": "#0b0b0c", "dark": "#ffffff"}, "usage": "Primary buttons, logo, key rules. Inverts in dark theme."},
+      {"name": "on-brand", "value": {"light": "#ffffff", "dark": "#0b0b0c"}, "usage": "Text and icons placed on brand-black."},
+      {"name": "border", "value": {"light": "#e0e0e4", "dark": "#2e2e34"}, "usage": "Hairline dividers. Decorative only, never the sole boundary of a control."},
+      {"name": "border-strong", "value": {"light": "#76767e", "dark": "#8e8e96"}, "usage": "Control borders (inputs, outlined buttons). Meets 3:1 on surface-100."},
+      {"name": "focus", "value": {"light": "#1f4fd1", "dark": "#8fb3ff"}, "usage": "Keyboard focus ring, 2px offset."}
+    ]
+  },
+  "type": {
+    "fonts": [],
+    "families": {
+      "sans": "\"Noto Sans JP\", \"Hiragino Sans\", \"Yu Gothic\", \"Helvetica Neue\", Arial, sans-serif",
+      "latin": "\"Inter\", \"Helvetica Neue\", Arial, sans-serif"
+    },
+    "groups": [
+      {"name": "Text", "family": "sans", "styles": [
+        {"name": "display", "fontSize": "56px", "lineHeight": "64px", "fontWeight": 700},
+        {"name": "heading", "fontSize": "28px", "lineHeight": "36px", "fontWeight": 700},
+        {"name": "subheading", "fontSize": "18px", "lineHeight": "28px", "fontWeight": 600},
+        {"name": "body", "fontSize": "15px", "lineHeight": "24px", "fontWeight": 400},
+        {"name": "label", "fontSize": "13px", "lineHeight": "18px", "fontWeight": 500},
+        {"name": "caption", "fontSize": "12px", "lineHeight": "18px", "fontWeight": 400}
+      ]}
+    ]
+  },
+  "spacing": {
+    "tokens": [
+      {"name": "space-1", "value": "4px", "usage": "Icon-to-text gaps."},
+      {"name": "space-2", "value": "8px", "usage": "Tight stacks, tag padding."},
+      {"name": "space-3", "value": "12px", "usage": "Form field internal spacing."},
+      {"name": "space-4", "value": "16px", "usage": "Card padding on mobile, default gutter."},
+      {"name": "space-6", "value": "24px", "usage": "Card padding on desktop."},
+      {"name": "space-8", "value": "32px", "usage": "Between related blocks."},
+      {"name": "space-12", "value": "48px", "usage": "Between sections on mobile."},
+      {"name": "space-16", "value": "64px", "usage": "Between sections on desktop."}
+    ]
+  },
+  "radius": {
+    "tokens": [
+      {"name": "radius-none", "value": "0px", "usage": "Buttons, cards, images. The default; the brand is sharp-edged."},
+      {"name": "radius-sm", "value": "2px", "usage": "Text inputs only."},
+      {"name": "radius-pill", "value": "999px", "usage": "Small tags and filter chips."}
+    ]
+  }
+}

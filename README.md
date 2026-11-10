@@ -59,3 +59,10 @@ Workers Builds 連携の再確認（2026-11-08）。
 | `/app/` | 気圧グラフ・体調記録・分析・設定のアプリ本体（PWAの起点） |
 
 トップ/週間天気/コラムは Worker がサーバー側で描画します（`src/pages.js`）。データは公開API `/api/week?area=<都道府県コード>`（5分キャッシュ）から取得します。
+
+## デザインシステム（トップページ以外）
+トップページ以外（週間天気・コラム・利用規約・アプリ）は、デザインシステム「QRO Eyewear」に合わせています（モノクロ・直角・細い罫線・Noto Sans JP / Inter）。
+- 元データ: `design/qro-eyewear.tokens.json`、ルール: `design/qro-eyewear.README.md`
+- `node scripts/build-ds-css.mjs` で `public/ds.css`（色・余白・角丸・文字の変数）を生成します。手で編集しないでください。
+- ページごとの適用: `public/ds-pages.css`（週間天気・コラム）、`public/header.css`（共通ヘッダー）、`public/style.css`（アプリ・利用規約）
+- 気圧の4段階の色（青・黄・橙・赤）は、ブランドカラーではなくデータの意味を表す色なので残し、必ず文字と一緒に表示します。
