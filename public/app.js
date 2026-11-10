@@ -347,16 +347,62 @@ function resetForm() {
   $('#formTitle').textContent = '体調を記録'; $('#save').textContent = '記録する'; $('#cancelEdit').hidden = true;
   renderPain(); renderTags(); renderMyMeds(); renderSelMeds();
 }
+const pressureNote = (l) => (l.pressure == null ? "" : `気圧 ${l.pressure.toFixed(1)}hPa` + (l.diff6 == null ? '' : `（6時間前比 ${l.diff6 > 0 ? '+' : ''}${l.diff6.toFixed(1)}）`));
+function logRow(l) {
+  const note = pressureNote(l);
+  return h('li', {},
+    h('div', {}, h('div', { class: 'logrow' }, faceEl(l.pain, 26), h('span', {}, fmtDT(l.ts))), h('div', { class: 'meta' }, [...l.tags, ...l.meds.map((m) => '💊' + m)].join(' / ') || '—'),
+      note ? h('div', { class: 'meta pr' + (l.diff6 != null && l.diff6 <= -1.5 ? ' down' : '') }, note) : null),
+    h('div', { class: 'acts' },
+      h('button', { class: 'link', onclick: () => editLog(l) }, '編集'),
+      h('button', { class: 'link', onclick: async () => { if (confirm('この記録を削除しますか？')) { await api('/logs/' + l.id, { method: 'DELETE' }); loadLogs(); } } }, '削除')));
+}
 async function loadLogs() {
   S.logs = await api(`/logs?from=${Date.now() - 30 * 24 * HOUR}`);
   const ul = $('#logList'); ul.replaceChildren();
-  if (!S.logs.length) return ul.append(h('li', {}, h('span', { class: 'muted' }, 'まだ記録がありません')));
-  S.logs.slice(0, 30).forEach((l) => ul.append(h('li', {},
-    h('div', {}, h('div', { class: 'logrow' }, faceEl(l.pain, 26), h('span', {}, fmtDT(l.ts))), h('div', { class: 'meta' }, [...l.tags, ...l.meds.map((m) => '💊' + m)].join(' / ') || '—')),
-    h('div', { class: 'acts' },
-      h('button', { class: 'link', onclick: () => editLog(l) }, '編集'),
-      h('button', { class: 'link', onclick: async () => { if (confirm('この記録を削除しますか？')) { await api('/logs/' + l.id, { method: 'DELETE' }); loadLogs(); } } }, '削除')))));
+  if (!S.logs.length) ul.append(h('li', {}, h('span', { class: 'muted' }, 'まだ記録がありません')));
+  else S.logs.slice(0, 30).forEach((l) => ul.append(logRow(l)));
+  if (S.logMode === 'cal') loadCal();
 }
+
+// ---------- 月間カレンダー(痛みの度合いを日ごとに表示) ----------
+S.logMode = 'list'; S.calDay = null;
+const monthStart = (d) => new Date(d.getFullYear(), d.getMonth(), 1);
+S.cal = monthStart(new Date());
+const dayKey = (d) => `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+function setLogMode(m) {
+  S.logMode = m;
+  document.querySelectorAll('#logMode button').forEach((b) => b.classList.toggle('on', b.dataset.m === m));
+  $('#logList').hidden = m !== 'list'; $('#calBox').hidden = m !== 'cal';
+  if (m === 'cal') loadCal();
+}
+document.querySelectorAll('#logMode button').forEach((b) => b.addEventListener('click', () => setLogMode(b.dataset.m)));
+$('#calPrev').addEventListener('click', () => { S.cal = new Date(S.cal.getFullYear(), S.cal.getMonth() - 1, 1); S.calDay = null; loadCal(); });
+$('#calNext').addEventListener('click', () => { S.cal = new Date(S.cal.getFullYear(), S.cal.getMonth() + 1, 1); S.calDay = null; loadCal(); });
+async function loadCal() {
+  const from = S.cal, to = new Date(from.getFullYear(), from.getMonth() + 1, 1);
+  $('#calTitle').textContent = `${from.getFullYear()}年${from.getMonth() + 1}月`;
+  $('#calNext').disabled = to > new Date();
+  const logs = await api(`/logs?from=${from.getTime()}&to=${to.getTime() - 1}`);
+  const by = new Map();
+  logs.forEach((l) => { const k = dayKey(new Date(l.ts)); (by.get(k) || by.set(k, []).get(k)).push(l); });
+  const grid = $('#calGrid'); grid.replaceChildren();
+  ['日', '月', '火', '水', '木', '金', '土'].forEach((w) => grid.append(h('div', { class: 'cal-w' }, w)));
+  for (let i = 0; i < from.getDay(); i++) grid.append(h('div', {}));
+  const days = new Date(from.getFullYear(), from.getMonth() + 1, 0).getDate();
+  for (let d = 1; d <= days; d++) {
+    const date = new Date(from.getFullYear(), from.getMonth(), d), ls = by.get(dayKey(date));
+    const worst = ls ? Math.max(...ls.map((l) => l.pain)) : 0;
+    const cell = h('button', { class: 'cal-d' + (ls ? ' has' : '') + (S.calDay === d ? ' sel' : ''), disabled: !ls, 'aria-label': `${d}日` + (ls ? ` 最大の痛み ${worst}` : ' 記録なし'),
+      onclick: () => { S.calDay = d; loadCal(); } }, h('span', {}, String(d)), worst ? faceEl(worst, 22) : null);
+    grid.append(cell);
+  }
+  const dl = $('#calDay'); dl.replaceChildren();
+  const sel = S.calDay && by.get(dayKey(new Date(from.getFullYear(), from.getMonth(), S.calDay)));
+  if (sel) { dl.append(h('li', { class: 'cal-h' }, `${from.getMonth() + 1}月${S.calDay}日の記録`)); sel.forEach((l) => dl.append(logRow(l))); }
+  else dl.append(h('li', {}, h('span', { class: 'muted' }, ls0(by) ? '日付をタップすると、その日の記録を表示します' : 'この月の記録はありません')));
+}
+const ls0 = (by) => by.size > 0;
 function editLog(l) {
   S.editId = l.id; S.pain = l.pain; S.tags = new Set(l.tags); S.meds = new Set(l.meds);
   $('#note').value = l.note; $('#when').value = toLocalInput(l.ts);

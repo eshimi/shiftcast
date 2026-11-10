@@ -68,8 +68,14 @@
       <button id="save" class="btn primary block">記録する</button>
     </div>
     <div class="card">
-      <div class="card-h"><b>最近の記録</b></div>
+      <div class="card-h"><b>記録</b>
+        <div id="logMode" class="seg" role="tablist"><button data-m="list" class="on">リスト</button><button data-m="cal">カレンダー</button></div></div>
       <ul id="logList" class="list"></ul>
+      <div id="calBox" hidden>
+        <div class="cal-nav"><button id="calPrev" class="link" aria-label="前の月">‹ 前の月</button><b id="calTitle"></b><button id="calNext" class="link" aria-label="次の月">次の月 ›</button></div>
+        <div id="calGrid" class="cal-grid"></div>
+        <ul id="calDay" class="list"></ul>
+      </div>
     </div>
   </section>
 

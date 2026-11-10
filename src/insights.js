@@ -58,3 +58,23 @@ export async function buildInsights(env, userId, now = Date.now()) {
     : `不調を記録した ${drops.length} 件を分析しましたが、気圧の低下との明確な関連は今のところ見られません（あくまで簡易的な統計です）。`;
   return out;
 }
+
+/** 記録に「記録時の気圧」と「6時間前との差」を付ける(気圧データが無い場合は null) */
+export async function withPressure(db, logs) {
+  const out = logs.map((l) => ({ ...l, pressure: null, diff6: null }));
+  const byArea = new Map();
+  out.forEach((l) => { if (l.area) (byArea.get(l.area) || byArea.set(l.area, []).get(l.area)).push(l); });
+  for (const [code, ls] of byArea) {
+    const from = Math.min(...ls.map((l) => l.ts)) - 8 * HOUR;
+    const to = Math.max(...ls.map((l) => l.ts)) + HOUR;
+    const s = await pressureSeries(db, code, from, to);
+    for (const l of ls) {
+      const p1 = interpolate(s, l.ts);
+      if (p1 == null) continue;
+      l.pressure = round1(p1);
+      const p0 = interpolate(s, l.ts - 6 * HOUR);
+      if (p0 != null) l.diff6 = round1(p1 - p0);
+    }
+  }
+  return out;
+}

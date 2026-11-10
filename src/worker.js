@@ -4,7 +4,7 @@ import { AREAS, AREA_BY_CODE, isAreaCode, nearestArea } from './areas.js';
 import { annotate, LEVEL_LABEL, HOUR } from './pressure.js';
 import { isDemo, ensureFresh } from './weather.js';
 import { getAreaStats } from './stats.js';
-import { buildInsights } from './insights.js';
+import { buildInsights, withPressure } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
 import { loadJmaCached } from './jma.js';
@@ -148,7 +148,8 @@ function parseLog(b) {
 app.get('/api/logs', async (c) => {
   const from = Number(c.req.query('from')) || 0;
   const to = Number(c.req.query('to')) || Date.now() + HOUR;
-  return c.json((await all(c.env.DB, 'SELECT * FROM logs WHERE user_id=? AND ts BETWEEN ? AND ? ORDER BY ts DESC LIMIT 1000', c.get('user').id, from, to)).map(logOut));
+  const rows = await all(c.env.DB, 'SELECT * FROM logs WHERE user_id=? AND ts BETWEEN ? AND ? ORDER BY ts DESC LIMIT 1000', c.get('user').id, from, to);
+  return c.json(await withPressure(c.env.DB, rows.map(logOut)));
 });
 
 app.post('/api/logs', async (c) => {

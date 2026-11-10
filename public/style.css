@@ -81,3 +81,19 @@ a { color: var(--ink); }
 .pain { gap: 4px; }
 .pain button small { white-space: nowrap; letter-spacing: -.03em; }
 .summary .ico { display: flex; align-items: center; justify-content: center; flex: none; width: 46px; height: 46px; }
+
+/* 記録: 気圧表示とカレンダー */
+.list .meta.pr { margin-top: 2px; }
+.list .meta.pr.down { color: #b3261e; font-weight: 600; }
+.seg { display: inline-flex; border: 1px solid var(--border-strong, #888); }
+.seg button { border: 0; background: transparent; padding: 4px 12px; font: inherit; font-size: 13px; color: inherit; cursor: pointer; }
+.seg button.on { background: var(--brand-black, #111); color: var(--on-brand, #fff); }
+.cal-nav { display: flex; align-items: center; justify-content: space-between; margin: 4px 0 8px; }
+.cal-nav .link:disabled { opacity: .3; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; text-align: center; }
+.cal-w { font-size: 11px; color: var(--muted); padding: 2px 0; }
+.cal-d { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px; min-height: 48px; padding: 3px 0; border: 0; background: transparent; font: inherit; font-size: 12px; color: inherit; }
+.cal-d.has { cursor: pointer; background: rgba(0,0,0,.04); }
+.cal-d.sel { outline: 2px solid var(--brand-black, #111); outline-offset: -2px; }
+.cal-d:disabled { opacity: .55; }
+.cal-h { font-weight: 600; }
