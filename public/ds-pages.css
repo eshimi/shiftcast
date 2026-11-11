@@ -131,3 +131,20 @@ body.ds {
 .ds .pref-r { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-size: 14px; }
 .ds .pref-r b { flex: none; min-width: 5.5em; }
 .ds .pref-r a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* サービス紹介: できること */
+.ds .ab-verbs { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.ds .ab-verb { background: var(--surface-200); padding: 22px 20px; }
+.ds .ab-verb .ic svg { width: 34px; height: 34px; fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ds .ab-verb .en { margin: 10px 0 0; font-size: 11px; letter-spacing: .22em; color: var(--ink-muted); }
+.ds .ab-verb h3 { margin: 2px 0 4px; font-size: 22px; }
+.ds .ab-verb b { display: block; font-size: 14px; margin-bottom: 8px; }
+.ds .ab-verb p:last-child { margin: 0; font-size: 14px; line-height: 1.85; }
+/* 用語集 */
+.ds .gl-index { margin: 16px 0 28px; }
+.ds .gl { margin: 0; }
+.ds .gl-i { padding: 18px 0; border-bottom: 1px solid var(--border-strong); scroll-margin-top: 120px; }
+.ds .gl dt { font-weight: 700; font-size: 17px; }
+.ds .gl dt small { display: block; font-weight: 400; font-size: 12px; color: var(--ink-muted); letter-spacing: .08em; margin-top: 2px; }
+.ds .gl dd { margin: 8px 0 0; font-size: 14.5px; line-height: 1.9; }
+.ds .gl dd a { text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }

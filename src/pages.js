@@ -3,6 +3,7 @@ import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.
 import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, OG_IMAGE } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
+import { GLOSSARY } from './glossary.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -129,7 +130,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/app/">気圧・記録</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -484,6 +485,30 @@ ${APP_TABS}`;
   });
 }
 
+/* ---------- 用語集(/glossary) ---------- */
+
+export function glossaryPage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('camera', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
+<div class="wrap">
+<ul class="chips-l gl-index" aria-label="用語の一覧">${GLOSSARY.map(([t], i) => `<li><a href="#g${i + 1}">${esc(t.replace(/（.*$/, ''))}</a></li>`).join('')}</ul>
+<dl class="gl">
+${GLOSSARY.map(([t, r, d, slug], i) => `<div class="gl-i" id="g${i + 1}"><dt>${esc(t)}<small>${esc(r)}</small></dt><dd>${esc(d)}${slug && findColumn(slug) ? ` <a href="/columns/${slug}">くわしくはこちら →</a>` : ''}</dd></div>`).join('\n')}
+</dl>
+<p class="disclaimer">用語の説明は一般的な情報で、診断や治療を目的としたものではありません。</p>
+</div>`;
+  return layout({
+    title: '天気痛・気象病の用語集｜気圧・低気圧・前線・片頭痛のやさしい解説',
+    description: '気象病・天気痛・気圧頭痛、海面気圧、低気圧、前線、台風、内耳、自律神経、片頭痛など、気圧と体調に関する用語をやさしく解説する用語集。',
+    keywords: ['天気痛', '気象病', '気圧', '頭痛', '用語集'],
+    page: 'glossary',
+    path: '/glossary',
+    jsonld: [{ '@type': 'DefinedTermSet', name: '天気痛・気象病の用語集', inLanguage: 'ja', url: SITE_URL + '/glossary', hasDefinedTerm: GLOSSARY.map(([t, , d], i) => ({ '@type': 'DefinedTerm', name: t, description: d, url: `${SITE_URL}/glossary#g${i + 1}` })) }],
+    body,
+    wide: true,
+  });
+}
+
 /* ---------- サービス紹介 ---------- */
 
 const ABOUT_FEATURES = [
@@ -493,7 +518,7 @@ const ABOUT_FEATURES = [
   ['04', '自分のパターンを見つける分析', '記録と気圧の変化を重ねて、「気圧が下がり始めて何時間後に痛みが出やすいか」などの傾向を振り返れます。通院時に見せられる履歴としても使えます。'],
   ['05', '前日20:00のお知らせ', '翌日に気圧が大きく動きそうなとき、前日の夜20:00(日本時間)にプッシュ通知でお知らせします。通知はオン・オフを選べます。'],
   ['06', '週間天気と気圧', '気象庁の週間予報をもとに、7日間の天気・気温・降水確率と気圧の見通しをまとめて確認できます。予定を立てるときの目安にどうぞ。'],
-  ['07', '気象病を防ぐコラム', '天気痛・気象病・気圧頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、受診の目安までを15本の記事で紹介しています。'],
+  ['07', '気象病を防ぐコラム', '天気痛・気象病・気圧頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、受診の目安までを18本の記事で紹介しています。'],
   ['08', '地域ごとのみんなの傾向', '都道府県単位で匿名に集計した「今日つらい人の割合」を見られます。個人が特定される情報は出しません。'],
 ];
 
@@ -507,9 +532,15 @@ const ABOUT_SHOTS = [
 ];
 const ABOUT_PAGES = [
   ['weather', '/weather', '週間天気', '7日間の天気・気温・降水確率と、日ごとの気圧の見通しを一覧できます。'],
-  ['columns', '/columns', 'コラム', '天気痛・気象病・気圧頭痛の仕組みやセルフケア、受診の目安を15本の記事で紹介しています。'],
+  ['columns', '/columns', 'コラム', '天気痛・気象病・気圧頭痛の仕組みやセルフケア、受診の目安を18本の記事で紹介しています。'],
 ];
 const phoneImg = (n, alt) => `<div class="ab-phone"><img src="/about/${n}.webp" alt="${esc(alt)}" width="390" height="780" loading="lazy"></div>`;
+
+const ABOUT_VERBS = [
+  ['予測する', 'FORECAST', '気圧の変化を先回りで知る', '気象庁の実測とOpenWeatherMapの予測をもとに、気圧がいつ下がるかを4段階の目安で表示。前日の夜には通知もお届けします。', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5c3-.3 4-6 6.5-6.5s3.5 3.5 6 1.5 3-8.5 4.5-9"/><path d="M3.5 4.5v15.2h17"/></svg>'],
+  ['記録する', 'RECORD', '痛みと体調を数タップで残す', '痛みの度合いを顔のアイコンで選び、症状・服薬・メモを記録。記録した時刻の気圧も自動で添えられます。', '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8M4.5 21h15"/></svg>'],
+  ['振り返る', 'REVIEW', '自分のパターンを見つける', '月間カレンダーと分析で、気圧が下がったときに不調が出やすいかどうかを確認。受診のときの手がかりにもなります。', '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="M15.4 15.6l5 5"/></svg>'],
+];
 const ABOUT_STEPS = [
   ['地域を選ぶ', '都道府県を選ぶだけ。アカウント登録もメールアドレスも不要です。'],
   ['今日の見通しを見る', '気圧のグラフと、注意が必要な時間帯を確認します。'],
@@ -528,6 +559,8 @@ export function aboutPage() {
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>Rio²（リオリオ）とは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap about">
+<section><h2 class="en-h">WHAT YOU CAN DO<small>できること</small></h2>
+<div class="ab-verbs">${ABOUT_VERBS.map(([v, en, t, d, ic], i) => `<article class="ab-verb"><span class="ic">${ic}</span><p class="en">${en}</p><h3>${i + 1}. ${esc(v)}</h3><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join('')}</div></section>
 <section><h2 class="en-h">SCREENS<small>画面で見る</small></h2>
 ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev' : ''}">${phoneImg(n, t)}<div class="ab-txt"><span class="no">${no}</span><h3>${esc(t)}</h3><p>${esc(d)}</p><ul>${li.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></div></div>`).join('')}
 <div class="ab-pages">${ABOUT_PAGES.map(([n, h, t, d]) => `<a href="${h}">${phoneImg(n, t + 'のページ')}<b>${esc(t)} →</b><span>${esc(d)}</span></a>`).join('')}</div></section>
@@ -552,7 +585,7 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
   });
 }
 
-const ref = (t) => esc(t).replace(/\[\[([a-z-]+)\|([^\]]+)\]\]/g, (_, slug, label) => (findColumn(slug) ? `<a href="/columns/${slug}">${label}</a>` : label));
+const ref = (t) => esc(t).replace(/\[\[(\/[a-z]+|[a-z-]+)\|([^\]]+)\]\]/g, (_, slug, label) => (slug.startsWith('/') ? `<a href="${slug}">${label}</a>` : findColumn(slug) ? `<a href="/columns/${slug}">${label}</a>` : label));
 function renderBlock(b) {
   if (b.h) return `<h2>${esc(b.h)}</h2>`;
   if (b.p) return `<p>${ref(b.p)}</p>`;
@@ -563,7 +596,7 @@ function renderBlock(b) {
   return '';
 }
 
-const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker', 'how-long': 'reading', 'which-department': 'family', 'otc-medicine': 'hat-bag', 'typhoon-headache': 'umbrella', 'sleepy-dizzy': 'yoga', 'old-injury': 'runner' };
+const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker', 'how-long': 'reading', 'which-department': 'family', 'otc-medicine': 'hat-bag', 'typhoon-headache': 'umbrella', 'sleepy-dizzy': 'yoga', 'old-injury': 'runner', 'pressure-pattern': 'autumn', 'ear-stretch': 'yoga', 'neck-shoulder-stretch': 'yoga' };
 
 export function columnPage(slug) {
   const c = findColumn(slug);
