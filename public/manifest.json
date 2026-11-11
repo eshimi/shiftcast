@@ -1,6 +1,6 @@
 {
-  "name": "Rio²（リオリオ）",
-  "short_name": "リオリオ",
+  "name": "そらだより",
+  "short_name": "そらだより",
   "description": "気圧の変化と体調を記録して、気象病を予防",
   "start_url": "/app/",
   "scope": "/",
