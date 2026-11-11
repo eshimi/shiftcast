@@ -114,7 +114,7 @@ ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
     <a class="logo" href="/" aria-label="Rio²（リオリオ） トップへ"><img src="/icon.svg" alt="" width="36" height="36">${LOGO}</a>
-    ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : '<a class="btn sm primary h-app" href="/app/">気圧・記録へ</a>'}
+    ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
     ${NAV.map(([href, label, id]) => `<a href="${href}"${id === page || (id === 'columns' && page === 'column') ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
@@ -176,7 +176,7 @@ export function topPage() {
       <p>気圧の低下を前の晩に通知。</p>
       <p>体調を記録するほど、あなたの<br>「不調になりやすい条件」が見えてきます。</p>
     </div>
-    <nav class="side-nav" aria-label="メインメニュー">${nav}<a class="btn dark sm" href="/app/">気圧・記録へ ↗</a></nav>
+    <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
     <ol class="side-index" aria-label="このページの内容">
       <li><a href="#today" data-sec="today">Today<small>今日の気圧</small></a></li>
       <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
