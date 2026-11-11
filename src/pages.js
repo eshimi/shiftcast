@@ -9,6 +9,7 @@ import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const SITE = SITE_NAME;
+const SITE_TITLE = 'Soradayori'; // <title>・og:site_name・構造化データのサイト名(表示上のロゴ・本文は「そらだより」)
 const TAGLINE = '気圧と体調のノート';
 // トップのHERO背景をランダムに選ぶ（描画前に実行）。直前に見たものとは別の写真にする。?hero=0|1|2 で固定表示も可能。
 // 写真ごとに、文字が読めるよう暗いオーバーレイの色・濃さ(a=[上,中,下])と、画面に見せたい位置(p)を設定している。
@@ -80,7 +81,7 @@ const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design
 const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
 
 function layout({ title, rawTitle, description, keywords, page, path, jsonld = [], body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
-  const full = rawTitle || `${title} | ${SITE}`;
+  const full = rawTitle || `${title} | ${SITE_TITLE}`;
   const url = path ? SITE_URL + path : '';
   const ogType = page === 'column' ? 'article' : 'website';
   return `<!doctype html>
@@ -95,7 +96,7 @@ ${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : '
 ${url ? `<link rel="canonical" href="${esc(url)}">\n<meta property="og:url" content="${esc(url)}">\n` : ''}<meta property="og:title" content="${esc(full)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:type" content="${ogType}">
-<meta property="og:site_name" content="${esc(SITE)}">
+<meta property="og:site_name" content="${esc(SITE_TITLE)}">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:image" content="${SITE_URL}${OG_IMAGE}">
 <meta property="og:image:width" content="1200">
@@ -298,13 +299,13 @@ export function topPage() {
   </div>
 </div>`;
   return layout({
-    rawTitle: `${SITE}｜天気痛・気象病の気圧予報と頭痛の記録ノート`,
+    rawTitle: `${SITE_TITLE}｜天気痛・気象病の気圧予報と頭痛の記録ノート`,
     description: '天気痛・気象病で気圧の変化に頭痛や不調が出やすい人のための、気圧予報と体調の記録ノート。気圧が下がる前の晩に通知し、記録から自分の傾向を見つけます。週間天気・コラムも。無料・登録不要。',
     keywords: COLUMN_KEYWORDS,
     page: 'top',
     path: '/',
     jsonld: [
-      { '@type': 'WebSite', name: SITE, url: SITE_URL + '/', inLanguage: 'ja' },
+      { '@type': 'WebSite', name: SITE_TITLE, alternateName: SITE, url: SITE_URL + '/', inLanguage: 'ja' },
       { '@type': 'WebApplication', name: SITE, url: SITE_URL + '/app/', applicationCategory: 'HealthApplication', operatingSystem: 'Web', inLanguage: 'ja', description: '天気痛・気象病の気圧予報と、頭痛・体調の記録ノート', offers: { '@type': 'Offer', price: '0', priceCurrency: 'JPY' } },
     ],
     body,
@@ -677,7 +678,7 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 <p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    rawTitle: `${SITE}とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
+    rawTitle: `${SITE_TITLE}（そらだより）とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
     description: 'そらだよりは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
     keywords: COLUMN_KEYWORDS,
     page: 'about',
