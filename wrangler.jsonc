@@ -5,7 +5,7 @@
   "compatibility_date": "2025-09-01",
   "observability": { "enabled": true },
   // 静的ファイル(アプリ本体 /app/ など)はAssetsで配信。API と、サーバー描画ページ(トップ・週間天気・コラム)はWorkerを先に実行する。
-  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/robots.txt", "/sitemap.xml", "/", "/weather", "/weather/", "/about", "/glossary", "/app", "/app/", "/pressure", "/pressure/*", "/columns", "/columns/*"] },
+  "assets": { "directory": "./public", "binding": "ASSETS", "run_worker_first": ["/api/*", "/robots.txt", "/sitemap.xml", "/", "/weather", "/weather/", "/about", "/check", "/today", "/glossary", "/app", "/app/", "/pressure", "/pressure/*", "/columns", "/columns/*"] },
   "d1_databases": [
     {
       "binding": "DB",
@@ -21,7 +21,7 @@
     "ALERT_HOUR": "20",
     "WEATHER_INTERVAL_H": "3",
     "MIN_K": "5",
-    "EXTRA_AREAS": "",
+    "EXTRA_AREAS": "01,04,13,23,27,34,40,47",
     "ALL_AREAS": "0"
   }
   // Secrets（wrangler secret put / Actions で設定）: OPENWEATHER_API_KEY, FIREBASE_SERVICE_ACCOUNT,

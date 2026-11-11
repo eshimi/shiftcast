@@ -148,3 +148,24 @@ body.ds {
 .ds .gl dt small { display: block; font-weight: 400; font-size: 12px; color: var(--ink-muted); letter-spacing: .08em; margin-top: 2px; }
 .ds .gl dd { margin: 8px 0 0; font-size: 14.5px; line-height: 1.9; }
 .ds .gl dd a { text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+
+/* 今日の気圧 */
+.ds .tbl-wrap { overflow-x: auto; margin: 16px 0; }
+.ds .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ds .tbl th, .ds .tbl td { padding: 12px 10px; border-bottom: 1px solid var(--border-strong); text-align: left; white-space: nowrap; }
+.ds .tbl thead th { font-size: 12px; color: var(--ink-muted); font-weight: 500; }
+.ds .tbl th small, .ds .tbl td small { display: block; font-weight: 400; color: var(--ink-muted); font-size: 11px; }
+.ds .tbl td small { display: inline; }
+.ds .tbl td:last-child, .ds .tbl thead th:last-child { white-space: normal; min-width: 7.5em; }
+@media (max-width: 480px) { .ds .tbl th, .ds .tbl td { padding: 10px 6px; } }
+
+/* セルフチェック */
+.ds .chk-q { list-style: none; counter-reset: q; padding: 0; margin: 0; }
+.ds .chk-q li { counter-increment: q; padding: 16px 0; border-bottom: 1px solid var(--border-strong); }
+.ds .chk-q fieldset { border: 0; margin: 0; padding: 0; }
+.ds .chk-q legend { padding: 0; font-weight: 600; line-height: 1.7; }
+.ds .chk-q legend::before { content: counter(q, decimal-leading-zero) "  "; color: var(--ink-muted); font-weight: 400; letter-spacing: .08em; }
+.ds .chk-q label { display: inline-flex; align-items: center; gap: 6px; margin: 8px 20px 0 0; font-size: 14px; cursor: pointer; }
+.ds .chk-q input { accent-color: var(--ink); width: 18px; height: 18px; }
+.ds .chk-res { margin-top: 28px; scroll-margin-top: 110px; }
+.ds .chk-res h2 { margin: 4px 0 6px; font-size: 22px; }

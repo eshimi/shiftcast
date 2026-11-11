@@ -12,7 +12,8 @@ import { buildWeek } from './week.js';
 import { SITE_URL } from './siteconfig.js';
 import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
-import { glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
+import { todaySummary } from './today.js';
+import { checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -206,7 +207,7 @@ app.get('/robots.txt', (c) => {
   return c.text(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 });
 app.get('/sitemap.xml', (c) => {
-  const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
+  const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ['/today', null], ['/check', null], ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, m]) => `<url><loc>${SITE_URL}${u}</loc>${m ? `<lastmod>${m}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
   c.header('Cache-Control', 'public, max-age=3600');
   return c.body(xml, 200, { 'content-type': 'application/xml; charset=utf-8' });
@@ -224,6 +225,13 @@ app.get('/pressure/:slug', async (c) => {
 });
 app.get('/app', (c) => c.redirect('/app/', 301));
 app.get('/app/', (c) => html(c, appPage()));
+app.get('/today', async (c) => {
+  let sum = { now: Date.now(), rows: [] };
+  try { sum = await todaySummary(c.env); } catch (e) { console.error('[today]', e); }
+  c.header('Cache-Control', 'public, max-age=600');
+  return c.html(todayPage(sum));
+});
+app.get('/check', (c) => html(c, checkPage()));
 app.get('/glossary', (c) => html(c, glossaryPage()));
 app.get('/about', (c) => html(c, aboutPage()));
 app.get('/columns', (c) => html(c, columnsPage()));

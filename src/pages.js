@@ -130,7 +130,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo">Rio<sup>2</sup>（リオリオ）</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -248,7 +248,7 @@ export function topPage() {
         ${LEVELS}
         <p class="sx-btn"><a class="btn dark block" href="/weather">Weekly All</a></p>
         <div class="sx-pref"><p class="sx-pref-h">都道府県別の気圧予報</p>
-          <ul>${['hokkaido', 'miyagi', 'tokyo', 'aichi', 'osaka', 'hiroshima', 'fukuoka'].map((sl) => PREFS.find((q) => q.slug === sl)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">全国47都道府県</a></li></ul></div>
+          <ul>${['hokkaido', 'miyagi', 'tokyo', 'aichi', 'osaka', 'hiroshima', 'fukuoka'].map((sl) => PREFS.find((q) => q.slug === sl)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">全国47都道府県</a></li><li><a href="/today">今日の全国の気圧</a></li><li><a href="/check">気象病セルフチェック</a></li></ul></div>
       </div>
     </section>
 
@@ -451,6 +451,7 @@ export function pressureIndexPage() {
 <div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('hiker', { k: 0.5 })}${person('couple', { k: 0.5 })}${person('runner', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</h2><ul class="chips-l">${codes.map((c) => PREFS.find((p) => p.code === c)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}</ul></section>`).join('\n')}
+<p class="row"><a class="btn" href="/today">全国の今日の気圧まとめを見る</a></p>
 <p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。</p>
 </div>`;
   return layout({
@@ -482,6 +483,108 @@ ${APP_TABS}`;
     wide: true,
     extraHead: '<link rel="stylesheet" href="/style.css">',
     scripts: '<script src="/vendor/chart.js"></script>\n<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/app.js" type="module"></script>',
+  });
+}
+
+/* ---------- 今日の気圧まとめ(/today) ---------- */
+
+export function todayPage(sum) {
+  const d = new Date(sum.now + 9 * 3600e3);
+  const date = `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${'日月火水木金土'[d.getUTCDay()]}）`;
+  const ok = sum.rows.filter((r) => r.ok);
+  const alert = ok.filter((r) => r.severity >= 2);
+  const slight = ok.filter((r) => r.severity === 1);
+  const rise = ok.filter((r) => r.level === 'rise');
+  const names = (a) => a.map((r) => `${r.region}（${r.name.replace(/[都府県]$/, '')}）`).join('、');
+  const lines = [];
+  if (!ok.length) lines.push('全国の気圧データを準備中です。しばらくしてからもう一度ご覧ください。');
+  else {
+    if (alert.length) lines.push(`今後24時間で、気圧が「注意」以上で下がる見込みの地方は、${names(alert)}です。前日の夜から、睡眠と予定に余裕を持ち、いつもの薬を確認しておくと安心です。`);
+    else lines.push('今後24時間で、気圧が「注意」以上で大きく下がる見込みの地方は、代表都市ではありません。');
+    if (slight.length) lines.push(`「やや注意」の見込みは、${names(slight)}です。`);
+    if (rise.length) lines.push(`気圧が上がる変化（上昇注意）の見込みは、${names(rise)}です。`);
+  }
+  const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstMD(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('runner', { k: 0.5 })}${person('hat-bag', { k: 0.5 })}</div></div>
+<div class="wrap">
+<section class="sec"><h2 class="pg-h">全国のようす</h2>
+${lines.map((l) => `<p>${esc(l)}</p>`).join('\n')}
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th>地方（代表都市）</th><th>現在の気圧</th><th>今後24時間</th><th>変化が大きい時間帯</th></tr></thead><tbody>
+${sum.rows.map(pk).join('\n')}
+</tbody></table></div>
+${LEVELS}
+<p class="muted small">各地方の県庁所在地の海面気圧をもとにした目安です（気象庁・OpenWeatherMap）。気圧の変化は、1時間あたりのhPaで評価しています。診断や医学的な基準ではありません。</p>
+</section>
+<section class="sec"><h2 class="pg-h">お住まいの地域を見る</h2>
+<p>都道府県ごとの今日の気圧と、7日間の天気・気圧の見通しはこちらです。</p>
+<p class="row"><a class="btn primary" href="/pressure">都道府県別の気圧予報</a><a class="btn" href="/weather">週間天気</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+</section>
+<section class="sec"><h2 class="pg-h">気圧が下がる日の過ごし方</h2>
+<ul class="plain">
+<li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li>
+<li><a href="/columns/when-it-hurts">気圧で頭痛・不調を感じたら：その場でできるセルフケア</a></li>
+<li><a href="/columns/pressure-pattern">気圧が変化する4つのパターン</a></li>
+<li><a href="/glossary">天気痛・気象病の用語集</a> ・ <a href="/check">気象病セルフチェック</a></li>
+</ul>
+</section>
+<p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。症状が強い・続くときは医療機関に相談してください。</p>
+</div>`;
+  return layout({
+    title: `今日の気圧と天気痛の目安｜${date} 全国の気圧予報`,
+    description: `${date}の全国の気圧と今後24時間の変化。${alert.length ? `${names(alert)}で気圧が「注意」以上で下がる見込みです。` : '全国の代表都市で、大きく下がる見込みはありません。'}天気痛・気象病・気圧頭痛に備えて。`,
+    keywords: ['今日の気圧', '天気痛', '気象病', '気圧 頭痛'],
+    page: 'today',
+    path: '/today',
+    body,
+    wide: true,
+  });
+}
+
+/* ---------- 気象病セルフチェック(/check) ---------- */
+
+const CHECK_Q = [
+  '天気が崩れる前や雨の日に、頭痛が起こりやすい',
+  '乗り物（車・バス・船など）に酔いやすい',
+  '首や肩のこりが強く、よく頭痛につながる',
+  'めまいやふらつき、耳鳴りを感じることがある',
+  '台風や低気圧が近づくと、体のだるさや眠気が強くなる',
+  '雨の前に、古傷や関節が痛んだりうずいたりする',
+  '片頭痛（ズキズキと脈打つ頭痛）と言われたことがある、または思い当たる',
+  '睡眠不足や疲れがたまると、天気の影響を受けやすいと感じる',
+  '梅雨や季節の変わり目に、気分が落ち込んだりイライラしたりしやすい',
+  '「天気予報で気圧が下がる」と聞くと、体調が悪くなりそうで心配になる',
+];
+
+export function checkPage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">SELF CHECK</p><h1>気象病セルフチェック（10問）</h1><p>当てはまるものを選ぶと、天気痛・気象病の「出やすさの傾向」の目安が分かります。診断ではありません。</p></div><div class="pg-ppl" aria-hidden="true">${person('couple', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="wrap">
+<form id="chk" class="chk" novalidate>
+<ol class="chk-q">${CHECK_Q.map((q, i) => `<li><fieldset><legend>${esc(q)}</legend><label><input type="radio" name="q${i}" value="1"> 当てはまる</label><label><input type="radio" name="q${i}" value="0"> 当てはまらない</label></fieldset></li>`).join('')}</ol>
+<p class="row"><button type="submit" class="btn primary">結果を見る</button><button type="reset" class="btn">やり直す</button></p>
+<p id="chkErr" class="muted" role="alert" hidden>すべての質問に答えてください。</p>
+</form>
+<section id="chkRes" class="card chk-res" hidden aria-live="polite" tabindex="-1">
+  <p class="en">RESULT</p>
+  <h2 id="chkTitle"></h2>
+  <p id="chkScore" class="muted"></p>
+  <p id="chkText"></p>
+  <ul id="chkLinks" class="plain"></ul>
+  <p class="row"><a class="btn primary" href="/app/">気圧・記録で体調を記録する</a><a class="btn" href="/pressure">お住まいの気圧予報</a></p>
+</section>
+<p class="disclaimer">このチェックは、医学的に確立した診断基準ではなく、一般的に知られている傾向をもとにした目安です。回答はこの端末の中だけで処理され、保存・送信されません。気になる症状が強い・続くときは、医療機関に相談してください。</p>
+</div>`;
+  return layout({
+    title: '気象病セルフチェック｜天気痛・気圧頭痛の出やすさ診断（10問）',
+    description: '10問に答えるだけで、天気痛・気象病・気圧頭痛の出やすさの傾向の目安が分かるセルフチェック。診断ではなく、備えのきっかけに。回答は保存されません。',
+    keywords: ['気象病 セルフチェック', '天気痛', '気圧 頭痛', '気象病'],
+    page: 'check',
+    path: '/check',
+    jsonld: [{ '@type': 'WebPage', name: '気象病セルフチェック', url: SITE_URL + '/check', inLanguage: 'ja' }],
+    body,
+    wide: true,
+    scripts: '<script src="/check.js" defer></script>',
   });
 }
 
