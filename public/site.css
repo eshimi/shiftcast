@@ -370,3 +370,16 @@ body.lp { background: var(--bg); }
 .mood-card .fx-grid { margin-top: 0; }
 .mood-mini { display: inline-flex; gap: 8px; align-items: center; margin-top: 6px; } .mood-mini .fxi { stroke-width: 3.4; } .mood-mini small { color: inherit; opacity: .85; }
 .news-mood { margin-top: 4px; }
+
+/* 体調そらもよう: キャラクターの5段階(今の段階だけ色つき) */
+.mood { flex-direction: column; align-items: stretch; gap: 10px; }
+.mood-strip { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 4px; padding: 4px 2px 0; }
+.mood-strip::before { content: ""; position: absolute; left: 6%; right: 6%; bottom: 7px; height: 5px; border-radius: 3px; background: var(--line); }
+.ms { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
+.ms .mi { display: block; width: auto; height: auto; max-width: 100%; max-height: 74px; object-fit: contain; opacity: .8; filter: none; }
+.ms.on .mi { max-height: 96px; opacity: 1; transform: translateY(-2px); }
+.ms .mdot { display: block; position: relative; z-index: 1; width: 14px; height: 14px; border-radius: 50%; background: var(--line); border: 2px solid var(--surface-100, #fff); box-sizing: content-box; }
+.ms.on .mdot { width: 20px; height: 20px; margin-bottom: -3px; background: var(--mc); }
+@media (min-width: 760px) { .ms .mi { max-height: 92px; } .ms.on .mi { max-height: 124px; } .mood-strip { max-width: 640px; } }
+.mi-mini { display: inline-block; width: auto; height: 44px; max-width: 60px; object-fit: contain; flex: none; }
+.mood-mini .mi-mini { margin-right: 2px; }
