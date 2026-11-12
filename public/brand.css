@@ -102,3 +102,9 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 @media (min-width: 760px) { .st .dog { height: 88px; } .st.on .dog { height: 124px; } }
 @media (prefers-color-scheme: dark) { .st .dog { mix-blend-mode: normal; } }
 .dog-mini { height: 48px; max-width: 76px; mix-blend-mode: multiply; }
+
+/* 人物の大きさを一回り小さく */
+.st .dog { height: 44px; }
+.st.on .dog { height: 68px; }
+@media (min-width: 760px) { .st .dog { height: 72px; } .st.on .dog { height: 100px; } }
+.dog-mini { height: 40px; max-width: 64px; }
