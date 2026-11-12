@@ -404,3 +404,6 @@ body.lp { background: var(--bg); }
 @media (min-width: 760px) { .stairs { max-width: 700px; gap: 6px; } .st .dog { max-height: 88px; } .st.on .dog { max-height: 120px; } .st-1 .blk { height: 44px; } .st-2 .blk { height: 58px; } .st-3 .blk { height: 72px; } .st-4 .blk { height: 86px; } .st-5 .blk { height: 100px; } .st .stl { font-size: 13px; } .st .blk { font-size: 26px; } .st.on .blk { font-size: 34px; } }
 @media (prefers-color-scheme: dark) { .stairs { background: #f4f6f9; border-radius: 10px; padding: 12px 8px 8px; } .st .stl { color: #5b6672; } }
 .dog-mini { display: inline-block; width: auto; height: 44px; max-width: 70px; object-fit: contain; flex: none; }
+
+/* hidden属性が、.badge などの display 指定に負けて表示されてしまわないようにする */
+[hidden] { display: none !important; }
