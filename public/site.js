@@ -84,7 +84,7 @@ function renderToday(w) {
   if (w.tilesHtml) {
     el.classList.add('has-fx');
     const fx = h('div', { class: 'fx-wrap' });
-    fx.innerHTML = w.tilesHtml;
+    fx.innerHTML = (w.moodHtml || '') + w.tilesHtml;
     el.append(fx);
   }
 }
@@ -118,9 +118,8 @@ function renderNews(w) {
         n.severe ? h('br') : null,
         n.severe ? '早めの休息と、いつもの薬の確認を。' : null,
         w.temp ? h('br') : null,
-        w.temp ? tempLine(w.temp) : null,
-        w.factors && w.factors.count > 0 ? h('br') : null,
-        w.factors && w.factors.count > 0 ? w.factors.text : null)),
+        w.temp ? tempLine(w.temp) : null)),
+    ...(w.moodMiniHtml ? [(() => { const d = h('div', { class: 'news-mood' }); d.innerHTML = w.moodMiniHtml; return d; })()] : []),
   );
 }
 

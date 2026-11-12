@@ -6,6 +6,7 @@ import { annotate, worstDrop, interpolate, SEVERITY, LEVEL_LABEL, HOUR, jstDateS
 import { ensureFresh, isDemo } from './weather.js';
 import { loadJmaCached } from './jma.js';
 import { loadExtras, wetInfo, factorSummary } from './extras.js';
+import { moodInfo } from './mood.js';
 
 // 気象庁の天気コード(telop)の主なもの。無い場合は百の位(1晴/2曇/3雨/4雪)で代用する。
 const CODE_TEXT = {
@@ -176,6 +177,7 @@ export async function buildWeek(env, code, now = Date.now()) {
     rain: wet.rain,
     humidity: wet.hum,
     factors: factorSummary({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum }),
+    mood: moodInfo({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum, next24: worst ? { level: worst.level, at: worst.ts, rate: worst.rate } : null }),
     current: cur ? { pressure: Math.round(cur.pressure * 10) / 10, d3: cur && ago3 ? Math.round((cur.pressure - ago3.pressure) * 10) / 10 : null } : null,
     next24: worst
       ? { level: worst.level, label: LEVEL_LABEL[worst.level], rate: worst.rate, at: worst.ts, severe: SEVERITY[worst.level] >= SEVERITY.caution }

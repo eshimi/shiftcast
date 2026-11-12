@@ -85,5 +85,5 @@ export function factorSummary({ pressureLevel, temp, rain, hum }) {
   const text = !f.length ? 'いまのところ、気圧・気温差・降水・湿度のうち、気になる要因は見られません。'
     : f.length === 1 ? `気になる要因は「${names[0]}」です。`
       : `「${names.join('」「')}」が重なる見込みです。体調に変化を感じやすい日かもしれません。早めの休息を。`;
-  return { count: f.length, factors: f.map((x) => x.key), text };
+  return { count: f.length, factors: f.map((x) => x.key), names, text };
 }

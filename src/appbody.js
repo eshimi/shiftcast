@@ -2,6 +2,7 @@
 export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-dash" class="view">
         <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
+    <div id="moodCard" class="card mood-card" hidden></div>
     <div id="summary" class="card summary"></div>
     <div class="card">
       <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>

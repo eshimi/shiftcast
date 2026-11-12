@@ -134,12 +134,15 @@ async function loadDash() {
   if (!S.sel) return;
   const code = S.sel;
   try {
-    const [fc, logs, st] = await Promise.all([
+    const [fc, logs, st, wk] = await Promise.all([
       api('/forecast?area=' + code),
       api(`/logs?from=${Date.now() - 72 * HOUR}`),
       api('/area-stats?area=' + code),
+      api('/week?area=' + code).catch(() => null), // 体調そらもよう(表示のみ)
     ]);
     if (code !== S.sel) return; // 切替競合
+    const mc = $('#moodCard');
+    if (wk?.moodHtml) { mc.innerHTML = wk.moodHtml + (wk.tilesHtml || ''); mc.hidden = false; } else mc.hidden = true;
     S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
     $('#fetched').textContent = fc.fetchedAt ? `更新 ${fmtDT(fc.fetchedAt)}` : '';
     $('#demoBadge').hidden = !fc.demo && !S.cfg.demo;

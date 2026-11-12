@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { weatherInfo, dailyPressure, mergeWeek, tempInfo } from '../src/week.js';
 import { wetInfo, factorSummary } from '../src/extras.js';
+import { moodInfo, MOOD_MAX } from '../src/mood.js';
 import { summarizeWeekly } from '../src/jma.js';
 import { annotate } from '../src/pressure.js';
 
@@ -139,4 +140,27 @@ test('factorSummary: 気になる要因を文章にする', () => {
   const many = factorSummary({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'mid' } });
   assert.equal(many.count, 4);
   assert.match(many.text, /重なる/);
+});
+
+test('moodInfo: 4つの指標を空もよう(5段階)と0〜100の点数にまとめる', () => {
+  const calm = moodInfo({ pressureLevel: 'none', temp: { level: 'none' }, rain: { level: 'small' }, hum: { level: 'none' } });
+  assert.equal(calm.level, 1);
+  assert.equal(calm.score, 0);
+  assert.match(calm.reason, /気になる要因は見られません/);
+  // 気圧 やや注意(2) + 気温差あり(1) = 3 → 晴れ時々くもり
+  const m2 = moodInfo({ pressureLevel: 'slight', temp: { level: 'mid' }, rain: null, hum: null });
+  assert.equal(m2.points, 3);
+  assert.equal(m2.level, 2);
+  assert.equal(m2.label, '晴れ時々くもり');
+  // 気圧 注意(4) + 気温差大(2) = 6 → 雨
+  assert.equal(moodInfo({ pressureLevel: 'caution', temp: { level: 'big' }, rain: null, hum: null }).level, 4);
+  // 全部重なる: 6+2+1+2 + 重なり補正1 = 12 → 雷 / 点数は 12/13
+  const storm = moodInfo({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'big' } });
+  assert.equal(storm.points, 12);
+  assert.equal(storm.bonus, 1);
+  assert.equal(storm.level, 5);
+  assert.equal(storm.score, Math.round((12 / MOOD_MAX) * 100));
+  assert.match(storm.reason, /重なっています/);
+  // データが無い要素は 0 点として扱う
+  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).level, 1);
 });

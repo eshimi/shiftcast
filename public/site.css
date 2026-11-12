@@ -349,3 +349,24 @@ body.lp { background: var(--bg); }
 .fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .fx-chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px 2px 6px; font-size: 12px; font-weight: 600; border: 1px solid #5b7c99; border-radius: 99px; color: #34506b; }
 .fx-chip.ok { border-color: var(--line); color: var(--muted); font-weight: 500; padding-left: 10px; }
+
+/* 体調そらもよう */
+.mood { --mc: #6ea8d9; display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface-100, #fff); border: 1px solid var(--line); border-left: 6px solid var(--mc); margin-bottom: 12px; }
+.mood-1 { --mc: #6ea8d9; } .mood-2 { --mc: #8fb9d6; } .mood-3 { --mc: #c9a24a; } .mood-4 { --mc: #e07b39; } .mood-5 { --mc: #c8392f; }
+.mood-ico { flex: none; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: color-mix(in srgb, var(--mc) 22%, transparent); }
+.mood-ico .fxi { stroke: color-mix(in srgb, var(--mc) 70%, #1d3a5f); stroke-width: 3; }
+.mood-body { flex: 1; min-width: 0; }
+.mood-en { margin: 0; font-size: 11px; letter-spacing: .18em; color: var(--muted); }
+.mood-t { margin: 2px 0 6px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.mood-t b { font-size: 24px; line-height: 1.2; } .mood-t span { font-size: 13px; font-weight: 700; color: color-mix(in srgb, var(--mc) 75%, #333); }
+.mood-bar { display: flex; gap: 4px; margin: 2px 0 6px; max-width: 260px; }
+.mood-bar i { flex: 1; height: 7px; background: var(--line); }
+.mood-bar i.on.m1 { background: #6ea8d9; } .mood-bar i.on.m2 { background: #8fb9d6; } .mood-bar i.on.m3 { background: #c9a24a; } .mood-bar i.on.m4 { background: #e07b39; } .mood-bar i.on.m5 { background: #c8392f; }
+.mood-s { margin: 0 0 6px; font-size: 13px; } .mood-s b { font-size: 18px; font-variant-numeric: tabular-nums; } .mood-s small { color: var(--muted); }
+.mood .fx-chips { margin-bottom: 4px; }
+.mood-r { margin: 4px 0 0; font-size: 13px; line-height: 1.7; }
+.mood-card { padding: 0; background: transparent; }
+.mood-card .mood { margin-bottom: 10px; }
+.mood-card .fx-grid { margin-top: 0; }
+.mood-mini { display: inline-flex; gap: 8px; align-items: center; margin-top: 6px; } .mood-mini .fxi { stroke-width: 3.4; } .mood-mini small { color: inherit; opacity: .85; }
+.news-mood { margin-top: 4px; }

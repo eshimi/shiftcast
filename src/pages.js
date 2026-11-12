@@ -4,7 +4,7 @@ import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, SITE_NAME, OG_IMAGE } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
-import { factorTilesHtml } from './tiles.js';
+import { factorTilesHtml, moodBlockHtml } from './tiles.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -415,7 +415,7 @@ export function pressurePage(pref, w) {
     <div>今後24時間：<span class="pill lv-${n.level}">${esc(n.label)}</span></div>
     <p>${esc(lead)}${esc(detail)}</p>
   </div>
-  <div class="fx-wrap">${factorTilesHtml(w)}</div>
+  <div class="fx-wrap">${moodBlockHtml(w)}${factorTilesHtml(w)}</div>
 </div>
 <section class="sec" aria-labelledby="p-days"><h2 id="p-days" class="pg-h">${esc(name)}の7日間の天気と気圧</h2>
   <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>

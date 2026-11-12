@@ -9,6 +9,46 @@ const ICONS = {
   rain: '<path d="M7 31a25 23 0 0150 0z"/><path d="M32 31v18a5.5 5.5 0 01-11 0"/><path d="M32 9V5"/>',
   hum: '<path d="M32 7c9 12 14 19 14 28a14 14 0 01-28 0c0-9 5-16 14-28z"/><path d="M24 38q4 4 8 0t8 0"/>',
 };
+// 体調そらもよう(空模様の線画)
+const SKY = {
+  sunny: '<circle cx="32" cy="32" r="11"/><path d="M32 8v7M32 49v7M8 32h7M49 32h7M15 15l5 5M44 44l5 5M49 15l-5 5M20 44l-5 5"/>',
+  partly: '<circle cx="23" cy="22" r="8"/><path d="M23 6v5M8 22h5M12.5 11.5l3.5 3.5M33.5 11.5L30 15"/><path d="M22 50a8.5 8.5 0 011-17 12 12 0 0122.5-2A9.5 9.5 0 0147 50z"/>',
+  cloudy: '<path d="M17 48a9.5 9.5 0 011-19 14 14 0 0126.5-2.5A10.5 10.5 0 0147 48z"/>',
+  rainy: '<path d="M17 38a9 9 0 011-18 13.5 13.5 0 0125.5-2.5A10 10 0 0146 38z"/><path d="M22 45l-3 8M32 45l-3 8M42 45l-3 8"/>',
+  stormy: '<path d="M17 36a9 9 0 011-18 13.5 13.5 0 0125.5-2.5A10 10 0 0146 36z"/><path d="M34 38l-8 11h8l-5 9"/>',
+};
+export const skyIcon = (key, size = 56) => `<svg class="fxi sky sky-${key}" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true">${SKY[key] || SKY.sunny}</svg>`;
+
+const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
+const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
+const CH_ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
+
+/** 体調そらもよう(大きなパネル) */
+export function moodBlockHtml(w) {
+  const m = w?.mood;
+  if (!m) return '';
+  const chips = m.factors.length ? m.factors.map((k) => `<span class="fx-chip">${fxIcon(CH_ICON[k], 20)}${CH_NAME[k]}</span>`).join('') : '<span class="fx-chip ok">✓ 気になる要因なし</span>';
+  const bar = [1, 2, 3, 4, 5].map((i) => `<i class="${i <= m.level ? `on m${i}` : ''}"></i>`).join('');
+  return `<div class="mood mood-${m.level}" role="group" aria-label="体調そらもよう">
+  <div class="mood-ico">${skyIcon(m.key, 64)}</div>
+  <div class="mood-body">
+    <p class="mood-en">今日の体調そらもよう</p>
+    <p class="mood-t"><b>${esc(m.label)}</b><span>${esc(m.name)}</span></p>
+    <div class="mood-bar" aria-hidden="true">${bar}</div>
+    <p class="mood-s">スコア <b>${m.score}</b> / 100${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
+    <div class="fx-chips">${chips}</div>
+    <p class="mood-r">${esc(m.reason)}${m.advice ? esc(m.advice) : ''}</p>
+  </div>
+</div>`;
+}
+
+/** トップの一行ニュース用の小さな表示 */
+export function moodMiniHtml(w) {
+  const m = w?.mood;
+  if (!m) return '';
+  return `<span class="mood-mini mood-${m.level}">${skyIcon(m.key, 30)}<span><b>体調そらもよう：${esc(m.label)}</b>（${esc(m.name)}・${m.score}/100）<br><small>${esc(m.reason)}${m.advice ? esc(m.advice) : ''}</small></span></span>`;
+}
+
 export const fxIcon = (name, size = 34) => `<svg class="fxi" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true">${ICONS[name]}</svg>`;
 
 const sgn = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
@@ -38,11 +78,5 @@ export function factorTilesHtml(w) {
       ? tile('hum', '湿度', `tp-${h.level}`, h.now, '%', '', [h.d24 != null ? `${arrow(h.d24)}前日同時刻比 ${sgn(h.d24)}${Math.abs(h.d24)}%` : '', `今後24時間 ${h.min}〜${h.max}%`].filter(Boolean), pill(`tp-${h.level}`, h.label))
       : na('hum', '湿度'),
   ];
-  const f = w.factors;
-  const NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
-  const ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
-  const sum = f
-    ? `<div class="fx-sum${f.count >= 2 ? ' multi' : ''}"><div class="fx-chips">${f.count ? f.factors.map((k) => `<span class="fx-chip">${fxIcon(ICON[k], 20)}${NAME[k]}</span>`).join('') : '<span class="fx-chip ok">✓ 気になる要因なし</span>'}</div><p>${esc(f.text)}</p></div>`
-    : '';
-  return `<div class="fx-grid">${tiles.join('')}</div>${sum}`;
+  return `<div class="fx-grid">${tiles.join('')}</div>`;
 }
