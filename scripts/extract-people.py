@@ -34,14 +34,17 @@ if os.environ.get('NAMES_JSON'):
     NAMES = json.loads(os.environ['NAMES_JSON'])
 START = int(os.environ.get('START', '0'))
 GROUND_BAND = int(os.environ.get('GROUND_BAND', '24'))
-cols, rows = 6, 4
+cols, rows = int(os.environ.get('COLS', '6')), int(os.environ.get('ROWS', '4'))
 cw, ch = W // cols, H // rows
+ROW_EDGES = [int(x) for x in os.environ['ROW_EDGES'].split(',')] if os.environ.get('ROW_EDGES') else [round(i * H / rows) for i in range(rows + 1)]  # 行の境界(y)。人物の行の間隔が一定でないシート用
 manifest = []
 
 for r in range(rows):
     for c in range(cols):
         idx = r * cols + c
-        cell = a[r * ch:(r + 1) * ch, c * cw:(c + 1) * cw]
+        y0e, y1e = ROW_EDGES[r], ROW_EDGES[r + 1]
+        ch = y1e - y0e
+        cell = a[y0e:y1e, c * cw:(c + 1) * cw]
         d = np.sqrt(((cell - bg) ** 2).sum(axis=2))
         lum = cell.mean(axis=2)
         chroma = cell.max(axis=2) - cell.min(axis=2)
@@ -77,7 +80,6 @@ for r in range(rows):
             sizes = ndi.sum(fg, labf, range(1, nf + 1))
             keep = [i + 1 for i, s in enumerate(sizes) if s >= 40]
             fg = np.isin(labf, keep)
-
         # 3) 縁のミント色のにじみを減らす: 1px 内側に縮めてから、少しぼかして滑らかに
         fg_er = ndi.binary_erosion(fg, iterations=1)
         alpha_fg = ndi.gaussian_filter(fg_er.astype(np.float32), 0.7)
