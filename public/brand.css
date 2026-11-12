@@ -1,27 +1,27 @@
-/* WELING ブランド(ブランドデザインコンセプト v1.0)。全ページの最後に読み込み、色・角丸・ロゴ表記を上書きする。
-   カラー: Sage #5B7C63(メイン) / Mint #A8C4A8(サブ) / Mist #E6EFE7(背景) / Sun #F6D38A(アクセント) / Ivory #FAF8F3(ベース)
+/* Weling ブランド。全ページの最後に読み込み、色・角丸を上書きする。
+   カラー(ロゴの色から): Blue #1B7FD6(メイン) / Sky #A9DDF0(サブ) / Mist #E8F4FA(背景) / Navy #2D4A67(文字・フッター) / Green #8EE060(アクセント) / Base #F7FBFD
    ルール: 自然と調和するやさしい色調・余白・角丸でやわらかいUI。気圧の4段階の色(青・黄・橙・赤)は「データの意味」を表すので変えない。 */
 :root {
-  --wl-sage: #5B7C63; --wl-sage-deep: #3F5C48; --wl-mint: #A8C4A8; --wl-mist: #E6EFE7; --wl-sun: #F6D38A; --wl-ivory: #FAF8F3;
+  --wl-sage: #1B7FD6; --wl-sage-deep: #0F5FA8; --wl-mint: #A9DDF0; --wl-mist: #E8F4FA; --wl-sun: #8EE060; --wl-ivory: #F7FBFD;
   /* デザインシステムのトークン(ds.css)を上書き */
-  --surface-100: #FAF8F3; --surface-200: #E6EFE7; --surface-300: #D5E3D8;
-  --ink: #25342B; --ink-muted: #5E7064; --brand-black: #5B7C63; --on-brand: #ffffff;
-  --border: #D3E0D5; --border-strong: #7F9B86; --focus: #3F7A52;
+  --surface-100: #F7FBFD; --surface-200: #E8F4FA; --surface-300: #D4E8F2;
+  --ink: #1F3347; --ink-muted: #566B7E; --brand-black: #1B7FD6; --on-brand: #ffffff;
+  --border: #D2E3EE; --border-strong: #7E9AB0; --focus: #1B7FD6;
   --radius-none: 16px; --radius-sm: 10px;
   /* トップページ(site.css)の変数 */
-  --bg: #FAF8F3; --card: #ffffff; --fg: #25342B; --muted: #5E7064; --line: #D3E0D5;
-  --blush: #E6EFE7; --teal: #5B7C63; --teal-2: #7C9A83; --accent: #5B7C63; --accent-fg: #ffffff;
-  --face-stroke: #3F6B4C;
+  --bg: #F7FBFD; --card: #ffffff; --fg: #1F3347; --muted: #566B7E; --line: #D2E3EE;
+  --blush: #E8F4FA; --teal: #1B7FD6; --teal-2: #4C9BE0; --accent: #1B7FD6; --accent-fg: #ffffff;
+  --face-stroke: #1F5E9C;
   --wl-font: "Jost", "Noto Sans JP", "Hiragino Sans", sans-serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface-100: #151b17; --surface-200: #1e2822; --surface-300: #28342d;
-    --ink: #eef4ec; --ink-muted: #a9bbad; --brand-black: #A8C4A8; --on-brand: #14201a;
-    --border: #2f3d34; --border-strong: #7f9b86; --focus: #A8C4A8;
-    --bg: #151b17; --card: #1e2822; --fg: #eef4ec; --muted: #a9bbad; --line: #2f3d34;
-    --blush: #1e2822; --teal: #3F5C48; --teal-2: #52745c; --accent: #A8C4A8; --accent-fg: #14201a;
-    --face-stroke: #A8C4A8;
+    --surface-100: #101c28; --surface-200: #182838; --surface-300: #223548;
+    --ink: #eaf3fa; --ink-muted: #a9bfd0; --brand-black: #A9DDF0; --on-brand: #0e1a26;
+    --border: #2b4157; --border-strong: #7f9b86; --focus: #A9DDF0;
+    --bg: #101c28; --card: #182838; --fg: #eaf3fa; --muted: #a9bfd0; --line: #2b4157;
+    --blush: #182838; --teal: #2D4A67; --teal-2: #3a678f; --accent: #A9DDF0; --accent-fg: #0e1a26;
+    --face-stroke: #A9DDF0;
   }
 }
 /* ---- 角丸でやわらかいUI ---- */
@@ -50,14 +50,14 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .site-h .nav a[aria-current="page"] { border-bottom-color: var(--wl-sage); }
 .site-h .nav a:hover { color: var(--wl-sage-deep); }
 /* ---- フッター(深い緑でなく、やさしい Sage の地に) ---- */
-.site-f { background: var(--wl-sage); color: #eef4ec; }
+.site-f { background: var(--wl-sage); color: #eaf3fa; }
 .site-f .muted { color: #cfe0d2; }
-.lp-f { background: #3F5C48; color: #e3eee5; }
-.lp-f .muted { color: #b9cdbd; }
+.lp-f { background: #2D4A67; color: #e4f0f8; }
+.lp-f .muted { color: #b4cbdc; }
 /* ---- アクセント(Sun) ---- */
 .ds .page-head .en, .page-head .en { color: var(--wl-sage); }
 .fx-chip:not(.ok) { border-color: var(--wl-sage); color: var(--wl-sage-deep); }
-@media (prefers-color-scheme: dark) { .site-h .ln b { color: var(--wl-mint); } .site-f { background: #24342a; } .fx-chip:not(.ok) { border-color: var(--wl-mint); color: var(--wl-mint); } }
+@media (prefers-color-scheme: dark) { .site-h .ln b { color: var(--wl-mint); } .site-f { background: #16283a; } .fx-chip:not(.ok) { border-color: var(--wl-mint); color: var(--wl-mint); } }
 
 /* トップ(写真の上)のロゴは白系で */
 .side .brand-ln small, .side-logo small { color: rgba(255, 255, 255, .85); }

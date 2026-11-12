@@ -90,7 +90,7 @@ function layout({ title, rawTitle, description, keywords, page, path, jsonld = [
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#FAF8F3">
+<meta name="theme-color" content="#F7FBFD">
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 ${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : ''}
