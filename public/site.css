@@ -3,8 +3,8 @@
    データ（数値・グラフ・フォーム）はゴシック体のまま、見出しと読み物だけを明朝体にする。 */
 :root {
   --hero-img: url("/hero/bg/dusk.webp"); --hero-pos: 41% center; --ov: 20, 40, 62; --o1: .34; --o2: .1; --o3: .78; /* HERO背景(ランダム。pages.jsの先頭スクリプトが上書き) */
-  --bg: #fff9f6; --card: #ffffff; --fg: #1f2f36; --muted: #5f717a; --line: #eadfd9;
-  --blush: #f5ebe6; --teal: #243d47; --teal-2: #3a5865; --accent: #243d47; --accent-fg: #ffffff;
+  --bg: #FAF8F3; --card: #ffffff; --fg: #25342B; --muted: #5E7064; --line: #D3E0D5;
+  --blush: #E6EFE7; --teal: #5B7C63; --teal-2: #7C9A83; --accent: #5B7C63; --accent-fg: #ffffff;
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
   --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   --sans: -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
@@ -83,13 +83,13 @@ body.lp { background: var(--bg); }
 .sx.cream { background: var(--bg); }
 .sx.blush { background: var(--blush); }
 .sx.teal { background: var(--teal-2); color: #eef3f4; background-image: radial-gradient(120% 70% at 85% 0%, rgba(255, 255, 255, .09), transparent 60%); }
-.sx.teal .center-copy, .sx.teal .ja { color: #cfdde2; }
+.sx.teal .center-copy, .sx.teal .ja { color: #e3eee5; }
 .sx-h { text-align: center; margin-bottom: 20px; }
 .sx-h h2 { margin: 0; font-family: var(--serif); font-size: 25px; font-weight: 700; letter-spacing: .1em; line-height: 1.4; }
 .sx-h .ja { margin: 4px 0 0; font-family: var(--serif); font-size: 12px; letter-spacing: .3em; color: var(--muted); padding-left: .3em; }
 .sx-btn { margin: 18px 0 0; }
 .center-copy { text-align: center; font-family: var(--serif); font-weight: 500; font-size: 15px; line-height: 2.1; letter-spacing: .08em; margin: 0 0 22px; }
-.btn.cream { background: #fff9f6; border-color: #fff9f6; color: #1f2f36; }
+.btn.cream { background: #FAF8F3; border-color: #FAF8F3; color: #25342B; }
 .note-s { margin: 14px 0 0; font-size: 12px; color: var(--muted); }
 
 /* Today（News風の一覧） */
@@ -133,11 +133,11 @@ body.lp { background: var(--bg); }
 .info dd { margin: 0; }
 
 .sx.start .sx-btn { margin-top: 12px; }
-.lp-f { background: #1b2e36; color: #cfdde2; padding: 30px 20px calc(28px + env(safe-area-inset-bottom)); font-size: 13px; }
+.lp-f { background: #3F5C48; color: #e3eee5; padding: 30px 20px calc(28px + env(safe-area-inset-bottom)); font-size: 13px; }
 .lp-f p { margin: 8px 0; } .lp-f a { color: #fff; }
 .lp-f .f-logo { font-family: var(--serif); font-size: 20px; letter-spacing: .12em; color: #fff; }
 .lp-f .f-logo sup { font-size: .5em; line-height: 0; position: relative; top: -.42em; margin-left: -.12em; letter-spacing: 0; }
-.lp-f .muted { color: #9db3bc; }
+.lp-f .muted { color: #b9cdbd; }
 .lp-f-nav { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 10px 0 14px; font-family: var(--serif); letter-spacing: .08em; }
 
 /* ---- PC幅: 左に固定の紹介、右にスマホ幅の本編（枠の中でスクロール） ----
@@ -170,7 +170,7 @@ body.lp { background: var(--bg); }
   .side-index a[aria-current="true"]::before { width: 14px; height: 2px; }
 
   /* 枠: 画面の下端からはみ出す(下の角は見せない)。スクロールバーを細く見せる */
-  .phone { --ph: calc(100vh - 28px + 70px); height: var(--ph); overflow-y: auto; overflow-x: hidden; border: 10px solid #fff9f6; border-bottom: 0; border-radius: 38px 38px 0 0; box-shadow: 0 24px 70px rgba(10, 25, 40, .45); scrollbar-width: thin; scrollbar-color: rgba(31, 47, 54, .4) transparent; overscroll-behavior: contain; scroll-behavior: smooth; }
+  .phone { --ph: calc(100vh - 28px + 70px); height: var(--ph); overflow-y: auto; overflow-x: hidden; border: 10px solid #FAF8F3; border-bottom: 0; border-radius: 38px 38px 0 0; box-shadow: 0 24px 70px rgba(10, 25, 40, .45); scrollbar-width: thin; scrollbar-color: rgba(31, 47, 54, .4) transparent; overscroll-behavior: contain; scroll-behavior: smooth; }
   .phone::-webkit-scrollbar { width: 5px; }
   .phone::-webkit-scrollbar-track { background: transparent; }
   .phone::-webkit-scrollbar-thumb { background: rgba(31, 47, 54, .4); border-radius: 3px; }
@@ -204,7 +204,7 @@ body.lp { background: var(--bg); }
 .today .t-link { display: inline-block; margin-top: 4px; font-size: 14px; }
 .badge { display: inline-block; font-size: 11px; color: #fff; background: var(--caution); padding: 1px 8px; border-radius: 99px; vertical-align: middle; }
 .pill { display: inline-block; padding: 1px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; color: #fff; background: var(--muted); white-space: nowrap; }
-.pill.lv-rise { background: var(--rise); } .pill.lv-slight { background: var(--slight); color: #1f2f36; }
+.pill.lv-rise { background: var(--rise); } .pill.lv-slight { background: var(--slight); color: #25342B; }
 .pill.lv-caution { background: var(--caution); } .pill.lv-warning { background: var(--warning); }
 .pill.lv-none { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
 
@@ -267,11 +267,11 @@ body.lp { background: var(--bg); }
 .steps li .muted { color: #b9cdd5; }
 
 /* フッター */
-.site-f { margin-top: 36px; background: var(--teal); color: #cfdde2; padding: 28px 0 calc(24px + env(safe-area-inset-bottom)); font-size: 13px; }
+.site-f { margin-top: 36px; background: var(--teal); color: #e3eee5; padding: 28px 0 calc(24px + env(safe-area-inset-bottom)); font-size: 13px; }
 .site-f a { color: #fff; }
 .site-f p { margin: 6px 0; }
 .site-f .f-logo { font-family: var(--serif); font-size: 19px; letter-spacing: .12em; color: #fff; margin-bottom: 8px; }
-.site-f .muted { color: #9db3bc; }
+.site-f .muted { color: #b9cdbd; }
 @media (min-width: 640px) { .page-head h1 { font-size: 32px; } }
 .sec { margin: 34px 0; }
 

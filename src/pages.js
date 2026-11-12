@@ -10,7 +10,7 @@ import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const SITE = SITE_NAME;
-const SITE_TITLE = 'Soradayori'; // <title>・og:site_name・構造化データのサイト名(表示上のロゴ・本文は「そらだより」)
+const SITE_TITLE = 'WELING'; // <title>・og:site_name・構造化データのサイト名(表示上のロゴ・本文は「WELING」)
 const TAGLINE = '気圧と体調のノート';
 // トップのHERO背景をランダムに選ぶ（描画前に実行）。直前に見たものとは別の写真にする。?hero=0|1|2 で固定表示も可能。
 // 写真ごとに、文字が読めるよう暗いオーバーレイの色・濃さ(a=[上,中,下])と、画面に見せたい位置(p)を設定している。
@@ -67,7 +67,7 @@ const STREET_SCRIPT = `<script>
 })();
 </script>`;
 
-const LOGO = '<span class="ln"><b>そらだより</b><small>気圧と体調のノート</small></span>';
+const LOGO = '<span class="ln"><b>WELING</b><small>Feel Better, Every Day.</small></span>';
 
 const NAV = [
   ['/', 'トップ', 'top'],
@@ -76,7 +76,7 @@ const NAV = [
 ];
 
 // フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
-const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&display=swap">';
+const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap">';
 const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
 const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
@@ -90,7 +90,7 @@ function layout({ title, rawTitle, description, keywords, page, path, jsonld = [
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#fff9f6">
+<meta name="theme-color" content="#FAF8F3">
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 ${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : ''}
@@ -107,16 +107,18 @@ ${page === 'none' ? '<meta name="robots" content="noindex">\n' : ''}${jsonLd(jso
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${chrome ? DS_FONTS : TOP_FONTS}
-<link rel="icon" href="/icon.svg">
-<link rel="apple-touch-icon" href="/icon.svg">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
 ${chrome ? '<link rel="stylesheet" href="/ds.css">\n<link rel="stylesheet" href="/header.css">\n' : ''}<link rel="stylesheet" href="/site.css">
 ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
+<link rel="stylesheet" href="/brand.css">
 </head>
 <body data-page="${page}" class="${[chrome ? 'ds' : '', bodyClass].filter(Boolean).join(' ')}">
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
-    <a class="logo" href="/" aria-label="そらだより トップへ"><img src="/icon.svg" alt="" width="36" height="36">${LOGO}</a>
+    <a class="logo" href="/" aria-label="WELING トップへ"><img src="/icon-dark.svg" alt="" width="36" height="36">${LOGO}</a>
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
@@ -130,7 +132,7 @@ ${body}
 ${chrome ? `<footer class="site-f">
   <div class="street" data-street aria-hidden="true"></div>
   <div class="wrap">
-    <p class="f-logo">そらだより</p>
+    <p class="f-logo">WELING</p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
     <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
@@ -174,7 +176,7 @@ export function topPage() {
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
-      <a class="side-logo" href="/" aria-label="そらだより トップへ"><img src="/icon.svg" alt="" width="84" height="84"><span class="brand-ln"><b>そらだより</b><small>気圧と体調のノート</small></span></a>
+      <a class="side-logo" href="/" aria-label="WELING トップへ"><img src="/icon-dark.svg" alt="" width="84" height="84"><span class="brand-ln"><b>WELING</b><small>Feel Better, Every Day.</small></span></a>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">
@@ -197,12 +199,12 @@ export function topPage() {
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
       <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">気圧・記録へ</a></nav>
-      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（そらだより：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
+      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（WELING：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
-        <img src="/icon.svg" alt="" width="56" height="56">
-        <span class="m-word">そらだより</span>
-        <span class="m-read">soradayori</span>
-        <span class="m-tag">気圧と体調のノート</span>
+        <img src="/icon-dark.svg" alt="" width="56" height="56">
+        <span class="m-word">WELING</span>
+        <span class="m-read">Feel Better, Every Day.</span>
+        <span class="m-tag">今日を知って、心地よく暮らす。</span>
       </div>
       <a class="m-scroll" href="#today" aria-label="下へスクロール">SCROLL</a>
     </section>
@@ -238,7 +240,7 @@ export function topPage() {
     <section class="sx teal" id="features" aria-labelledby="t-three">
       <div class="sx-in">
         ${secHead2('Three Features', '三つの機能', 't-three')}
-        <p class="center-copy">そらだよりは、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
+        <p class="center-copy">WELINGは、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
         <a class="feat" href="/weather" style="--img: url('/hero/bg/mist.webp'); --pos: 30% 50%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
         <a class="feat" href="/app/" style="--img: url('/hero/bg/dusk.webp'); --pos: 41% 40%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
         <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">天気痛・気象病・気圧頭痛の対策</span></a>
@@ -282,7 +284,7 @@ export function topPage() {
         ${person('suitcase', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Information', 'サービス情報', 't-info')}
         <dl class="info">
-          <div><dt>サービス名</dt><dd>そらだより</dd></div>
+          <div><dt>サービス名</dt><dd>WELING</dd></div>
           <div><dt>できること</dt><dd>気圧の予報、週間天気、体調の記録、傾向の分析、前夜の通知</dd></div>
           <div><dt>データ</dt><dd>天気：気象庁、気圧予報：OpenWeatherMap</dd></div>
           <div><dt>対応地域</dt><dd>全国47都道府県</dd></div>
@@ -305,11 +307,11 @@ export function topPage() {
     </section>
 
     <footer class="lp-f">
-      <p class="f-logo">そらだより</p>
+      <p class="f-logo">WELING</p>
       <nav class="lp-f-nav">${footNav}</nav>
       <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
       <p><a href="/terms.html">利用規約・プライバシー</a></p>
-      <p class="muted">天気: 気象庁 / OpenWeatherMap　© そらだより</p>
+      <p class="muted">天気: 気象庁 / OpenWeatherMap　© WELING</p>
     </footer>
   </div>
 </div>`;
@@ -678,7 +680,7 @@ const ABOUT_FAQ = [
 
 export function aboutPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>そらだよりとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>WELINGとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap about">
 <section><h2 class="en-h">WHAT YOU CAN DO<small>できること</small></h2>
 <div class="ab-verbs">${ABOUT_VERBS.map(([v, en, t, d, ic], i) => `<article class="ab-verb"><span class="ic">${ic}</span><p class="en">${en}</p><h3>${i + 1}. ${esc(v)}</h3><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join('')}</div></section>
@@ -695,8 +697,8 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 <p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    rawTitle: `${SITE_TITLE}（そらだより）とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
-    description: 'そらだよりは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
+    rawTitle: `${SITE_TITLE}とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
+    description: 'WELINGは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
     keywords: COLUMN_KEYWORDS,
     page: 'about',
     path: '/about',

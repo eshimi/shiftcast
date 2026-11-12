@@ -1,12 +1,37 @@
 {
-  "name": "そらだより",
-  "short_name": "そらだより",
-  "description": "気圧の変化と体調を記録して、気象病を予防",
+  "name": "WELING",
+  "short_name": "WELING",
+  "description": "気象と暮らしをつなぐウェルビーイング。気圧・気温・降水・湿度から、今日の体調への影響を知る。",
   "start_url": "/app/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#fff9f6",
-  "theme_color": "#243d47",
+  "background_color": "#FAF8F3",
+  "theme_color": "#5B7C63",
   "lang": "ja",
-  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

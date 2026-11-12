@@ -1,0 +1,64 @@
+/* WELING ブランド(ブランドデザインコンセプト v1.0)。全ページの最後に読み込み、色・角丸・ロゴ表記を上書きする。
+   カラー: Sage #5B7C63(メイン) / Mint #A8C4A8(サブ) / Mist #E6EFE7(背景) / Sun #F6D38A(アクセント) / Ivory #FAF8F3(ベース)
+   ルール: 自然と調和するやさしい色調・余白・角丸でやわらかいUI。気圧の4段階の色(青・黄・橙・赤)は「データの意味」を表すので変えない。 */
+:root {
+  --wl-sage: #5B7C63; --wl-sage-deep: #3F5C48; --wl-mint: #A8C4A8; --wl-mist: #E6EFE7; --wl-sun: #F6D38A; --wl-ivory: #FAF8F3;
+  /* デザインシステムのトークン(ds.css)を上書き */
+  --surface-100: #FAF8F3; --surface-200: #E6EFE7; --surface-300: #D5E3D8;
+  --ink: #25342B; --ink-muted: #5E7064; --brand-black: #5B7C63; --on-brand: #ffffff;
+  --border: #D3E0D5; --border-strong: #7F9B86; --focus: #3F7A52;
+  --radius-none: 16px; --radius-sm: 10px;
+  /* トップページ(site.css)の変数 */
+  --bg: #FAF8F3; --card: #ffffff; --fg: #25342B; --muted: #5E7064; --line: #D3E0D5;
+  --blush: #E6EFE7; --teal: #5B7C63; --teal-2: #7C9A83; --accent: #5B7C63; --accent-fg: #ffffff;
+  --face-stroke: #3F6B4C;
+  --wl-font: "Jost", "Noto Sans JP", "Hiragino Sans", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-100: #151b17; --surface-200: #1e2822; --surface-300: #28342d;
+    --ink: #eef4ec; --ink-muted: #a9bbad; --brand-black: #A8C4A8; --on-brand: #14201a;
+    --border: #2f3d34; --border-strong: #7f9b86; --focus: #A8C4A8;
+    --bg: #151b17; --card: #1e2822; --fg: #eef4ec; --muted: #a9bbad; --line: #2f3d34;
+    --blush: #1e2822; --teal: #3F5C48; --teal-2: #52745c; --accent: #A8C4A8; --accent-fg: #14201a;
+    --face-stroke: #A8C4A8;
+  }
+}
+/* ---- 角丸でやわらかいUI ---- */
+.btn, .ds .btn, .site-h .h-app, .m-nav .m-app { border-radius: 999px; }
+.btn.primary, .btn.dark, .ds .btn.primary { background: var(--wl-sage); border-color: var(--wl-sage); color: #fff; }
+.btn.primary:hover, .btn.dark:hover { background: var(--wl-sage-deep); border-color: var(--wl-sage-deep); }
+input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12px; }
+.card, .ds .card, .fx, .fx-sum, .mood, .stairs, .ab-card, .ab-verb, .related li, .callout, .col-card, .pager a { border-radius: 16px; }
+.mood { overflow: hidden; }
+.seg { border-radius: 999px; overflow: hidden; }
+.chip { border-radius: 999px; }
+.site-h .logo img { border-radius: 22%; }
+.tabs { border-radius: 18px 18px 0 0; }
+.ab-phone { border-radius: 30px; }
+/* ---- 見出し・ロゴ: WELING ---- */
+.site-h .ln b, .brand-ln b, .m-word, .f-logo, .lp-f .f-logo, .site-f .f-logo {
+  font-family: var(--wl-font); font-weight: 500; letter-spacing: .2em; text-transform: none;
+}
+.site-h .ln b { font-size: 22px; color: var(--wl-sage); letter-spacing: .22em; }
+.site-h .ln small, .brand-ln small { font-family: var(--wl-font); font-size: 9.5px; font-weight: 400; letter-spacing: .16em; color: var(--ink-muted); }
+.brand-ln b { font-size: 36px; } .brand-ln small { font-size: 11px; letter-spacing: .2em; }
+.m-word { font-size: 40px; font-weight: 500; letter-spacing: .26em; padding-left: .26em; }
+.m-read { font-family: var(--wl-font); font-size: 12px; letter-spacing: .24em; }
+.m-tag { font-size: 14px; letter-spacing: .2em; }
+.site-f .f-logo, .lp-f .f-logo { font-size: 20px; letter-spacing: .24em; }
+.site-h .nav a[aria-current="page"] { border-bottom-color: var(--wl-sage); }
+.site-h .nav a:hover { color: var(--wl-sage-deep); }
+/* ---- フッター(深い緑でなく、やさしい Sage の地に) ---- */
+.site-f { background: var(--wl-sage); color: #eef4ec; }
+.site-f .muted { color: #cfe0d2; }
+.lp-f { background: #3F5C48; color: #e3eee5; }
+.lp-f .muted { color: #b9cdbd; }
+/* ---- アクセント(Sun) ---- */
+.ds .page-head .en, .page-head .en { color: var(--wl-sage); }
+.fx-chip:not(.ok) { border-color: var(--wl-sage); color: var(--wl-sage-deep); }
+@media (prefers-color-scheme: dark) { .site-h .ln b { color: var(--wl-mint); } .site-f { background: #24342a; } .fx-chip:not(.ok) { border-color: var(--wl-mint); color: var(--wl-mint); } }
+
+/* トップ(写真の上)のロゴは白系で */
+.side .brand-ln small, .side-logo small { color: rgba(255, 255, 255, .85); }
+.side .brand-ln b { color: #fff; }

@@ -1,6 +1,6 @@
 // アプリシェルのキャッシュ + FCM(Web Push)の受信
-const CACHE = 'kiatsu-shell-v55';
-const SHELL = ['/app/', '/style.css', '/ds.css', '/header.css', '/app.js', '/wx.js', '/faces.js', '/manifest.json', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/icon.svg', '/vendor/chart.js'];
+const CACHE = 'kiatsu-shell-v57';
+const SHELL = ['/app/', '/style.css', '/ds.css', '/header.css', '/brand.css', '/app.js', '/wx.js', '/faces.js', '/manifest.json', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/icon.svg', '/vendor/chart.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -34,8 +34,8 @@ self.addEventListener('push', (e) => {
   e.waitUntil(
     self.registration.showNotification(data.title || '気圧アラート', {
       body: data.body || '',
-      icon: '/icon.svg',
-      badge: '/icon.svg',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
       data: { url: '/' },
     }),
   );
