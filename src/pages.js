@@ -451,7 +451,7 @@ export function pressurePage(pref, w) {
 
 export function pressureIndexPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('hiker', { k: 0.5 })}${person('couple', { k: 0.5 })}${person('runner', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('trekking', { k: 0.5 })}${person('yukata', { k: 0.5 })}${person('stroller', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</h2><ul class="chips-l">${codes.map((c) => PREFS.find((p) => p.code === c)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}</ul></section>`).join('\n')}
 <p class="row"><a class="btn" href="/today">全国の今日の気圧まとめを見る</a></p>
@@ -509,7 +509,7 @@ export function todayPage(sum) {
   }
   const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstMD(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('runner', { k: 0.5 })}${person('hat-bag', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('jogger', { k: 0.5 })}${person('coffee-woman', { k: 0.5 })}</div></div>
 <div class="wrap">
 <section class="sec"><h2 class="pg-h">全国のようす</h2>
 ${lines.map((l) => `<p>${esc(l)}</p>`).join('\n')}
@@ -561,7 +561,7 @@ const CHECK_Q = [
 
 export function checkPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">SELF CHECK</p><h1>気象病セルフチェック（10問）</h1><p>当てはまるものを選ぶと、天気痛・気象病の「出やすさの傾向」の目安が分かります。診断ではありません。</p></div><div class="pg-ppl" aria-hidden="true">${person('couple', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">SELF CHECK</p><h1>気象病セルフチェック（10問）</h1><p>当てはまるものを選ぶと、天気痛・気象病の「出やすさの傾向」の目安が分かります。診断ではありません。</p></div><div class="pg-ppl" aria-hidden="true">${person('senior-couple', { k: 0.5 })}${person('schoolgirl', { k: 0.5 })}${person('businessman', { k: 0.5 })}</div></div>
 <div class="wrap">
 <form id="chk" class="chk" novalidate>
 <ol class="chk-q">${CHECK_Q.map((q, i) => `<li><fieldset><legend>${esc(q)}</legend><label><input type="radio" name="q${i}" value="1"> 当てはまる</label><label><input type="radio" name="q${i}" value="0"> 当てはまらない</label></fieldset></li>`).join('')}</ol>
@@ -595,7 +595,7 @@ export function checkPage() {
 
 export function glossaryPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('camera', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('photo-man', { k: 0.5 })}${person('shopping', { k: 0.5 })}${person('senior-man', { k: 0.5 })}</div></div>
 <div class="wrap">
 <ul class="chips-l gl-index" aria-label="用語の一覧">${GLOSSARY.map(([t], i) => `<li><a href="#g${i + 1}">${esc(t.replace(/（.*$/, ''))}</a></li>`).join('')}</ul>
 <dl class="gl">
@@ -702,7 +702,7 @@ function renderBlock(b) {
   return '';
 }
 
-const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'hiker', 'how-long': 'reading', 'which-department': 'family', 'otc-medicine': 'hat-bag', 'typhoon-headache': 'umbrella', 'sleepy-dizzy': 'yoga', 'old-injury': 'runner', 'pressure-pattern': 'autumn', 'ear-stretch': 'yoga', 'neck-shoulder-stretch': 'yoga' };
+const ARTICLE_FIG = { 'what-is-kishobyo': 'couple', 'day-before': 'hat-bag', 'when-it-hurts': 'reading', 'daily-habits': 'runner', 'how-to-use-app': 'camera', 'when-to-see-doctor': 'family', 'kiatsu-zutsu': 'umbrella', 'tenkitsu-season': 'autumn', 'headache-diary': 'phone-walk', 'how-long': 'reading', 'which-department': 'senior-couple', 'otc-medicine': 'coffee-woman', 'typhoon-headache': 'umbrella', 'sleepy-dizzy': 'phone-man', 'old-injury': 'senior-man', 'pressure-pattern': 'winter-trip', 'ear-stretch': 'yoga', 'neck-shoulder-stretch': 'businessman' };
 
 export function columnPage(slug) {
   const c = findColumn(slug);

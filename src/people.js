@@ -1,4 +1,4 @@
-// 人物イラスト24点（public/img/people/）。scripts/extract-people.py で元画像から切り出したもの。w/h は画像の実寸(px)。
+// 人物イラスト48点(1〜24: 1枚目のシート、25〜48: 2枚目のシート)（public/img/people/）。scripts/extract-people.py で元画像から切り出したもの。w/h は画像の実寸(px)。
 // 使い方は pages.js の person()。表示は明るい背景の上に mix-blend-mode: multiply で重ねる（site.css の .ppl）。
 export const PEOPLE = [
   { name: 'hat-bag', file: '01-hat-bag.webp', w: 163, h: 159 },
@@ -25,5 +25,30 @@ export const PEOPLE = [
   { name: 'scooter', file: '22-scooter.webp', w: 169, h: 141 },
   { name: 'bike-walk', file: '23-bike-walk.webp', w: 173, h: 150 },
   { name: 'autumn', file: '24-autumn.webp', w: 192, h: 166 },
+  // ---- 追加の24点(2枚目のシート: 25〜48) ----
+  { name: 'businessman', file: '25-businessman.webp', w: 168, h: 187 },
+  { name: 'phone-walk', file: '26-phone-walk.webp', w: 163, h: 182 },
+  { name: 'senior-man', file: '27-senior-man.webp', w: 159, h: 182 },
+  { name: 'schoolgirl', file: '28-schoolgirl.webp', w: 155, h: 173 },
+  { name: 'delivery-bike', file: '29-delivery-bike.webp', w: 223, h: 180 },
+  { name: 'coffee-woman', file: '30-coffee-woman.webp', w: 173, h: 183 },
+  { name: 'stroller', file: '31-stroller.webp', w: 203, h: 187 },
+  { name: 'photo-man', file: '32-photo-man.webp', w: 160, h: 183 },
+  { name: 'trekking', file: '33-trekking.webp', w: 177, h: 184 },
+  { name: 'shopping', file: '34-shopping.webp', w: 246, h: 179 },
+  { name: 'dog-walk', file: '35-dog-walk.webp', w: 246, h: 181 },
+  { name: 'phone-man', file: '36-phone-man.webp', w: 158, h: 186 },
+  { name: 'guitar', file: '37-guitar.webp', w: 197, h: 155 },
+  { name: 'food-truck', file: '38-food-truck.webp', w: 239, h: 177 },
+  { name: 'yukata', file: '39-yukata.webp', w: 165, h: 176 },
+  { name: 'camera-woman', file: '40-camera-woman.webp', w: 147, h: 179 },
+  { name: 'senior-couple', file: '41-senior-couple.webp', w: 181, h: 173 },
+  { name: 'skateboard', file: '42-skateboard.webp', w: 181, h: 168 },
+  { name: 'surfer', file: '43-surfer.webp', w: 208, h: 186 },
+  { name: 'snowboard', file: '44-snowboard.webp', w: 174, h: 190 },
+  { name: 'winter-trip', file: '45-winter-trip.webp', w: 169, h: 185 },
+  { name: 'jogger', file: '46-jogger.webp', w: 170, h: 185 },
+  { name: 'wheelchair', file: '47-wheelchair.webp', w: 203, h: 178 },
+  { name: 'snowman', file: '48-snowman.webp', w: 210, h: 150 },
 ];
 export const PERSON = Object.fromEntries(PEOPLE.map((p) => [p.name, p]));

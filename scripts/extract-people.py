@@ -1,5 +1,6 @@
 # 元画像の背景を透明にして、人物を1人ずつ切り出す（public/img/people/ に出力する元のスクリプト）。
 # 必要: numpy, scipy, Pillow。使い方: GROUND_BAND=24 python3 -I scripts/extract-people.py <元画像> <出力先>
+#   2枚目のシート: NAMES_JSON='[...24個の名前...]' START=24 GROUND_BAND=24 python3 -I scripts/extract-people.py <元画像> <出力先>
 """人物イラスト(6列x4行)を1人ずつ切り出し、背景を透明にして webp で保存する（改良版）。
  - 背景: セルの外周から「背景色に近い」ピクセルをたどって塗りつぶし(flood fill)、そこだけを透明にする
    → 白い服・白い日傘のように背景と近い色でも、内側は残る
@@ -28,6 +29,10 @@ NAMES = [
     "family", "fishing", "reading", "tent", "hiker", "yoga",
     "skate", "camera", "sunflower", "scooter", "bike-walk", "autumn",
 ]
+# 2枚目以降のシート: NAMES_JSON='["name1",...]' START=24 を指定すると、番号を START+1 から振る(既存の人物は上書きしない)
+if os.environ.get('NAMES_JSON'):
+    NAMES = json.loads(os.environ['NAMES_JSON'])
+START = int(os.environ.get('START', '0'))
 GROUND_BAND = int(os.environ.get('GROUND_BAND', '24'))
 cols, rows = 6, 4
 cw, ch = W // cols, H // rows
@@ -100,9 +105,9 @@ for r in range(rows):
         x0, x1 = max(0, xs.min() - pad), min(cw, xs.max() + 1 + pad)
         rgba = np.dstack([rgb, alpha * 255])[y0:y1, x0:x1].astype(np.uint8)
         img = Image.fromarray(rgba, "RGBA")
-        name = f"{idx + 1:02d}-{NAMES[idx]}"
+        name = f"{START + idx + 1:02d}-{NAMES[idx]}"
         img.save(os.path.join(out, name + ".webp"), "WEBP", quality=90, alpha_quality=92, method=6)
         img.save(os.path.join(out, name + ".png"))
-        manifest.append({"id": idx + 1, "name": NAMES[idx], "file": name + ".webp", "w": img.width, "h": img.height})
+        manifest.append({"id": START + idx + 1, "name": NAMES[idx], "file": name + ".webp", "w": img.width, "h": img.height})
 json.dump(manifest, open(os.path.join(out, "manifest.json"), "w"), ensure_ascii=False, indent=1)
 print(len(manifest), "figures")
