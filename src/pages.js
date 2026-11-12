@@ -164,6 +164,9 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 
 /* ---------- トップ ---------- */
 
+// トップに出すコラム(JSが使えないときの既定の3本。ふだんは18本からランダムに入れ替わる)
+const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
+
 export function topPage() {
   const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
   const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
@@ -258,7 +261,18 @@ export function topPage() {
       <div class="sx-in">
         ${person('hiker', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Column', '天気痛・気象病のコラム', 't-col')}
-        <ul class="menu">${COLUMNS.map((c, i) => `<li><a href="/columns/${esc(c.slug)}"><span class="no">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(c.title)}</span><span class="m">${c.readMin}分</span></a></li>`).join('')}</ul>
+        <ul class="menu" id="colMenu">${TOP_COLUMNS.map((c, i) => `<li><a href="/columns/${esc(c.slug)}"><span class="no">${String(i + 1).padStart(2, '0')}</span><span class="t">${esc(c.title)}</span><span class="m">${c.readMin}分</span></a></li>`).join('')}</ul>
+        <script>(function () { // 18本の中から毎回ランダムに3本を表示する(JSが使えないときは、上の3本のまま)
+          var L = ${JSON.stringify(COLUMNS.map((c) => [c.slug, c.title, c.readMin])).replace(/</g, '\\u003c')}, ul = document.getElementById('colMenu');
+          if (!ul) return;
+          for (var i = L.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = L[i]; L[i] = L[j]; L[j] = t; }
+          ul.textContent = '';
+          L.slice(0, 3).forEach(function (c, n) {
+            var li = document.createElement('li'), a = document.createElement('a'); a.href = '/columns/' + c[0];
+            [['no', ('0' + (n + 1)).slice(-2)], ['t', c[1]], ['m', c[2] + '分']].forEach(function (x) { var sp = document.createElement('span'); sp.className = x[0]; sp.textContent = x[1]; a.appendChild(sp); });
+            li.appendChild(a); ul.appendChild(li);
+          });
+        })();</script>
         <p class="sx-btn"><a class="btn dark block" href="/columns">Column All</a></p>
       </div>
     </section>
