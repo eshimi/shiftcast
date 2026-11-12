@@ -1,4 +1,4 @@
-// 「体調そらもよう」: 気圧・気温差・降水・湿度の4つを、5段階の体調レベル(5=とても元気 〜 1=体調が悪い)と点数(0〜100、高いほど元気)にまとめる。
+// 「体調そらもよう」: 気圧・気温差・降水・湿度の4つを、5段階の体調レベル(5=気候が快調 〜 1=体調不良に注意)と点数(0〜100、高いほど快調)にまとめる。
 // 表示専用の暫定のロジックで、医学的に検証された基準ではない。通知には使わない。
 // 重み: 気圧は体調との関係の報告が最も多いと考え、他の要因より大きくしている。
 import { factorSummary } from './extras.js';
@@ -12,15 +12,15 @@ export const MOOD_POINTS = {
   overlapFrom: 3,
 };
 export const MOOD_MAX = 6 + 2 + 2 + 2 + 1; // 13
-// 合計点(気になる要因の多さ) → 体調レベル。5が「とても元気」、1が「体調が悪い」(数字が大きいほど元気)。
+// 合計点(気になる要因の多さ) → 体調レベル。5が「気候が快調」、1が「体調不良に注意」(数字が大きいほど快調)。
 export const MOOD_LEVELS = [
-  { level: 5, key: 'great', label: 'とても元気', max: 1, desc: '活動に最適なコンディションの見込みです。', short: '活動に最適なコンディション' },
-  { level: 4, key: 'good', label: '元気', max: 3, desc: 'ふだん通りに過ごせそうです。', short: 'ふだん通りに過ごせる' },
-  { level: 3, key: 'tired', label: 'やや疲れ気味', max: 5, desc: '少し休憩して、リフレッシュを。', short: '少し休憩してリフレッシュを' },
-  { level: 2, key: 'care', label: '体調に注意', max: 8, desc: '無理せず、しっかり休みましょう。', short: '無理せずしっかり休もう' },
-  { level: 1, key: 'bad', label: '体調が悪い', max: Infinity, desc: '早めに静養を。いつもの薬の確認も。', short: '早めに静養を' },
+  { level: 5, key: 'great', label: '気候が快調', max: 1, desc: '体調への影響は、ほぼなさそうです。活動にも向いた日です。', short: '活動にも向いた日' },
+  { level: 4, key: 'good', label: 'おおむね良好', max: 3, desc: '体調への影響は、小さそうです。ふだん通りに過ごせます。', short: 'ふだん通りに過ごせる' },
+  { level: 3, key: 'tired', label: 'やや不安定', max: 5, desc: '気候の変化で、少し疲れやすいかもしれません。休憩をはさんで過ごしましょう。', short: '休憩をはさんで過ごそう' },
+  { level: 2, key: 'care', label: '体調に影響しそう', max: 8, desc: '体調を崩しやすい要因があります。無理せず、しっかり休みましょう。', short: '無理せずしっかり休もう' },
+  { level: 1, key: 'bad', label: '体調不良に注意', max: Infinity, desc: '体調不良を引き起こしそうなので注意。早めに静養し、いつもの薬を確認しましょう。', short: '早めに静養を' },
 ];
-export const moodScore = (points) => 100 - Math.round((points / MOOD_MAX) * 100); // 高いほど元気
+export const moodScore = (points) => 100 - Math.round((points / MOOD_MAX) * 100); // 高いほど快調
 
 export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24 }) {
   const f = factorSummary({ pressureLevel, temp, rain, hum });

@@ -12,7 +12,7 @@ const ICONS = {
   hum: '<path d="M32 7c9 12 14 19 14 28a14 14 0 01-28 0c0-9 5-16 14-28z"/><path d="M24 38q4 4 8 0t8 0"/>',
 };
 // 体調そらもよう: 犬のキャラクターと5段の階段(public/img/mood/dog-{レベル}.webp)。
-// レベルは 5=とても元気 〜 1=体調が悪い。今のレベルの段だけ色をつけ、ほかは灰色にする。
+// レベルは 5=気候が快調 〜 1=体調不良に注意。今のレベルの段だけ色をつけ、ほかは灰色にする。
 const dogImg = (level, cls = '') => `<img class="dog ${cls}" src="/img/mood/dog-${level}.webp" alt="" aria-hidden="true" width="120" height="100" loading="lazy" decoding="async">`;
 export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].label)}</span></div>`).join('')}</div>`;
 
@@ -20,7 +20,7 @@ const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMont
 const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
 const CH_ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
 
-// 5段階の早見表(レベル・状況・スコアの範囲)。レベル1→5(体調が悪い→とても元気)の順
+// 5段階の早見表(レベル・状況・スコアの範囲)。レベル1→5(体調不良に注意→気候が快調)の順
 const MOOD_GUIDE = [...MOOD_LEVELS].reverse().map((l) => {
   const idx = MOOD_LEVELS.indexOf(l);
   const minPts = idx === 0 ? 0 : MOOD_LEVELS[idx - 1].max + 1;   // このレベルになる最小の合計点(=スコアは最大側)
@@ -40,10 +40,10 @@ export function moodBlockHtml(w) {
   return `<div class="mood mood-${m.level}" role="group" aria-label="体調そらもよう">
   ${moodStairs(m.level)}
   <div class="mood-body">
-    <p class="mood-en">今日の体調そらもよう<small>（天気から見た目安）</small></p>
-    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level}（5が元気・1が体調不良）</span></p>
+    <p class="mood-en">今日の体調そらもよう<small>（気候から見た目安）</small></p>
+    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level}（5=快調・1=要注意）</span></p>
     <p class="mood-m">${esc(m.desc)}</p>
-    <p class="mood-s">スコア <b>${m.score}</b> / 100<small>（高いほど元気）</small>${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
+    <p class="mood-s">スコア <b>${m.score}</b> / 100<small>（高いほど快調）</small>${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
     <div class="fx-chips">${chips}</div>
     <p class="mood-r">${esc(m.reason)}</p>
     <details class="mood-guide"><summary>5段階の見かた</summary>

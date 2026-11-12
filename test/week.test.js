@@ -142,20 +142,20 @@ test('factorSummary: 気になる要因を文章にする', () => {
   assert.match(many.text, /重なる/);
 });
 
-test('moodInfo: 4つの指標を5段階の体調レベル(5=とても元気〜1=体調が悪い)と0〜100の点数(高いほど元気)にまとめる', () => {
+test('moodInfo: 4つの指標を5段階の体調レベル(5=気候が快調〜1=体調不良に注意)と0〜100の点数(高いほど快調)にまとめる', () => {
   const calm = moodInfo({ pressureLevel: 'none', temp: { level: 'none' }, rain: { level: 'small' }, hum: { level: 'none' } });
   assert.equal(calm.level, 5);
-  assert.equal(calm.label, 'とても元気');
+  assert.equal(calm.label, '気候が快調');
   assert.equal(calm.score, 100);
   assert.match(calm.reason, /気になる要因は見られません/);
-  // 気圧 やや注意(2) + 気温差あり(1) = 3点 → 4 元気
+  // 気圧 やや注意(2) + 気温差あり(1) = 3点 → 4 おおむね良好
   const m2 = moodInfo({ pressureLevel: 'slight', temp: { level: 'mid' }, rain: null, hum: null });
   assert.equal(m2.points, 3);
   assert.equal(m2.level, 4);
-  assert.equal(m2.label, '元気');
-  // 気圧 注意(4) + 気温差大(2) = 6点 → 2 体調に注意
+  assert.equal(m2.label, 'おおむね良好');
+  // 気圧 注意(4) + 気温差大(2) = 6点 → 2 体調に影響しそう
   assert.equal(moodInfo({ pressureLevel: 'caution', temp: { level: 'big' }, rain: null, hum: null }).level, 2);
-  // 全部重なる: 6+2+1+2 + 重なり補正1 = 12点 → 1 体調が悪い / スコアは 100 - 12/13
+  // 全部重なる: 6+2+1+2 + 重なり補正1 = 12点 → 1 体調不良に注意 / スコアは 100 - 12/13
   const bad = moodInfo({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'big' } });
   assert.equal(bad.points, 12);
   assert.equal(bad.bonus, 1);
