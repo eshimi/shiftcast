@@ -399,7 +399,7 @@ body.lp { background: var(--bg); }
 .st .blk { width: 100%; display: flex; align-items: center; justify-content: center; border-top: 5px solid #f4f6f8; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #e8ecf0, #d3d9e0); color: #fff; font-size: 20px; line-height: 1; }
 .st-1 .blk { height: 32px; } .st-2 .blk { height: 42px; } .st-3 .blk { height: 52px; } .st-4 .blk { height: 62px; } .st-5 .blk { height: 72px; }
 .st.on .blk { background: linear-gradient(180deg, var(--c), var(--c2)); border-top-color: color-mix(in srgb, var(--c) 45%, #fff); box-shadow: 0 6px 14px -6px var(--c2); font-size: 26px; }
-.st .stl { margin-top: 8px; padding: 3px 6px; min-height: 2.5em; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 99px; font-size: 10.5px; line-height: 1.25; color: var(--muted); }
+.st .stl { margin-top: 8px; padding: 3px 4px; height: 2.9em; box-sizing: border-box; width: 100%; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 99px; font-size: 10.5px; line-height: 1.25; color: var(--muted); }
 .st.on .stl { background: color-mix(in srgb, var(--c) 24%, #fff); color: #1d2b3a; font-weight: 700; }
 @media (min-width: 760px) { .stairs { max-width: 700px; gap: 6px; } .st .dog { max-height: 88px; } .st.on .dog { max-height: 120px; } .st-1 .blk { height: 44px; } .st-2 .blk { height: 58px; } .st-3 .blk { height: 72px; } .st-4 .blk { height: 86px; } .st-5 .blk { height: 100px; } .st .stl { font-size: 13px; } .st .blk { font-size: 26px; } .st.on .blk { font-size: 34px; } }
 @media (prefers-color-scheme: dark) { .stairs { background: #f4f6f9; border-radius: 10px; padding: 12px 8px 8px; } .st .stl { color: #5b6672; } }
@@ -407,3 +407,5 @@ body.lp { background: var(--bg); }
 
 /* hidden属性が、.badge などの display 指定に負けて表示されてしまわないようにする */
 [hidden] { display: none !important; }
+
+@media (min-width: 760px) { .st .stl { height: 2.2em; } }

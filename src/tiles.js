@@ -14,7 +14,7 @@ const ICONS = {
 // 体調そらもよう: 犬のキャラクターと5段の階段(public/img/mood/dog-{レベル}.webp)。
 // レベルは 5=気候が快調 〜 1=体調不良に注意。今のレベルの段だけ色をつけ、ほかは灰色にする。
 const dogImg = (level, cls = '') => `<img class="dog ${cls}" src="/img/mood/dog-${level}.webp" alt="" aria-hidden="true" width="120" height="100" loading="lazy" decoding="async">`;
-export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].label)}</span></div>`).join('')}</div>`;
+export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].st)}</span></div>`).join('')}</div>`;
 
 const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
 const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
