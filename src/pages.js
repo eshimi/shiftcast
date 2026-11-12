@@ -230,7 +230,7 @@ export function topPage() {
           <p>痛みやだるさは、ワンタップで記録。<br>重ねるほど、あなたの<br>「なりやすい条件」が見えてくる。</p>
           <p>“ああ”と空を見上げるその前に、<br>備えられる毎日を。</p>
         </div>
-        <div class="ppl-row r" aria-hidden="true">${person('yoga', { k: 0.55 })}${person('reading', { k: 0.55 })}</div>
+        <div class="ppl-row c" aria-hidden="true">${person('reading', { k: 0.55 })}</div>
         <div id="hero-root" class="exp-phones"></div>
       </div>
     </section>
@@ -335,7 +335,7 @@ export function topPage() {
 
 export function weatherPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('hat-bag', { k: 0.5 })}${person('runner', { k: 0.5 })}${person('umbrella', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('runner', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${areaBar}
 
@@ -372,7 +372,7 @@ ${areaBar}
 
 export function columnsPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>天気痛・気象病のコラム</h1><p>気圧の変化による頭痛や不調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}${person('hiker', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>天気痛・気象病のコラム</h1><p>気圧の変化による頭痛や不調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap">
 <div class="col-list">${COLUMNS.map((c) => columnCard(c)).join('')}</div>
 <p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
@@ -420,7 +420,7 @@ export function pressurePage(pref, w) {
   const detail = n.level !== 'none' && n.rate != null ? `${jstMD(n.at)}ごろに、1時間あたり${sgn(n.rate)}${Math.abs(n.rate).toFixed(1)}hPaの変化が見込まれます。` : n.level === 'none' && cur ? '大きな気圧の変化は見込まれていません。' : '';
   const weekNote = risky.length ? `1週間のうち、気圧が「注意」以上で下がる見込みの日は${risky.map((d) => `${d.label}（${d.dow}）`).join('、')}です。前日の夜に、早めの休息と睡眠、いつもの薬の確認をしておくと安心です。` : '1週間のうち、気圧が「注意」以上で大きく下がる見込みの日は、いまのところありません（気圧の予報は約5日先まで）。';
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE · ${esc(regionOf(pref.code))}</p><h1>${esc(name)}の気圧予報｜天気痛・気象病の頭痛の目安</h1><p>${esc(name)}の今日の気圧と1週間の見通しで、天気痛・気象病・気圧による頭痛に備えましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('hat-bag', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE · ${esc(regionOf(pref.code))}</p><h1>${esc(name)}の気圧予報｜天気痛・気象病の頭痛の目安</h1><p>${esc(name)}の今日の気圧と1週間の見通しで、天気痛・気象病・気圧による頭痛に備えましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap">
 <div class="card today has-fx lv-${n.level}">
   <div class="t-body">
@@ -465,7 +465,7 @@ export function pressurePage(pref, w) {
 
 export function pressureIndexPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('trekking', { k: 0.5 })}${person('yukata', { k: 0.5 })}${person('stroller', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE BY PREFECTURE</p><h1>都道府県別の気圧予報</h1><p>お住まいの地域を選んで、今日の気圧と1週間の見通しを確認できます。天気痛・気象病・気圧による頭痛の備えに。</p></div><div class="pg-ppl" aria-hidden="true">${person('yukata', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</h2><ul class="chips-l">${codes.map((c) => PREFS.find((p) => p.code === c)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}</ul></section>`).join('\n')}
 <p class="row"><a class="btn" href="/today">全国の今日の気圧まとめを見る</a></p>
@@ -486,7 +486,7 @@ ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</
 
 export function appPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap app-main">
 ${APP_BODY}
 </div>
@@ -523,7 +523,7 @@ export function todayPage(sum) {
   }
   const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstMD(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('jogger', { k: 0.5 })}${person('coffee-woman', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('jogger', { k: 0.5 })}</div></div>
 <div class="wrap">
 <section class="sec"><h2 class="pg-h">全国のようす</h2>
 ${lines.map((l) => `<p>${esc(l)}</p>`).join('\n')}
@@ -575,7 +575,7 @@ const CHECK_Q = [
 
 export function checkPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">SELF CHECK</p><h1>気象病セルフチェック（10問）</h1><p>当てはまるものを選ぶと、天気痛・気象病の「出やすさの傾向」の目安が分かります。診断ではありません。</p></div><div class="pg-ppl" aria-hidden="true">${person('senior-couple', { k: 0.5 })}${person('schoolgirl', { k: 0.5 })}${person('businessman', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">SELF CHECK</p><h1>気象病セルフチェック（10問）</h1><p>当てはまるものを選ぶと、天気痛・気象病の「出やすさの傾向」の目安が分かります。診断ではありません。</p></div><div class="pg-ppl" aria-hidden="true">${person('schoolgirl', { k: 0.5 })}</div></div>
 <div class="wrap">
 <form id="chk" class="chk" novalidate>
 <ol class="chk-q">${CHECK_Q.map((q, i) => `<li><fieldset><legend>${esc(q)}</legend><label><input type="radio" name="q${i}" value="1"> 当てはまる</label><label><input type="radio" name="q${i}" value="0"> 当てはまらない</label></fieldset></li>`).join('')}</ol>
@@ -609,7 +609,7 @@ export function checkPage() {
 
 export function glossaryPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('photo-man', { k: 0.5 })}${person('shopping', { k: 0.5 })}${person('senior-man', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('shopping', { k: 0.5 })}</div></div>
 <div class="wrap">
 <ul class="chips-l gl-index" aria-label="用語の一覧">${GLOSSARY.map(([t], i) => `<li><a href="#g${i + 1}">${esc(t.replace(/（.*$/, ''))}</a></li>`).join('')}</ul>
 <dl class="gl">
@@ -677,7 +677,7 @@ const ABOUT_FAQ = [
 
 export function aboutPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>そらだよりとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('camera', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('yoga', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>そらだよりとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap about">
 <section><h2 class="en-h">WHAT YOU CAN DO<small>できること</small></h2>
 <div class="ab-verbs">${ABOUT_VERBS.map(([v, en, t, d, ic], i) => `<article class="ab-verb"><span class="ic">${ic}</span><p class="en">${en}</p><h3>${i + 1}. ${esc(v)}</h3><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join('')}</div></section>
