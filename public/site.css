@@ -324,3 +324,28 @@ body.lp { background: var(--bg); }
 .tline { margin-top: 4px; }
 .pill.tp-small { background: #8aa4bb; color: #fff; }
 .fline { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }
+
+/* 今日の見通し: 気圧・気温・降水・湿度のタイル */
+.today.has-fx { flex-wrap: wrap; }
+.today .fx-wrap { flex: 0 0 100%; min-width: 0; }
+.fx-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 6px; }
+@media (min-width: 760px) { .fx-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.fx { background: var(--surface-100, #fff); border: 1px solid var(--line); border-top: 4px solid var(--line); padding: 10px 12px 12px; min-width: 0; }
+.fx.lv-rise { border-top-color: var(--rise); } .fx.lv-slight { border-top-color: var(--slight); }
+.fx.lv-caution { border-top-color: var(--caution); } .fx.lv-warning { border-top-color: var(--warning); }
+.fx.tp-small { border-top-color: #8aa4bb; } .fx.tp-mid { border-top-color: #5b7c99; } .fx.tp-big { border-top-color: #34506b; }
+.fx-h { display: flex; align-items: center; gap: 8px; } .fx-h b { font-size: 14px; }
+.fxi { fill: none; stroke: var(--face-stroke, #1d5fa6); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; overflow: visible; flex: none; }
+.fx-cap { margin-top: 6px; font-size: 11px; color: var(--muted); }
+.fx-v { margin-top: 4px; font-size: 28px; font-weight: 700; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.fx-v small { margin-left: 3px; font-size: 13px; font-weight: 500; color: var(--muted); }
+.fx-r { margin-top: 4px; font-size: 12px; line-height: 1.5; color: var(--muted); }
+.fx-p { margin-top: 8px; }
+.fx .ar { font-style: normal; font-size: 10px; margin-right: 3px; } .fx .ar.up { color: #c7442f; } .fx .ar.dn { color: #2f6a8a; }
+.fx.na { opacity: .6; } .fx-na { margin-top: 10px; font-size: 12px; color: var(--muted); }
+.fx-sum { margin-top: 12px; padding: 10px 12px; background: var(--surface-100, #fff); border: 1px dashed var(--line); }
+.fx-sum.multi { border: 1px solid #5b7c99; }
+.fx-sum p { margin: 6px 0 0; font-size: 13px; line-height: 1.7; }
+.fx-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.fx-chip { display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px 2px 6px; font-size: 12px; font-weight: 600; border: 1px solid #5b7c99; border-radius: 99px; color: #34506b; }
+.fx-chip.ok { border-color: var(--line); color: var(--muted); font-weight: 500; padding-left: 10px; }

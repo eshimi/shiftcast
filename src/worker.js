@@ -13,6 +13,7 @@ import { SITE_URL } from './siteconfig.js';
 import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
 import { todaySummary } from './today.js';
+import { factorTilesHtml } from './tiles.js';
 import { checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
@@ -52,7 +53,8 @@ app.get('/api/week', async (c) => {
   const code = c.req.query('area') || '';
   if (!isAreaCode(code)) return bad(c, 'bad_area');
   c.header('Cache-Control', 'public, max-age=300'); // 5分キャッシュ（気象データは3時間ごとの更新）
-  return c.json(await buildWeek(c.env, code));
+  const w = await buildWeek(c.env, code);
+  return c.json({ ...w, tilesHtml: factorTilesHtml(w) });
 });
 app.get('/api/columns', (c) => c.json(columnList()));
 

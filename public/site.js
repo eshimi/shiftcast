@@ -19,20 +19,6 @@ const pad = (n) => String(n).padStart(2, '0');
 const jstParts = (ts) => { const d = new Date(ts + 9 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; };
 const fmtTime = (ts) => { const p = jstParts(ts); return `${p.m}/${p.d} ${p.h}時`; };
 const sign = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
-// 降水量・湿度・複数要因のまとめ(表示専用の暫定の目安)
-const mm = (x) => (Math.round(x * 10) / 10).toFixed(1);
-function rainLine(r) {
-  if (!r) return null;
-  const p = [];
-  if (r.past24 != null) p.push(`直近24時間の降水 ${mm(r.past24)}mm${r.prev24 != null ? `（前日同時刻の24時間は ${mm(r.prev24)}mm）` : ''}`);
-  if (r.next24 != null) p.push(`今後24時間の予測 約${mm(r.next24)}mm${r.popMax != null ? `（降水確率 最大${r.popMax}%）` : ''}`);
-  if (!p.length) return null;
-  return [p.join('　') + ' ', h('span', { class: `pill tp-${r.level}` }, r.label)];
-}
-function humLine(x) {
-  if (!x) return null;
-  return [`湿度 ${x.now}%${x.d24 != null ? `（前日同時刻比 ${sign(x.d24)}${Math.abs(x.d24)}%）` : ''}　今後24時間 ${x.min}〜${x.max}% `, h('span', { class: `pill tp-${x.level}` }, x.label)];
-}
 // 気温の変化(表示専用の暫定の目安): 現在の気温・前日の同時刻との差・今後24時間の最高/最低
 function tempLine(t) {
   if (!t) return null;
@@ -92,12 +78,15 @@ function renderToday(w) {
       h('div', {}, '今後24時間：', h('span', { class: `pill lv-${n.level}` }, n.label),
         n.rate != null && n.level !== 'none' ? h('span', { class: 'muted small' }, `　${fmtTime(n.at)}ごろ ${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h`) : null),
       n.severe ? h('div', { class: 'small' }, '気圧が大きく下がる見込みです。早めの休息と、いつもの薬の確認を。') : null,
-      w.temp ? h('div', { class: 'small tline' }, tempLine(w.temp)) : null,
-      w.rain ? h('div', { class: 'small tline' }, rainLine(w.rain)) : null,
-      w.humidity ? h('div', { class: 'small tline' }, humLine(w.humidity)) : null,
-      w.factors ? h('div', { class: 'small fline' }, w.factors.text) : null,
       document.body.dataset.page === 'top' ? h('a', { class: 't-link', href: '/weather' }, '1週間の見通しを見る →') : null),
   );
+  // 気圧・気温・降水・湿度のタイル(サーバーで描画したHTML)
+  if (w.tilesHtml) {
+    el.classList.add('has-fx');
+    const fx = h('div', { class: 'fx-wrap' });
+    fx.innerHTML = w.tilesHtml;
+    el.append(fx);
+  }
 }
 
 // トップの Today: 参考サイトの News のような「日付・カテゴリ・見出し」の1行

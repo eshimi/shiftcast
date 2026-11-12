@@ -4,6 +4,7 @@ import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, SITE_NAME, OG_IMAGE } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
+import { factorTilesHtml } from './tiles.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -407,17 +408,14 @@ export function pressurePage(pref, w) {
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE · ${esc(regionOf(pref.code))}</p><h1>${esc(name)}の気圧予報｜天気痛・気象病の頭痛の目安</h1><p>${esc(name)}の今日の気圧と1週間の見通しで、天気痛・気象病・気圧による頭痛に備えましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('umbrella', { k: 0.5 })}${person('reading', { k: 0.5 })}${person('hat-bag', { k: 0.5 })}</div></div>
 <div class="wrap">
-<div class="card today lv-${n.level}">
+<div class="card today has-fx lv-${n.level}">
   <div class="t-body">
     <div class="muted small">${esc(name)}・今日の気圧${w?.demo ? ' <span class="badge">デモデータ</span>' : ''}${w?.fetchedAt ? `（${jstMD(w.fetchedAt)}更新）` : ''}</div>
     <div class="big">${cur ? Math.round(cur.pressure) : '–'}<small> hPa</small></div>
     <div>今後24時間：<span class="pill lv-${n.level}">${esc(n.label)}</span></div>
     <p>${esc(lead)}${esc(detail)}</p>
-    ${w?.rain ? (() => { const r = w.rain; const p = []; if (r.past24 != null) p.push(`直近24時間の降水 ${r.past24.toFixed(1)}mm${r.prev24 != null ? `（前日同時刻の24時間は ${r.prev24.toFixed(1)}mm）` : ''}`); if (r.next24 != null) p.push(`今後24時間の予測 約${r.next24.toFixed(1)}mm${r.popMax != null ? `（降水確率 最大${r.popMax}%）` : ''}`); return p.length ? `<p class="small tline">${esc(p.join('　'))} <span class="pill tp-${r.level}">${esc(r.label)}</span></p>` : ''; })() : ''}
-    ${w?.humidity ? `<p class="small tline">湿度 ${w.humidity.now}%${w.humidity.d24 != null ? `（前日同時刻比 ${sgn(w.humidity.d24)}${Math.abs(w.humidity.d24)}%）` : ''}　今後24時間 ${w.humidity.min}〜${w.humidity.max}% <span class="pill tp-${w.humidity.level}">${esc(w.humidity.label)}</span></p>` : ''}
-    ${w?.factors ? `<p class="small fline">${esc(w.factors.text)}</p>` : ''}
-    ${w?.temp ? `<p class="small tline">気温 ${Math.round(w.temp.now)}℃${w.temp.d24 != null ? `（前日同時刻比 ${sgn(w.temp.d24)}${Math.abs(w.temp.d24).toFixed(1)}℃）` : ''}　今後24時間 ${Math.round(w.temp.min)}〜${Math.round(w.temp.max)}℃ <span class="pill tp-${w.temp.level}">${esc(w.temp.label)}</span></p>` : ''}
   </div>
+  <div class="fx-wrap">${factorTilesHtml(w)}</div>
 </div>
 <section class="sec" aria-labelledby="p-days"><h2 id="p-days" class="pg-h">${esc(name)}の7日間の天気と気圧</h2>
   <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>
