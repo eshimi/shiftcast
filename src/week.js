@@ -170,7 +170,7 @@ export async function buildWeek(env, code, now = Date.now()) {
   return {
     area: { code, name: AREA_BY_CODE.get(code).name },
     now,
-    demo: isDemo(env) || rows.some((r) => r.source === 'demo'),
+    demo: isDemo(env),
     fetchedAt,
     jma: jma ? { office: jma.office, reported: jma.reported } : null,
     temp,

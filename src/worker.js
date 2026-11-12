@@ -118,14 +118,19 @@ app.get('/api/forecast', async (c) => {
   const db = c.env.DB;
   await ensureFresh(c.env, code);
   const now = Date.now();
-  const rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 7 * 24 * HOUR, now + 6 * 24 * HOUR);
+  let rows = await all(db, `SELECT ts,temp,pressure,icon,descr,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 7 * 24 * HOUR, now + 6 * 24 * HOUR);
+  // 本物のデータで動いているのに、過去のデモ用の行が残っていたら、表示に混ぜずに削除する(「デモデータ」の表示も、実際の動作モードだけで決める)
+  if (!isDemo(c.env) && rows.some((r) => r.source === 'demo')) {
+    await run(db, "DELETE FROM points WHERE source='demo'");
+    rows = rows.filter((r) => r.source !== 'demo');
+  }
   const observed = await all(db, `SELECT ts,pressure,descr FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 7 * 24 * HOUR, now);
   const fetchedAt = Number((await get(db, 'SELECT v FROM meta WHERE k=?', 'fetched:' + code))?.v || 0) || null;
   return c.json({
     area: { code, name: AREA_BY_CODE.get(code).name },
     now,
     fetchedAt,
-    demo: rows.some((r) => r.source === 'demo'),
+    demo: isDemo(c.env),
     points: annotate(rows).filter((p) => p.ts >= now - 7 * 24 * HOUR),
     observed,
     jma: await loadJmaCached(c.env, code),
