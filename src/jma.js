@@ -3,6 +3,7 @@ import { batch, get, setMeta } from './db.js';
 import { HOUR } from './pressure.js';
 import { AREAS } from './areas.js';
 import { targetAreas } from './weather.js';
+import { saveExtras } from './extras.js';
 
 const BASE = 'https://www.jma.go.jp/bosai/amedas';
 let stationCache = null;
@@ -43,7 +44,21 @@ export async function refreshJma(env) {
     ]);
   }
   await batch(env.DB, stmts);
-  console.log(`[jma] stored ${stmts.length} areas @ ${latest}`);
+  // 降水量・湿度の実測(表示専用): 全47都道府県について、最寄りの「湿度と降水量を観測している」観測所の値を保存
+  const withW = list.filter((s) => map[s.id]?.humidity?.[0] != null && map[s.id]?.precipitation1h?.[0] != null);
+  let wx = 0;
+  for (const a of AREAS) {
+    const st = withW.reduce((best, s) => (!best || d2(s, a) < d2(best, a) ? s : best), null);
+    if (!st) continue;
+    const o = map[st.id];
+    try {
+      await saveExtras(env.DB, a.code, { obs: [{ ts: when.getTime(), r1: o.precipitation1h[0], r24: o.precipitation24h?.[0] ?? null, h: o.humidity[0] }] });
+      wx++;
+    } catch (e) {
+      console.error('[jma:wet]', a.code, e.message);
+    }
+  }
+  console.log(`[jma] stored ${stmts.length} areas @ ${latest}, wet ${wx} areas`);
 }
 
 /** 気象庁 府県天気予報の要約（今日〜数日の天気文と降水確率）。主地域(areas[0])を採用。 */

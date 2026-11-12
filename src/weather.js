@@ -2,6 +2,7 @@
 import { all, get, run, batch, getMeta, setMeta } from './db.js';
 import { AREAS, AREA_BY_CODE } from './areas.js';
 import { HOUR } from './pressure.js';
+import { saveExtras } from './extras.js';
 
 export const isDemo = (env) => !env.OPENWEATHER_API_KEY;
 const MIN_REFRESH_MS = 30 * 60e3;
@@ -34,6 +35,23 @@ function demoRows(code, from, to) {
   return rows;
 }
 
+// デモ: 降水量・湿度(開発・動作確認用)
+function demoExtras(code, now) {
+  const n = Number(code);
+  const hum = (ts) => Math.round(68 + 18 * Math.sin(ts / HOUR / 11 + n) + 8 * Math.sin(ts / HOUR / 3.5));
+  const rainAt = (ts) => Math.max(0, Math.round((Math.sin(ts / HOUR / 7 + n * 1.3) - 0.35) * 9 * 10) / 10);
+  const step = 3 * HOUR;
+  const fc = [];
+  for (let ts = Math.ceil(now / step) * step; ts <= now + 5 * 24 * HOUR; ts += step) fc.push({ ts, r3: rainAt(ts), h: hum(ts), pop: Math.min(1, rainAt(ts) / 6) });
+  const obs = [];
+  for (let ts = Math.floor(now / HOUR) * HOUR; ts >= now - 36 * HOUR; ts -= HOUR) {
+    let r24 = 0;
+    for (let k = 0; k < 24; k++) r24 += rainAt(ts - k * HOUR) / 3;
+    obs.push({ ts, r1: Math.round((rainAt(ts) / 3) * 10) / 10, r24: Math.round(r24 * 10) / 10, h: hum(ts) });
+  }
+  return { fc, obs };
+}
+
 export async function refreshArea(env, code) {
   const area = AREA_BY_CODE.get(code);
   if (!area) throw new Error('unknown area ' + code);
@@ -41,6 +59,7 @@ export async function refreshArea(env, code) {
   if (isDemo(env)) {
     const has = (await get(env.DB, "SELECT COUNT(*) c FROM points WHERE area_code=? AND source='demo'", code)).c;
     await batch(env.DB, demoRows(code, has ? now - 6 * HOUR : now - 14 * 24 * HOUR, now + 5 * 24 * HOUR));
+    await saveExtras(env.DB, code, demoExtras(code, now), now);
   } else {
     const base = `lat=${area.lat}&lon=${area.lon}&units=metric&lang=ja&appid=${env.OPENWEATHER_API_KEY}`;
     await run(env.DB, "DELETE FROM points WHERE source='demo'"); // キー設定後はデモ行を残さない
@@ -49,6 +68,8 @@ export async function refreshArea(env, code) {
       getJson(`https://api.openweathermap.org/data/2.5/weather?${base}`),
     ]);
     await batch(env.DB, [...fc.list.map((o) => rowOf(code, o)), rowOf(code, cur)]);
+    // 降水量・湿度(表示専用)。予報の3時間降水量と、現在の湿度
+    await saveExtras(env.DB, code, { fc: [{ ts: cur.dt * 1000, r3: null, h: cur.main?.humidity ?? null, pop: null }, ...fc.list.map((o) => ({ ts: o.dt * 1000, r3: o.rain?.['3h'] ?? 0, h: o.main?.humidity ?? null, pop: o.pop ?? null }))] }, now);
   }
   await setMeta(env.DB, 'fetched:' + code, now);
 }

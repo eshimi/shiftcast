@@ -322,3 +322,5 @@ body.lp { background: var(--bg); }
 .pill.tp-none { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
 .pill.tp-mid { background: #5b7c99; } .pill.tp-big { background: #34506b; }
 .tline { margin-top: 4px; }
+.pill.tp-small { background: #8aa4bb; color: #fff; }
+.fline { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }

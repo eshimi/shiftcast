@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { weatherInfo, dailyPressure, mergeWeek, tempInfo } from '../src/week.js';
+import { wetInfo, factorSummary } from '../src/extras.js';
 import { summarizeWeekly } from '../src/jma.js';
 import { annotate } from '../src/pressure.js';
 
@@ -108,4 +109,34 @@ test('mergeWeek: 最高・最低気温の前日比', () => {
   assert.equal(days[0].dtmax, null);
   assert.equal(days[1].dtmax, -5);
   assert.equal(days[1].dtmin, 1);
+});
+
+test('wetInfo: 直近24時間の降水・今後の予測・湿度', () => {
+  const now = at('2026-11-10', 12);
+  const obs = [{ ts: now - 24 * H, r1: 0, r24: 2, h: 60 }, { ts: now, r1: 1.5, r24: 12, h: 82 }];
+  const fc = [{ ts: now + 3 * H, r3: 6, h: 88, pop: 0.8 }, { ts: now + 6 * H, r3: 5, h: 90, pop: 0.9 }, { ts: now + 27 * H, r3: 50, h: 50, pop: 1 }];
+  const { rain, hum } = wetInfo({ obs, fc }, now);
+  assert.equal(rain.past24, 12);
+  assert.equal(rain.prev24, 2);
+  assert.equal(rain.next24, 11); // 24時間を超える予報は含めない
+  assert.equal(rain.popMax, 90);
+  assert.equal(rain.level, 'mid');
+  assert.equal(hum.now, 82);
+  assert.equal(hum.d24, 22);
+  assert.equal(hum.max, 90);
+  assert.equal(hum.level, 'big');
+  // データが無ければ null
+  const none = wetInfo({ obs: [], fc: [] }, now);
+  assert.equal(none.rain, null);
+  assert.equal(none.hum, null);
+});
+
+test('factorSummary: 気になる要因を文章にする', () => {
+  assert.equal(factorSummary({ pressureLevel: 'none', temp: { level: 'none' }, rain: { level: 'small' }, hum: { level: 'none' } }).count, 0);
+  const one = factorSummary({ pressureLevel: 'caution', temp: null, rain: null, hum: null });
+  assert.equal(one.count, 1);
+  assert.match(one.text, /気圧の大きな低下/);
+  const many = factorSummary({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'mid' } });
+  assert.equal(many.count, 4);
+  assert.match(many.text, /重なる/);
 });
