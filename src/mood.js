@@ -1,4 +1,4 @@
-// 「体調そらもよう」: 気圧・気温差・降水・湿度の4つを1つの空模様(5段階)と点数(0〜100)にまとめる。
+// 「体調そらもよう」: 気圧・気温差・降水・湿度の4つを、かおのアイコン(5段階)と点数(0〜100)にまとめる。
 // 表示専用の暫定のロジックで、医学的に検証された基準ではない。通知には使わない。
 // 重み: 気圧は体調との関係の報告が最も多いと考え、他の要因より大きくしている。
 import { factorSummary } from './extras.js';
@@ -14,11 +14,11 @@ export const MOOD_POINTS = {
 export const MOOD_MAX = 6 + 2 + 2 + 2 + 1; // 13
 // 合計点 → 段階(上限の点数)
 export const MOOD_LEVELS = [
-  { level: 1, key: 'sunny', label: '晴れ', name: 'おだやか', max: 1 },
-  { level: 2, key: 'partly', label: '晴れ時々くもり', name: '少し気にかけて', max: 3 },
-  { level: 3, key: 'cloudy', label: 'くもり', name: '注意', max: 5 },
-  { level: 4, key: 'rainy', label: '雨', name: '要注意', max: 8 },
-  { level: 5, key: 'stormy', label: '雷', name: '警戒', max: Infinity },
+  { level: 1, key: 'calm', label: 'おだやか', name: 'おだやか', max: 1 },
+  { level: 2, key: 'mild', label: '少し気にかけて', name: '少し気にかけて', max: 3 },
+  { level: 3, key: 'care', label: '注意', name: '注意', max: 5 },
+  { level: 4, key: 'alert', label: '要注意', name: '要注意', max: 8 },
+  { level: 5, key: 'warn', label: '警戒', name: '警戒', max: Infinity },
 ];
 
 export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24 }) {
