@@ -108,3 +108,10 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .st.on .dog { height: 68px; }
 @media (min-width: 760px) { .st .dog { height: 72px; } .st.on .dog { height: 100px; } }
 .dog-mini { height: 40px; max-width: 64px; }
+
+/* 人物は、素材の実際の大きさ(--ph)に同じ倍率をかけて表示する。座っている人も、立っている人と同じ縮尺になる */
+.stairs { --k: .235; --kon: .365; }
+.st .dog { height: calc(var(--ph) * var(--k) * 1px); }
+.st.on .dog { height: calc(var(--ph) * var(--kon) * 1px); }
+@media (min-width: 760px) { .stairs { --k: .39; --kon: .54; } .st .dog { height: calc(var(--ph) * var(--k) * 1px); } .st.on .dog { height: calc(var(--ph) * var(--kon) * 1px); } }
+.dog-mini { height: calc(var(--ph) * .22 * 1px); max-width: 70px; }

@@ -16,7 +16,8 @@ const ICONS = {
 import { PERSON } from './people.js';
 const MOOD_PERSON = { 5: 'jogger', 4: 'road-cyclist', 3: 'yoga', 2: 'dog', 1: 'reading-chair' };
 // レベルは 5=気候が快調 〜 1=体調不良に注意。今のレベルの段だけ色をつけ、ほかは灰色にする。
-const dogImg = (level, cls = '') => { const p = PERSON[MOOD_PERSON[level]]; return `<img class="dog ${cls}" src="/img/people/${p.file}" alt="" aria-hidden="true" width="${Math.round(p.w * 0.5)}" height="${Math.round(p.h * 0.5)}" loading="lazy" decoding="async">`; };
+// 表示の高さの基準(--ph): 素材の実寸と、立っている人の高さ(185)の中間にする。座る人・自転車が小さすぎず、立つ人と大きく違わないようにする
+const dogImg = (level, cls = '') => { const p = PERSON[MOOD_PERSON[level]]; return `<img class="dog ${cls}" src="/img/people/${p.file}" alt="" aria-hidden="true" style="--ph:${Math.round(Math.sqrt(p.h * 185))}" width="${Math.round(p.w * 0.5)}" height="${Math.round(p.h * 0.5)}" loading="lazy" decoding="async">`; };
 export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].st)}</span></div>`).join('')}</div>`;
 
 const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
