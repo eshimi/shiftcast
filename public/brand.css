@@ -33,7 +33,7 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .mood { overflow: hidden; }
 .seg { border-radius: 999px; overflow: hidden; }
 .chip { border-radius: 999px; }
-.site-h .logo img { border-radius: 22%; }
+.site-h .logo img { border-radius: 0; }
 .tabs { border-radius: 18px 18px 0 0; }
 .ab-phone { border-radius: 30px; }
 /* ---- 見出し・ロゴ: WELING ---- */
@@ -62,3 +62,8 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 /* トップ(写真の上)のロゴは白系で */
 .side .brand-ln small, .side-logo small { color: rgba(255, 255, 255, .85); }
 .side .brand-ln b { color: #fff; }
+
+/* アイコンのまわり(角丸の四角)は付けず、マークだけを出す。写真の上は白抜き */
+.site-h .logo img { height: 36px; width: auto; }
+.side-logo img { height: 84px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }
+.m-brand img { height: 56px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }

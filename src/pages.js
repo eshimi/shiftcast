@@ -118,7 +118,7 @@ ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 <body data-page="${page}" class="${[chrome ? 'ds' : '', bodyClass].filter(Boolean).join(' ')}">
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
-    <a class="logo" href="/" aria-label="WELING トップへ"><img src="/icon-dark.svg" alt="" width="36" height="36">${LOGO}</a>
+    <a class="logo" href="/" aria-label="WELING トップへ"><img src="/mark.svg" alt="" width="48" height="36">${LOGO}</a>
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
@@ -176,7 +176,7 @@ export function topPage() {
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
-      <a class="side-logo" href="/" aria-label="WELING トップへ"><img src="/icon-dark.svg" alt="" width="84" height="84"><span class="brand-ln"><b>WELING</b><small>Feel Better, Every Day.</small></span></a>
+      <a class="side-logo" href="/" aria-label="WELING トップへ"><img src="/mark-white.svg" alt="" width="112" height="84"><span class="brand-ln"><b>WELING</b><small>Feel Better, Every Day.</small></span></a>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">
@@ -201,7 +201,7 @@ export function topPage() {
       <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">気圧・記録へ</a></nav>
       <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（WELING：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
-        <img src="/icon-dark.svg" alt="" width="56" height="56">
+        <img src="/mark-white.svg" alt="" width="75" height="56">
         <span class="m-word">WELING</span>
         <span class="m-read">Feel Better, Every Day.</span>
         <span class="m-tag">今日を知って、心地よく暮らす。</span>
