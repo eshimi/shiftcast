@@ -142,25 +142,26 @@ test('factorSummary: 気になる要因を文章にする', () => {
   assert.match(many.text, /重なる/);
 });
 
-test('moodInfo: 4つの指標を空もよう(5段階)と0〜100の点数にまとめる', () => {
+test('moodInfo: 4つの指標を5段階の体調レベル(5=とても元気〜1=体調が悪い)と0〜100の点数(高いほど元気)にまとめる', () => {
   const calm = moodInfo({ pressureLevel: 'none', temp: { level: 'none' }, rain: { level: 'small' }, hum: { level: 'none' } });
-  assert.equal(calm.level, 1);
-  assert.equal(calm.score, 0);
+  assert.equal(calm.level, 5);
+  assert.equal(calm.label, 'とても元気');
+  assert.equal(calm.score, 100);
   assert.match(calm.reason, /気になる要因は見られません/);
-  // 気圧 やや注意(2) + 気温差あり(1) = 3 → 少し気にかけて
+  // 気圧 やや注意(2) + 気温差あり(1) = 3点 → 4 元気
   const m2 = moodInfo({ pressureLevel: 'slight', temp: { level: 'mid' }, rain: null, hum: null });
   assert.equal(m2.points, 3);
-  assert.equal(m2.level, 2);
-  assert.equal(m2.label, '少し気にかけて');
-  // 気圧 注意(4) + 気温差大(2) = 6 → 要注意
-  assert.equal(moodInfo({ pressureLevel: 'caution', temp: { level: 'big' }, rain: null, hum: null }).level, 4);
-  // 全部重なる: 6+2+1+2 + 重なり補正1 = 12 → 警戒 / 点数は 12/13
-  const storm = moodInfo({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'big' } });
-  assert.equal(storm.points, 12);
-  assert.equal(storm.bonus, 1);
-  assert.equal(storm.level, 5);
-  assert.equal(storm.score, Math.round((12 / MOOD_MAX) * 100));
-  assert.match(storm.reason, /重なっています/);
+  assert.equal(m2.level, 4);
+  assert.equal(m2.label, '元気');
+  // 気圧 注意(4) + 気温差大(2) = 6点 → 2 体調に注意
+  assert.equal(moodInfo({ pressureLevel: 'caution', temp: { level: 'big' }, rain: null, hum: null }).level, 2);
+  // 全部重なる: 6+2+1+2 + 重なり補正1 = 12点 → 1 体調が悪い / スコアは 100 - 12/13
+  const bad = moodInfo({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'big' } });
+  assert.equal(bad.points, 12);
+  assert.equal(bad.bonus, 1);
+  assert.equal(bad.level, 1);
+  assert.equal(bad.score, 100 - Math.round((12 / MOOD_MAX) * 100));
+  assert.match(bad.reason, /重なっています/);
   // データが無い要素は 0 点として扱う
-  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).level, 1);
+  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).level, 5);
 });

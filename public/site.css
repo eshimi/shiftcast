@@ -352,7 +352,7 @@ body.lp { background: var(--bg); }
 
 /* 体調そらもよう */
 .mood { --mc: #6ea8d9; display: flex; gap: 14px; align-items: center; padding: 14px 16px; background: var(--surface-100, #fff); border: 1px solid var(--line); border-left: 6px solid var(--mc); margin-bottom: 12px; }
-.mood-1 { --mc: #6ea8d9; } .mood-2 { --mc: #8fb9d6; } .mood-3 { --mc: #c9a24a; } .mood-4 { --mc: #e07b39; } .mood-5 { --mc: #c8392f; }
+.mood-1 { --mc: #14a9e9; } .mood-2 { --mc: #22d0b4; } .mood-3 { --mc: #88d24c; } .mood-4 { --mc: #fcb132; } .mood-5 { --mc: #fd7573; }
 .mood-ico { flex: none; width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: color-mix(in srgb, var(--mc) 22%, transparent); }
 .mood-ico .fxi { stroke: var(--face-stroke, #1d5fa6); stroke-width: 3.2; }
 .mface .fc { fill: color-mix(in srgb, var(--mc) 38%, #fff); } .mface .fc2 { opacity: .38; stroke-width: 2; }
@@ -373,22 +373,8 @@ body.lp { background: var(--bg); }
 
 /* 体調そらもよう: キャラクターの5段階(今の段階だけ色つき) */
 .mood { flex-direction: column; align-items: stretch; gap: 10px; }
-.mood-strip { position: relative; display: flex; justify-content: space-between; align-items: flex-end; gap: 4px; padding: 4px 2px 0; }
-.ms { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 6px; }
-.ms .mi { display: block; width: auto; height: auto; max-width: 100%; max-height: 74px; object-fit: contain; opacity: .8; filter: none; }
-.ms.on .mi { max-height: 96px; opacity: 1; transform: translateY(-2px); }
-@media (min-width: 760px) { .ms .mi { max-height: 92px; } .ms.on .mi { max-height: 124px; } .mood-strip { max-width: 640px; } }
-.mi-mini { display: inline-block; width: auto; height: 44px; max-width: 60px; object-fit: contain; flex: none; }
-.mood-mini .mi-mini { margin-right: 2px; }
 
 /* 5段階: 番号つきの丸とラベル */
-.ms .mdw { position: relative; width: 100%; display: flex; justify-content: center; }
-.ms .mdw::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 4px; margin-top: -2px; background: var(--line); }
-.ms:first-child .mdw::before { left: 50%; } .ms:last-child .mdw::before { right: 50%; }
-.ms .mdot { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--line); color: #fff; font-style: normal; font-size: 12px; font-weight: 700; line-height: 1; }
-.ms.on .mdot { width: 30px; height: 30px; font-size: 16px; background: var(--mc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc) 25%, transparent); }
-.ms .ml { font-size: 10.5px; line-height: 1.25; text-align: center; color: var(--muted); min-height: 2.5em; }
-.ms.on .ml { color: color-mix(in srgb, var(--mc) 70%, #222); font-weight: 700; }
 .lvno { display: inline-flex; align-items: baseline; justify-content: center; min-width: 46px; padding: 2px 10px; border-radius: 99px; background: var(--mc); color: #fff; font-size: 22px; font-weight: 700; line-height: 1.25; }
 .lvno small { font-size: 12px; font-weight: 500; margin-left: 1px; opacity: .9; }
 .lvno.sm { min-width: 0; width: 20px; height: 20px; padding: 0; align-items: center; font-size: 12px; margin-right: 6px; }
@@ -401,5 +387,20 @@ body.lp { background: var(--bg); }
 .mg thead th { font-size: 11px; color: var(--muted); font-weight: 500; }
 .mg tbody th { white-space: nowrap; font-weight: 700; } .mg td:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
 .mg tr.now { background: color-mix(in srgb, var(--mc) 14%, transparent); }
-.mg tr:nth-child(1) .lvno { background: #6ea8d9; } .mg tr:nth-child(2) .lvno { background: #8fb9d6; } .mg tr:nth-child(3) .lvno { background: #c9a24a; } .mg tr:nth-child(4) .lvno { background: #e07b39; } .mg tr:nth-child(5) .lvno { background: #c8392f; }
+.mg tr:nth-child(1) .lvno { background: #14a9e9; } .mg tr:nth-child(2) .lvno { background: #22d0b4; } .mg tr:nth-child(3) .lvno { background: #88d24c; } .mg tr:nth-child(4) .lvno { background: #fcb132; } .mg tr:nth-child(5) .lvno { background: #fd7573; }
 .mood-bar { display: none; }
+
+/* 体調そらもよう: 犬のキャラクターと5段の階段(今のレベルの段だけ色つき) */
+.stairs { display: flex; align-items: flex-end; gap: 4px; padding: 6px 2px 0; }
+.st { --c: #14a9e9; --c2: #0b8fd0; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
+.st-2 { --c: #22d0b4; --c2: #14b79c; } .st-3 { --c: #88d24c; --c2: #6bb934; } .st-4 { --c: #fcb132; --c2: #f09a14; } .st-5 { --c: #fd7573; --c2: #f25a58; }
+.st .dog { position: relative; z-index: 1; display: block; width: auto; height: auto; max-width: 96%; max-height: 54px; margin-bottom: -3px; filter: grayscale(1); opacity: .42; }
+.st.on .dog { max-height: 80px; filter: none; opacity: 1; }
+.st .blk { width: 100%; display: flex; align-items: center; justify-content: center; border-top: 5px solid #f4f6f8; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #e8ecf0, #d3d9e0); color: #fff; font-size: 20px; line-height: 1; }
+.st-1 .blk { height: 32px; } .st-2 .blk { height: 42px; } .st-3 .blk { height: 52px; } .st-4 .blk { height: 62px; } .st-5 .blk { height: 72px; }
+.st.on .blk { background: linear-gradient(180deg, var(--c), var(--c2)); border-top-color: color-mix(in srgb, var(--c) 45%, #fff); box-shadow: 0 6px 14px -6px var(--c2); font-size: 26px; }
+.st .stl { margin-top: 8px; padding: 3px 6px; min-height: 2.5em; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 99px; font-size: 10.5px; line-height: 1.25; color: var(--muted); }
+.st.on .stl { background: color-mix(in srgb, var(--c) 24%, #fff); color: #1d2b3a; font-weight: 700; }
+@media (min-width: 760px) { .stairs { max-width: 700px; gap: 6px; } .st .dog { max-height: 88px; } .st.on .dog { max-height: 120px; } .st-1 .blk { height: 44px; } .st-2 .blk { height: 58px; } .st-3 .blk { height: 72px; } .st-4 .blk { height: 86px; } .st-5 .blk { height: 100px; } .st .stl { font-size: 13px; } .st .blk { font-size: 26px; } .st.on .blk { font-size: 34px; } }
+@media (prefers-color-scheme: dark) { .stairs { background: #f4f6f9; border-radius: 10px; padding: 12px 8px 8px; } .st .stl { color: #5b6672; } }
+.dog-mini { display: inline-block; width: auto; height: 44px; max-width: 70px; object-fit: contain; flex: none; }

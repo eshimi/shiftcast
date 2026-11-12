@@ -1,4 +1,5 @@
-import { MOOD_LEVELS, MOOD_MAX } from './mood.js';
+import { MOOD_LEVELS, MOOD_MAX, moodScore } from './mood.js';
+const MOOD_BY_LEVEL = Object.fromEntries(MOOD_LEVELS.map((l) => [l.level, l]));
 // 「今日の見通し」の要因タイル(気圧・気温・降水・湿度)とまとめ。サーバーで描画し、
 // 都道府県ページにそのまま埋め込むほか、週間天気ページには /api/week の tilesHtml として渡す。
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -10,23 +11,26 @@ const ICONS = {
   rain: '<path d="M7 31a25 23 0 0150 0z"/><path d="M32 31v18a5.5 5.5 0 01-11 0"/><path d="M32 9V5"/>',
   hum: '<path d="M32 7c9 12 14 19 14 28a14 14 0 01-28 0c0-9 5-16 14-28z"/><path d="M24 38q4 4 8 0t8 0"/>',
 };
-// 体調そらもよう(キャラクターのイラスト: public/img/mood/mood-{段階}-{on|off}.webp)。
-// 今の段階だけ色つき(on)、ほかは灰色(off)で、5段階をならべて見せる。
-const MOOD_NAMES = ['おだやか', '少し気にかけて', '注意', '要注意', '警戒'];
-export const moodImg = (level, on, cls = '') => `<img class="mi ${cls}" src="/img/mood/mood-${level}-${on ? 'on' : 'off'}.webp" alt="${on ? esc(MOOD_NAMES[level - 1]) : ''}"${on ? '' : ' aria-hidden="true"'} width="120" height="120" loading="lazy" decoding="async">`;
-export const moodStrip = (level) => `<div class="mood-strip" role="img" aria-label="体調そらもよう ${esc(MOOD_NAMES[level - 1])}（5段階の${level}）">${[1, 2, 3, 4, 5].map((i) => `<div class="ms${i === level ? ' on' : ''}" data-l="${i}">${moodImg(i, i === level)}<div class="mdw"><i class="mdot">${i}</i></div><span class="ml">${esc(MOOD_NAMES[i - 1])}</span></div>`).join('')}</div>`;
+// 体調そらもよう: 犬のキャラクターと5段の階段(public/img/mood/dog-{レベル}.webp)。
+// レベルは 5=とても元気 〜 1=体調が悪い。今のレベルの段だけ色をつけ、ほかは灰色にする。
+const dogImg = (level, cls = '') => `<img class="dog ${cls}" src="/img/mood/dog-${level}.webp" alt="" aria-hidden="true" width="120" height="100" loading="lazy" decoding="async">`;
+export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].label)}</span></div>`).join('')}</div>`;
 
 const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
 const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
 const CH_ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
 
-// 5段階の早見表(段階・状況・スコアの範囲)
-const MOOD_GUIDE = MOOD_LEVELS.map((l, i) => {
-  const sc = (p) => Math.round((p / MOOD_MAX) * 100);
-  const lo = i === 0 ? 0 : sc(MOOD_LEVELS[i - 1].max) + 1; // 前の段階の上限の次から(つづけて読めるように)
-  const hi = l.max === Infinity ? 100 : sc(l.max);
-  return { level: l.level, label: l.label, desc: l.desc, range: `${lo}〜${hi}` };
+// 5段階の早見表(レベル・状況・スコアの範囲)。レベル1→5(体調が悪い→とても元気)の順
+const MOOD_GUIDE = [...MOOD_LEVELS].reverse().map((l) => {
+  const idx = MOOD_LEVELS.indexOf(l);
+  const minPts = idx === 0 ? 0 : MOOD_LEVELS[idx - 1].max + 1;   // このレベルになる最小の合計点(=スコアは最大側)
+  const maxPts = l.max === Infinity ? MOOD_MAX : l.max;          // このレベルになる最大の合計点(=スコアは最小側)
+  const lo = l.max === Infinity ? 0 : moodScore(maxPts);
+  const hi = idx === 0 ? 100 : moodScore(minPts);
+  return { level: l.level, label: l.label, desc: l.desc, lo, hi };
 });
+// つづけて読めるように、各レベルの下限を「ひとつ下のレベルの上限+1」にそろえる
+MOOD_GUIDE.forEach((g, i) => { g.range = `${i === 0 ? 0 : MOOD_GUIDE[i - 1].hi + 1}〜${g.hi}`; });
 
 /** 体調そらもよう(大きなパネル) */
 export function moodBlockHtml(w) {
@@ -34,16 +38,16 @@ export function moodBlockHtml(w) {
   if (!m) return '';
   const chips = m.factors.length ? m.factors.map((k) => `<span class="fx-chip">${fxIcon(CH_ICON[k], 20)}${CH_NAME[k]}</span>`).join('') : '<span class="fx-chip ok">✓ 気になる要因なし</span>';
   return `<div class="mood mood-${m.level}" role="group" aria-label="体調そらもよう">
-  ${moodStrip(m.level)}
+  ${moodStairs(m.level)}
   <div class="mood-body">
-    <p class="mood-en">今日の体調そらもよう</p>
-    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level} 段階目</span></p>
+    <p class="mood-en">今日の体調そらもよう<small>（天気から見た目安）</small></p>
+    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level}（5が元気・1が体調不良）</span></p>
     <p class="mood-m">${esc(m.desc)}</p>
-    <p class="mood-s">スコア <b>${m.score}</b> / 100${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
+    <p class="mood-s">スコア <b>${m.score}</b> / 100<small>（高いほど元気）</small>${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
     <div class="fx-chips">${chips}</div>
     <p class="mood-r">${esc(m.reason)}</p>
     <details class="mood-guide"><summary>5段階の見かた</summary>
-      <table class="mg"><thead><tr><th>段階</th><th>状況</th><th>スコア</th></tr></thead><tbody>${MOOD_GUIDE.map((g) => `<tr class="${g.level === m.level ? 'now' : ''}"><th scope="row"><span class="lvno sm">${g.level}</span>${esc(g.label)}</th><td>${esc(g.desc)}</td><td>${g.range}</td></tr>`).join('')}</tbody></table>
+      <table class="mg"><thead><tr><th>レベル</th><th>状況</th><th>スコア</th></tr></thead><tbody>${MOOD_GUIDE.map((g) => `<tr class="${g.level === m.level ? 'now' : ''}"><th scope="row"><span class="lvno sm">${g.level}</span>${esc(g.label)}</th><td>${esc(g.desc)}</td><td>${g.range}</td></tr>`).join('')}</tbody></table>
       <p class="muted small">スコアは、気圧・気温差・降水・湿度の目安を点数にして0〜100に換算したものです。暫定の目安で、医学的な基準ではありません。</p>
     </details>
   </div>
@@ -54,7 +58,7 @@ export function moodBlockHtml(w) {
 export function moodMiniHtml(w) {
   const m = w?.mood;
   if (!m) return '';
-  return `<span class="mood-mini mood-${m.level}">${moodImg(m.level, true, 'mi-mini')}<span><b>体調そらもよう：${esc(m.label)}</b>（${m.score}/100）<br><small>${esc(m.reason)}${m.advice ? esc(m.advice) : ''}</small></span></span>`;
+  return `<span class="mood-mini mood-${m.level}">${dogImg(m.level, 'dog-mini')}<span><b>体調そらもよう：${esc(m.label)}</b>（${m.score}/100）<br><small>${esc(m.desc)}${m.reason ? ' ' + esc(m.reason) : ''}</small></span></span>`;
 }
 
 export const fxIcon = (name, size = 34) => `<svg class="fxi" viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden="true">${ICONS[name]}</svg>`;
