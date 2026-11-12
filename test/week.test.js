@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { weatherInfo, dailyPressure, mergeWeek } from '../src/week.js';
+import { weatherInfo, dailyPressure, mergeWeek, tempInfo } from '../src/week.js';
 import { summarizeWeekly } from '../src/jma.js';
 import { annotate } from '../src/pressure.js';
 
@@ -76,4 +76,36 @@ test('mergeWeek: 今日は気象庁に無くても気圧側で埋め、7日分�
   assert.equal(w[2].tmax, 17);
   assert.equal(w[2].dow, '水');
   assert.equal(w[6].source, 'none');
+});
+
+test('tempInfo: 前日同時刻比と今後24時間の差から気温差の段階を出す', () => {
+  const now = at('2026-11-10', 12);
+  const row = (h, temp) => ({ ts: now + h * H, temp });
+  // 24時間前 18℃ → 現在 10℃(−8℃)、今後24時間は 10〜12℃
+  const rows = [row(-24, 18), row(-12, 14), row(0, 10), row(6, 11), row(12, 10), row(24, 12)];
+  const t = tempInfo(rows, now);
+  assert.equal(t.now, 10);
+  assert.equal(t.d24, -8);
+  assert.equal(t.range, 2);
+  assert.equal(t.level, 'big');
+  // 変化が小さい
+  const small = tempInfo([row(-24, 11), row(0, 12), row(12, 13), row(24, 12)], now);
+  assert.equal(small.level, 'none');
+  assert.equal(small.d24, 1);
+  // 前日のデータが無ければ d24 は null、日較差だけで判定
+  const noAgo = tempInfo([row(0, 8), row(12, 20), row(24, 9)], now);
+  assert.equal(noAgo.d24, null);
+  assert.equal(noAgo.level, 'big');
+  assert.equal(tempInfo([], now), null);
+});
+
+test('mergeWeek: 最高・最低気温の前日比', () => {
+  const days = mergeWeek({
+    today: '2026-11-10',
+    jma: { days: [], week: [{ date: '2026-11-10', code: '100', tmax: 20, tmin: 10 }, { date: '2026-11-11', code: '100', tmax: 15, tmin: 11 }] },
+    pressure: {},
+  });
+  assert.equal(days[0].dtmax, null);
+  assert.equal(days[1].dtmax, -5);
+  assert.equal(days[1].dtmin, 1);
 });

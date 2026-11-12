@@ -19,6 +19,12 @@ const pad = (n) => String(n).padStart(2, '0');
 const jstParts = (ts) => { const d = new Date(ts + 9 * 3600e3); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() }; };
 const fmtTime = (ts) => { const p = jstParts(ts); return `${p.m}/${p.d} ${p.h}時`; };
 const sign = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
+// 気温の変化(表示専用の暫定の目安): 現在の気温・前日の同時刻との差・今後24時間の最高/最低
+function tempLine(t) {
+  if (!t) return null;
+  const d = t.d24 != null ? `（前日同時刻比 ${sign(t.d24)}${Math.abs(t.d24).toFixed(1)}℃）` : '';
+  return [`気温 ${Math.round(t.now)}℃${d}　今後24時間 ${Math.round(t.min)}〜${Math.round(t.max)}℃ `, h('span', { class: `pill tp-${t.level}` }, t.label)];
+}
 const temp = (t) => (t == null ? '–' : `${t}°`);
 
 async function getJson(url, opt) {
@@ -72,6 +78,7 @@ function renderToday(w) {
       h('div', {}, '今後24時間：', h('span', { class: `pill lv-${n.level}` }, n.label),
         n.rate != null && n.level !== 'none' ? h('span', { class: 'muted small' }, `　${fmtTime(n.at)}ごろ ${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h`) : null),
       n.severe ? h('div', { class: 'small' }, '気圧が大きく下がる見込みです。早めの休息と、いつもの薬の確認を。') : null,
+      w.temp ? h('div', { class: 'small tline' }, tempLine(w.temp)) : null,
       document.body.dataset.page === 'top' ? h('a', { class: 't-link', href: '/weather' }, '1週間の見通しを見る →') : null),
   );
 }
@@ -103,7 +110,9 @@ function renderNews(w) {
         n.level !== 'none' && n.rate != null ? h('br') : null,
         n.level !== 'none' && n.rate != null ? `${fmtTime(n.at)}ごろ ${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h で変化する見込みです。` : null,
         n.severe ? h('br') : null,
-        n.severe ? '早めの休息と、いつもの薬の確認を。' : null)),
+        n.severe ? '早めの休息と、いつもの薬の確認を。' : null,
+        w.temp ? h('br') : null,
+        w.temp ? tempLine(w.temp) : null)),
   );
 }
 
@@ -127,7 +136,8 @@ function dayRow(d) {
     h('div', { class: 'd' }, h('b', {}, d.label), h('small', {}, `(${d.dow})`)),
     h('div', { class: 'w' }, h('span', { class: 'ic' }, wxIcon(d.key, d.icon, 36)), h('span', {}, d.text || '予報なし')),
     h('div', { class: 't' }, h('span', { class: 'hi' }, temp(d.tmax)), ' / ', h('span', { class: 'lo' }, temp(d.tmin)),
-      d.pop != null ? h('small', {}, `降水確率 ${d.pop}%`) : null),
+      d.pop != null ? h('small', {}, `降水確率 ${d.pop}%`) : null,
+      d.dtmax != null ? h('small', {}, `最高 前日比 ${sign(d.dtmax)}${Math.abs(d.dtmax)}℃`) : null),
     h('div', { class: 'p' },
       p ? [h('span', { class: `pill lv-${lv}` }, `気圧 ${p.label}`),
         h('span', {}, `${Math.round(p.min)}〜${Math.round(p.max)} hPa`),

@@ -317,3 +317,8 @@ body.lp { background: var(--bg); }
 .sx-pref ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
 .sx-pref a { display: inline-block; padding: 6px 12px; font-size: 13px; background: rgba(255,255,255,.7); color: inherit; text-decoration: none; border: 1px solid rgba(0,0,0,.12); }
 .sx-pref a:hover { background: #fff; }
+
+/* 気温差の目安(表示専用。気圧の4段階とは別の色) */
+.pill.tp-none { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 500; }
+.pill.tp-mid { background: #5b7c99; } .pill.tp-big { background: #34506b; }
+.tline { margin-top: 4px; }

@@ -2,7 +2,7 @@
 // 「その日の気圧の最低値・最大の下がり方（4段階）」を重ねて返す。
 import { all, get } from './db.js';
 import { AREA_BY_CODE } from './areas.js';
-import { annotate, worstDrop, SEVERITY, LEVEL_LABEL, HOUR, jstDateStr, jstDayStart } from './pressure.js';
+import { annotate, worstDrop, interpolate, SEVERITY, LEVEL_LABEL, HOUR, jstDateStr, jstDayStart } from './pressure.js';
 import { ensureFresh, isDemo } from './weather.js';
 import { loadJmaCached } from './jma.js';
 
@@ -88,10 +88,33 @@ const addDays = (dateStr, n) => jstDateStr(Date.parse(dateStr + 'T00:00:00+09:00
 const DOW = ['日', '月', '火', '水', '木', '金', '土'];
 
 /** 気象庁の予報(短期+週間)と気圧の日別集計を日付で突き合わせ、今日から7日分を返す。 */
+// ---- 気温の変化(表示専用の暫定の目安。医学的な基準ではない) ----
+// 前日の同時刻との差(d24)と、今後24時間の最高・最低の差(range)で、「気温差」の大きさを3段階に分ける。
+export const TEMP_LABEL = { none: '変化は小さめ', mid: '気温差あり', big: '気温差 大' };
+export const TEMP_RULE = { midD24: 5, bigD24: 8, midRange: 9, bigRange: 12 };
+const r1 = (x) => Math.round(x * 10) / 10;
+
+/** rows: [{ts, temp}]（ts昇順）。気温データが足りなければ null。 */
+export function tempInfo(rows, now) {
+  const pts = rows.filter((r) => r.temp != null).map((r) => ({ ts: r.ts, pressure: r.temp })); // interpolate は pressure を値として扱う
+  const cur = interpolate(pts, now);
+  if (cur == null) return null;
+  const ago = interpolate(pts, now - 24 * HOUR);
+  const next = pts.filter((p) => p.ts > now && p.ts <= now + 24 * HOUR).map((p) => p.pressure);
+  next.push(cur);
+  const min = Math.min(...next);
+  const max = Math.max(...next);
+  const d24 = ago == null ? null : cur - ago;
+  const range = max - min;
+  const a = d24 == null ? 0 : Math.abs(d24);
+  const level = a >= TEMP_RULE.bigD24 || range >= TEMP_RULE.bigRange ? 'big' : a >= TEMP_RULE.midD24 || range >= TEMP_RULE.midRange ? 'mid' : 'none';
+  return { now: r1(cur), d24: d24 == null ? null : r1(d24), min: r1(min), max: r1(max), range: r1(range), level, label: TEMP_LABEL[level] };
+}
+
 export function mergeWeek({ today, jma, pressure }) {
   const short = Object.fromEntries((jma?.days ?? []).map((d) => [d.date, d]));
   const week = Object.fromEntries((jma?.week ?? []).map((d) => [d.date, d]));
-  return Array.from({ length: 7 }, (_, i) => {
+  const days = Array.from({ length: 7 }, (_, i) => {
     const date = addDays(today, i);
     const w = week[date];
     const s = short[date];
@@ -114,13 +137,19 @@ export function mergeWeek({ today, jma, pressure }) {
       pressure: p ? { min: p.min, max: p.max, level: p.level, label: LEVEL_LABEL[p.level], rate: p.rate, at: p.at, partial: p.partial } : null,
     };
   });
+  // 前日比（最高・最低気温）。前日の値が無い日(今日)は null
+  return days.map((d, i) => ({
+    ...d,
+    dtmax: i > 0 && d.tmax != null && days[i - 1].tmax != null ? Math.round(d.tmax - days[i - 1].tmax) : null,
+    dtmin: i > 0 && d.tmin != null && days[i - 1].tmin != null ? Math.round(d.tmin - days[i - 1].tmin) : null,
+  }));
 }
 
 /** /api/week の本体 */
 export async function buildWeek(env, code, now = Date.now()) {
   await ensureFresh(env, code);
   const [rows, jma] = await Promise.all([
-    all(env.DB, `SELECT ts,temp,pressure,icon,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 6 * HOUR, now + 7 * 24 * HOUR),
+    all(env.DB, `SELECT ts,temp,pressure,icon,source FROM points WHERE area_code=? AND source IN ('owm','demo') AND ts BETWEEN ? AND ? ORDER BY ts`, code, now - 30 * HOUR, now + 7 * 24 * HOUR),
     loadJmaCached(env, code),
   ]);
   const ann = annotate(rows.filter((r) => r.pressure != null));
@@ -140,6 +169,7 @@ export async function buildWeek(env, code, now = Date.now()) {
     demo: isDemo(env) || rows.some((r) => r.source === 'demo'),
     fetchedAt,
     jma: jma ? { office: jma.office, reported: jma.reported } : null,
+    temp: tempInfo(rows, now),
     current: cur ? { pressure: Math.round(cur.pressure * 10) / 10, d3: cur && ago3 ? Math.round((cur.pressure - ago3.pressure) * 10) / 10 : null } : null,
     next24: worst
       ? { level: worst.level, label: LEVEL_LABEL[worst.level], rate: worst.rate, at: worst.ts, severe: SEVERITY[worst.level] >= SEVERITY.caution }

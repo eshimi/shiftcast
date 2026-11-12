@@ -330,7 +330,7 @@ ${areaBar}
   ${secHead('7 Days', '7日間の予報', 'w-days')}
   <div id="days" class="days" aria-live="polite"><p class="muted">読み込み中…</p></div>
   ${LEVELS}
-  <p class="muted small">気圧の欄は、その日の予測される最低・最高気圧（海面気圧）と、1時間あたりの最大の低下の段階です。気圧の予報は約5日先までのため、それより先の日は表示されません。</p>
+  <p class="muted small">気圧の欄は、その日の予測される最低・最高気圧（海面気圧）と、1時間あたりの最大の低下の段階です。気圧の予報は約5日先までのため、それより先の日は表示されません。「気温差」は、前日の同じ時刻との差が5℃以上、または今後24時間の最高と最低の差が9℃以上で「あり」、8℃以上／12℃以上で「大」とする暫定の目安で、医学的な基準ではありません（表示のみで、通知には使っていません）。</p>
 </section>
 
 <section class="sec" aria-labelledby="w-hour">
@@ -388,7 +388,7 @@ function dayRowHtml(d) {
   return `<div class="day lv-${lv}">
   <div class="d"><b>${esc(d.label)}</b><small>(${esc(d.dow)})</small></div>
   <div class="w"><span>${esc(d.text || '予報なし')}</span></div>
-  <div class="t"><span class="hi">${t(d.tmax)}</span> / <span class="lo">${t(d.tmin)}</span>${d.pop != null ? `<small>降水確率 ${d.pop}%</small>` : ''}</div>
+  <div class="t"><span class="hi">${t(d.tmax)}</span> / <span class="lo">${t(d.tmin)}</span>${d.pop != null ? `<small>降水確率 ${d.pop}%</small>` : ''}${d.dtmax != null ? `<small>最高 前日比 ${sgn(d.dtmax)}${Math.abs(d.dtmax)}℃</small>` : ''}</div>
   <div class="p">${p ? `<span class="pill lv-${lv}">気圧 ${esc(p.label)}</span><span>${Math.round(p.min)}〜${Math.round(p.max)} hPa</span>${lv !== 'none' && p.rate != null ? `<span>${jstHM(p.at)}ごろ ${sgn(p.rate)}${Math.abs(p.rate).toFixed(1)}hPa/h</span>` : ''}` : '<span>気圧の予報は約5日先までです</span>'}</div>
 </div>`;
 }
@@ -413,13 +413,14 @@ export function pressurePage(pref, w) {
     <div class="big">${cur ? Math.round(cur.pressure) : '–'}<small> hPa</small></div>
     <div>今後24時間：<span class="pill lv-${n.level}">${esc(n.label)}</span></div>
     <p>${esc(lead)}${esc(detail)}</p>
+    ${w?.temp ? `<p class="small tline">気温 ${Math.round(w.temp.now)}℃${w.temp.d24 != null ? `（前日同時刻比 ${sgn(w.temp.d24)}${Math.abs(w.temp.d24).toFixed(1)}℃）` : ''}　今後24時間 ${Math.round(w.temp.min)}〜${Math.round(w.temp.max)}℃ <span class="pill tp-${w.temp.level}">${esc(w.temp.label)}</span></p>` : ''}
   </div>
 </div>
 <section class="sec" aria-labelledby="p-days"><h2 id="p-days" class="pg-h">${esc(name)}の7日間の天気と気圧</h2>
   <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>
   ${LEVELS}
   <p>${esc(weekNote)}</p>
-  <p class="muted small">気圧は海面気圧の変化の目安です（気象庁・OpenWeatherMap）。診断や医学的な基準ではありません。</p>
+  <p class="muted small">気圧は海面気圧の変化の目安です（気象庁・OpenWeatherMap）。気温の「気温差」は、前日の同じ時刻との差が5℃以上、または今後24時間の最高と最低の差が9℃以上で「あり」、8℃以上／12℃以上で「大」とする暫定の表示で、医学的な基準ではありません（表示のみで、通知には使っていません）。</p>
 </section>
 <section class="sec"><h2 class="pg-h">${esc(name)}で天気痛・気象病に備えるには</h2>
   <ul class="plain">
