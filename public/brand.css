@@ -90,9 +90,15 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .site-f .f-logo, .lp-f .f-logo { margin-bottom: 10px; }
 
 /* ロゴ下のサブタイトル */
-.site-h .logo { flex-direction: column; align-items: flex-start; gap: 3px; }
+.site-h .logo { flex-direction: row; align-items: center; gap: 0; }
 .logo-sub { display: block; font-family: var(--wl-font); font-size: 9.5px; font-weight: 400; letter-spacing: .16em; line-height: 1; color: var(--ink-muted); white-space: nowrap; }
-.site-h .h-in { min-height: 56px; }
 .side-logo { flex-direction: column; align-items: flex-start; gap: 8px; }
 .side-logo .logo-sub { font-size: 12px; letter-spacing: .2em; color: rgba(255, 255, 255, .92); text-shadow: 0 1px 8px rgba(10, 30, 50, .4); }
 .m-brand .m-tag { margin-top: 6px; }
+
+/* 人物イラストの階段: 人物は影つきで大きさがまちまちなので、高さをそろえて表示する */
+.st .dog { height: 54px; width: auto; max-width: 96%; object-fit: contain; mix-blend-mode: multiply; }
+.st.on .dog { height: 84px; max-height: none; }
+@media (min-width: 760px) { .st .dog { height: 88px; } .st.on .dog { height: 124px; } }
+@media (prefers-color-scheme: dark) { .st .dog { mix-blend-mode: normal; } }
+.dog-mini { height: 48px; max-width: 76px; mix-blend-mode: multiply; }

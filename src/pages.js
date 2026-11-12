@@ -67,7 +67,7 @@ const STREET_SCRIPT = `<script>
 })();
 </script>`;
 
-const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="Weling" width="102" height="36"><small class="logo-sub">Feel Better, Every Day.</small>';
+const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="Weling" width="102" height="36">';
 
 const NAV = [
   ['/', 'トップ', 'top'],
