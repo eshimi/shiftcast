@@ -50,5 +50,9 @@ export const PEOPLE = [
   { name: 'jogger', file: '46-jogger.webp', w: 170, h: 185 },
   { name: 'wheelchair', file: '47-wheelchair.webp', w: 203, h: 178 },
   { name: 'snowman', file: '48-snowman.webp', w: 210, h: 150 },
+  // ---- 3枚目のシートから(体調そらもようで使用) ----
+  { name: 'reading-chair', file: '131-reading-chair.webp', w: 136, h: 123 },
+  { name: 'road-cyclist', file: '126-road-cyclist.webp', w: 166, h: 139 },
+  { name: 'trail-run', file: '123-trail-run.webp', w: 125, h: 154 },
 ];
 export const PERSON = Object.fromEntries(PEOPLE.map((p) => [p.name, p]));
