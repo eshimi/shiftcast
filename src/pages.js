@@ -52,9 +52,9 @@ const STREET_SCRIPT = `<script>
   var el = document.querySelector('[data-street]');
   if (!el) return;
   var L = ${JSON.stringify(PEOPLE.map((p) => [p.file, p.w, p.h]))};
-  // 画面の幅に収まる人数だけ、重複なしでランダムに選ぶ（はみ出さない・重ならない）
+  // 毎回ランダムに1人だけ、中央に置く
   var room = Math.min(window.innerWidth, 1100) - 40, used = 0, picked = [], tries = 0;
-  while (tries++ < 80 && picked.length < 8) {
+  while (tries++ < 80 && picked.length < 1) {
     var c = L[Math.floor(Math.random() * L.length)], w = c[1] * 0.5 + 14;
     if (picked.indexOf(c) >= 0 || used + w > room) continue;
     picked.push(c); used += w;

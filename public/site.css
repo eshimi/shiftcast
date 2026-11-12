@@ -291,14 +291,14 @@ body.lp { background: var(--bg); }
 .ppl-row.c { justify-content: center; }
 /* 前のセクションの底辺に立つ人物（Start の上端） */
 .sx.start { position: relative; }
-.walker { position: absolute; right: 22px; bottom: 100%; margin-bottom: -3px; z-index: 2; pointer-events: none; }
+.walker { position: absolute; left: 50%; transform: translateX(-50%); bottom: 100%; margin-bottom: -3px; z-index: 2; pointer-events: none; }
 .sx.room { padding-bottom: 112px; }
 /* 見出し帯の下端に並ぶ人物 */
 .page-head.has-ppl { position: relative; padding-bottom: 104px; margin-bottom: 8px; }
 .pg-ppl { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: flex-end; padding: 0 12px; }
 /* フッターの上に立つ人物（ランダム） */
 .site-f { position: relative; margin-top: 92px; }
-.street { position: absolute; left: 0; right: 0; bottom: 100%; display: flex; justify-content: space-around; align-items: flex-end; padding: 0 10px; margin-bottom: -2px; pointer-events: none; }
+.street { position: absolute; left: 0; right: 0; bottom: 100%; display: flex; justify-content: center; align-items: flex-end; padding: 0 10px; margin-bottom: -2px; pointer-events: none; }
 /* コラム記事の見出しの横 */
 .art-fig { float: right; margin: 0 0 6px 10px; }
 @media (min-width: 640px) { .fig-live { height: 70px; } }
