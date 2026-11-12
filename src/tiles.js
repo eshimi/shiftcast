@@ -12,9 +12,9 @@ const ICONS = {
   hum: '<path d="M32 7c9 12 14 19 14 28a14 14 0 01-28 0c0-9 5-16 14-28z"/><path d="M24 38q4 4 8 0t8 0"/>',
 };
 // 体調そらもよう: 人物イラスト(活動のようす別に5人)と5段の階段。人物は public/img/people/ の既存の素材を使う。
-// 5=快調: トレイルラン / 4=おおむね良好: ロードバイク / 3=やや不安定: ヨガ / 2=影響しそう: 犬の散歩 / 1=体調不良: 椅子で読書
+// 5=快調: ジョギング / 4=おおむね良好: ロードバイク / 3=やや不安定: ヨガ / 2=影響しそう: 犬の散歩 / 1=体調不良: 椅子で読書
 import { PERSON } from './people.js';
-const MOOD_PERSON = { 5: 'trail-run', 4: 'road-cyclist', 3: 'yoga', 2: 'dog', 1: 'reading-chair' };
+const MOOD_PERSON = { 5: 'jogger', 4: 'road-cyclist', 3: 'yoga', 2: 'dog', 1: 'reading-chair' };
 // レベルは 5=気候が快調 〜 1=体調不良に注意。今のレベルの段だけ色をつけ、ほかは灰色にする。
 const dogImg = (level, cls = '') => { const p = PERSON[MOOD_PERSON[level]]; return `<img class="dog ${cls}" src="/img/people/${p.file}" alt="" aria-hidden="true" width="${Math.round(p.w * 0.5)}" height="${Math.round(p.h * 0.5)}" loading="lazy" decoding="async">`; };
 export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].st)}</span></div>`).join('')}</div>`;
