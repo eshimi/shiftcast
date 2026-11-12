@@ -14,11 +14,11 @@ export const MOOD_POINTS = {
 export const MOOD_MAX = 6 + 2 + 2 + 2 + 1; // 13
 // 合計点 → 段階(上限の点数)
 export const MOOD_LEVELS = [
-  { level: 1, key: 'calm', label: 'おだやか', name: 'おだやか', max: 1 },
-  { level: 2, key: 'mild', label: '少し気にかけて', name: '少し気にかけて', max: 3 },
-  { level: 3, key: 'care', label: '注意', name: '注意', max: 5 },
-  { level: 4, key: 'alert', label: '要注意', name: '要注意', max: 8 },
-  { level: 5, key: 'warn', label: '警戒', name: '警戒', max: Infinity },
+  { level: 1, key: 'calm', label: 'おだやか', name: 'おだやか', max: 1, desc: '体調に響きそうな要因は少ない日です。いつもどおり過ごせそうです。' },
+  { level: 2, key: 'mild', label: '少し気にかけて', name: '少し気にかけて', max: 3, desc: '軽い要因があります。無理をしなければ大丈夫なことが多い日です。' },
+  { level: 3, key: 'care', label: '注意', name: '注意', max: 5, desc: '体調に影響しそうな要因がいくつかあります。予定に余裕を持ち、こまめに休みましょう。' },
+  { level: 4, key: 'alert', label: '要注意', name: '要注意', max: 8, desc: '強い要因、または複数の要因が重なっています。早めに休み、いつもの薬を確認しておきましょう。' },
+  { level: 5, key: 'warn', label: '警戒', name: '警戒', max: Infinity, desc: '大きな気圧の低下や、複数の要因の重なりがあります。無理をせず、休息を最優先にしましょう。' },
 ];
 
 export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24 }) {
@@ -40,5 +40,5 @@ export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24 }) {
       : `「${names.join('」と「')}」が重なっています。`;
   const advice = lv.level >= 4 ? '早めの休息と、いつもの薬の確認を。' : lv.level === 3 ? '無理のない予定で、こまめに休みましょう。' : '';
   const worst = next24 && next24.level !== 'none' && next24.at ? { at: next24.at, rate: next24.rate } : null;
-  return { points, max: MOOD_MAX, score: Math.round((points / MOOD_MAX) * 100), level: lv.level, key: lv.key, label: lv.label, name: lv.name, reason, advice, factors: f.factors, parts, bonus, worst };
+  return { desc: lv.desc, points, max: MOOD_MAX, score: Math.round((points / MOOD_MAX) * 100), level: lv.level, key: lv.key, label: lv.label, name: lv.name, reason, advice, factors: f.factors, parts, bonus, worst };
 }

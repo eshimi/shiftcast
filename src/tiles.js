@@ -1,3 +1,4 @@
+import { MOOD_LEVELS, MOOD_MAX } from './mood.js';
 // 「今日の見通し」の要因タイル(気圧・気温・降水・湿度)とまとめ。サーバーで描画し、
 // 都道府県ページにそのまま埋め込むほか、週間天気ページには /api/week の tilesHtml として渡す。
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -13,27 +14,38 @@ const ICONS = {
 // 今の段階だけ色つき(on)、ほかは灰色(off)で、5段階をならべて見せる。
 const MOOD_NAMES = ['おだやか', '少し気にかけて', '注意', '要注意', '警戒'];
 export const moodImg = (level, on, cls = '') => `<img class="mi ${cls}" src="/img/mood/mood-${level}-${on ? 'on' : 'off'}.webp" alt="${on ? esc(MOOD_NAMES[level - 1]) : ''}"${on ? '' : ' aria-hidden="true"'} width="120" height="120" loading="lazy" decoding="async">`;
-export const moodStrip = (level) => `<div class="mood-strip" role="img" aria-label="体調そらもよう ${esc(MOOD_NAMES[level - 1])}（5段階の${level}）">${[1, 2, 3, 4, 5].map((i) => `<div class="ms${i === level ? ' on' : ''}" data-l="${i}">${moodImg(i, i === level)}<i class="mdot"></i></div>`).join('')}</div>`;
+export const moodStrip = (level) => `<div class="mood-strip" role="img" aria-label="体調そらもよう ${esc(MOOD_NAMES[level - 1])}（5段階の${level}）">${[1, 2, 3, 4, 5].map((i) => `<div class="ms${i === level ? ' on' : ''}" data-l="${i}">${moodImg(i, i === level)}<div class="mdw"><i class="mdot">${i}</i></div><span class="ml">${esc(MOOD_NAMES[i - 1])}</span></div>`).join('')}</div>`;
 
 const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
 const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
 const CH_ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
+
+// 5段階の早見表(段階・状況・スコアの範囲)
+const MOOD_GUIDE = MOOD_LEVELS.map((l, i) => {
+  const sc = (p) => Math.round((p / MOOD_MAX) * 100);
+  const lo = i === 0 ? 0 : sc(MOOD_LEVELS[i - 1].max) + 1; // 前の段階の上限の次から(つづけて読めるように)
+  const hi = l.max === Infinity ? 100 : sc(l.max);
+  return { level: l.level, label: l.label, desc: l.desc, range: `${lo}〜${hi}` };
+});
 
 /** 体調そらもよう(大きなパネル) */
 export function moodBlockHtml(w) {
   const m = w?.mood;
   if (!m) return '';
   const chips = m.factors.length ? m.factors.map((k) => `<span class="fx-chip">${fxIcon(CH_ICON[k], 20)}${CH_NAME[k]}</span>`).join('') : '<span class="fx-chip ok">✓ 気になる要因なし</span>';
-  const bar = [1, 2, 3, 4, 5].map((i) => `<i class="${i <= m.level ? `on m${i}` : ''}"></i>`).join('');
   return `<div class="mood mood-${m.level}" role="group" aria-label="体調そらもよう">
   ${moodStrip(m.level)}
   <div class="mood-body">
     <p class="mood-en">今日の体調そらもよう</p>
-    <p class="mood-t"><b>${esc(m.label)}</b></p>
-    <div class="mood-bar" aria-hidden="true">${bar}</div>
+    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level} 段階目</span></p>
+    <p class="mood-m">${esc(m.desc)}</p>
     <p class="mood-s">スコア <b>${m.score}</b> / 100${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
     <div class="fx-chips">${chips}</div>
-    <p class="mood-r">${esc(m.reason)}${m.advice ? esc(m.advice) : ''}</p>
+    <p class="mood-r">${esc(m.reason)}</p>
+    <details class="mood-guide"><summary>5段階の見かた</summary>
+      <table class="mg"><thead><tr><th>段階</th><th>状況</th><th>スコア</th></tr></thead><tbody>${MOOD_GUIDE.map((g) => `<tr class="${g.level === m.level ? 'now' : ''}"><th scope="row"><span class="lvno sm">${g.level}</span>${esc(g.label)}</th><td>${esc(g.desc)}</td><td>${g.range}</td></tr>`).join('')}</tbody></table>
+      <p class="muted small">スコアは、気圧・気温差・降水・湿度の目安を点数にして0〜100に換算したものです。暫定の目安で、医学的な基準ではありません。</p>
+    </details>
   </div>
 </div>`;
 }
