@@ -1,6 +1,6 @@
 {
-  "name": "WELING",
-  "short_name": "WELING",
+  "name": "Weling",
+  "short_name": "Weling",
   "description": "気象と暮らしをつなぐウェルビーイング。気圧・気温・降水・湿度から、今日の体調への影響を知る。",
   "start_url": "/app/",
   "scope": "/",
@@ -26,12 +26,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
-    },
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
     }
   ]
 }

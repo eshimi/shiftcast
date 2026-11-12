@@ -80,3 +80,11 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
   .brand-ln small { font-size: 11.5px; letter-spacing: .14em; margin-top: 8px; }
 }
 .m-brand img { height: 78px; margin-bottom: 12px; }
+
+/* 新ロゴ(Weling): 画像のロゴを使う */
+.site-h .logo img.logo-img { height: 36px; width: auto; border-radius: 0; }
+.site-h .logo { gap: 0; }
+.side-logo img { height: 70px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }
+.m-brand img { height: 190px; width: auto; margin-bottom: 14px; }
+.f-logo img, .lp-f .f-logo img, .site-f .f-logo img { height: 40px; width: auto; display: block; }
+.site-f .f-logo, .lp-f .f-logo { margin-bottom: 10px; }

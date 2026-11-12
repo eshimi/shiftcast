@@ -1,4 +1,4 @@
-# shiftcast（WELING：気圧と体調のノート）
+# shiftcast（Weling：気圧と体調のノート）
 気圧の変化と体調を記録して気象病を予防する、スマホ向けPWA。Cloudflare Workers + D1 で動作します。
 
 - 気象: OpenWeatherMap（3時間毎）/ 気象庁アメダス実況（最寄り観測所の海面気圧）
