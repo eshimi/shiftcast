@@ -67,7 +67,7 @@ const STREET_SCRIPT = `<script>
 })();
 </script>`;
 
-const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="Weling" width="102" height="36">';
+const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="Weling" width="102" height="36"><small class="logo-sub">Feel Better, Every Day.</small>';
 
 const NAV = [
   ['/', 'トップ', 'top'],
@@ -176,7 +176,7 @@ export function topPage() {
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
-      <a class="side-logo" href="/" aria-label="Weling トップへ"><img src="/logo-h-white.webp" alt="Weling" width="199" height="70"></a>
+      <a class="side-logo" href="/" aria-label="Weling トップへ"><img src="/logo-h-white.webp" alt="Weling" width="199" height="70"><small class="logo-sub">Feel Better, Every Day.</small></a>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">

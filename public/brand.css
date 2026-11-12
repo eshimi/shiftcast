@@ -88,3 +88,11 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .m-brand img { height: 190px; width: auto; margin-bottom: 14px; }
 .f-logo img, .lp-f .f-logo img, .site-f .f-logo img { height: 40px; width: auto; display: block; }
 .site-f .f-logo, .lp-f .f-logo { margin-bottom: 10px; }
+
+/* ロゴ下のサブタイトル */
+.site-h .logo { flex-direction: column; align-items: flex-start; gap: 3px; }
+.logo-sub { display: block; font-family: var(--wl-font); font-size: 9.5px; font-weight: 400; letter-spacing: .16em; line-height: 1; color: var(--ink-muted); white-space: nowrap; }
+.site-h .h-in { min-height: 56px; }
+.side-logo { flex-direction: column; align-items: flex-start; gap: 8px; }
+.side-logo .logo-sub { font-size: 12px; letter-spacing: .2em; color: rgba(255, 255, 255, .92); text-shadow: 0 1px 8px rgba(10, 30, 50, .4); }
+.m-brand .m-tag { margin-top: 6px; }
