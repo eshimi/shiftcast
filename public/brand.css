@@ -67,3 +67,16 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .site-h .logo img { height: 36px; width: auto; }
 .side-logo img { height: 84px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }
 .m-brand img { height: 56px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }
+
+/* ロゴのバランス調整: マークと文字の高さ・重さをそろえる */
+.site-h .logo { gap: 12px; align-items: center; }
+.site-h .logo img { height: 40px; width: auto; }
+.site-h .ln b { font-size: 21px; letter-spacing: .18em; line-height: 1; }
+.site-h .ln small { font-size: 9px; letter-spacing: .12em; margin-top: 5px; }
+@media (min-width: 900px) {
+  .side-logo { flex-direction: row; align-items: center; gap: 18px; }
+  .side-logo img { height: 78px; }
+  .brand-ln b { font-size: 40px; letter-spacing: .2em; line-height: 1; }
+  .brand-ln small { font-size: 11.5px; letter-spacing: .14em; margin-top: 8px; }
+}
+.m-brand img { height: 78px; margin-bottom: 12px; }
