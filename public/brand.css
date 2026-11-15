@@ -115,3 +115,12 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .st.on .dog { height: calc(var(--ph) * var(--kon) * 1px); }
 @media (min-width: 760px) { .stairs { --k: .39; --kon: .54; } .st .dog { height: calc(var(--ph) * var(--k) * 1px); } .st.on .dog { height: calc(var(--ph) * var(--kon) * 1px); } }
 .dog-mini { height: calc(var(--ph) * .22 * 1px); max-width: 70px; }
+
+/* トップ: 機能3つの横並び(写真カードの代わり) */
+.mini-feat { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 10px; }
+.mini-feat a { display: grid; grid-template-columns: 36px 1fr; grid-template-areas: "i b" "i s"; column-gap: 12px; align-items: center; padding: 14px 16px; background: rgba(255, 255, 255, .14); border: 1px solid rgba(255, 255, 255, .35); border-radius: 16px; color: #fff; text-decoration: none; }
+.mini-feat svg { grid-area: i; width: 30px; height: 30px; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.mini-feat b { grid-area: b; font-size: 16px; letter-spacing: .08em; }
+.mini-feat span { grid-area: s; font-size: 12.5px; opacity: .9; }
+.sx-more { margin: 14px 0 0; text-align: center; font-size: 14px; } .sx-more a { text-decoration: underline; text-underline-offset: 3px; }
+.tmrw-next { margin: 8px 0 0; }

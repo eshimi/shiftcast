@@ -133,8 +133,17 @@ function renderMain(w) {
   const night = isNight(w);
   const head = $('#t-today');
   if (head) { head.textContent = night ? 'Tomorrow' : 'Today'; head.nextElementSibling.textContent = night ? '明日の気圧' : '今日の気圧'; }
-  if (night) { renderTomorrow(w); renderNews(w); }
-  else { renderTodayBig(w); renderTomorrowSmall(w); }
+  // 見通しは1枚のカードに統合する(別カードにしない): 夜=明日のカード+体調そらもよう / 日中=今日のカード(体調そらもよう入り)+明日の1行
+  const card = $('#tmrwCard');
+  if (night) {
+    renderTomorrow(w);
+    if (card && w.moodMiniHtml) { const x = h('div', { class: 'news-mood' }); x.innerHTML = w.moodMiniHtml; card.append(x); }
+  } else {
+    renderTodayBig(w);
+    const d1 = w.days && w.days[1], p1 = d1 && d1.pressure;
+    if (card && p1) card.append(h('p', { class: 'tmrw-next' }, h('span', { class: 'muted small' }, `明日 ${mdDow(d1)}　`), h('span', { class: `pill lv-${p1.level}` }, LABEL[p1.level])));
+  }
+  const sm = $('#todayNews'); if (sm) sm.hidden = true;
   // 通知CTAの位置: 夜は明日カードの直下、日中は「今日→明日」の流れを切らないよう明日の小カードの下
   const cta = document.querySelector('#today [data-ncta]'), big = $('#tmrwCard'), small = $('#todayNews');
   if (cta && big && small) (night ? big : small).after(cta);

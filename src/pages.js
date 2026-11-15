@@ -222,8 +222,6 @@ export function topPage() {
       <li><a href="#features" data-sec="features">Three Features<small>三つの機能</small></a></li>
       <li><a href="#weekly" data-sec="weekly">Weekly<small>今週の天気</small></a></li>
       <li><a href="#column" data-sec="column">Column<small>コラム</small></a></li>
-      <li><a href="#info" data-sec="info">Information<small>サービス情報</small></a></li>
-      <li><a href="#start" data-sec="start">Start<small>はじめる</small></a></li>
     </ol>
   </aside>
 
@@ -244,8 +242,7 @@ export function topPage() {
         ${secHead2('Today', '今日の気圧', 't-today')}
         ${areaBar}
         <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
-        ${notifyCta()}
-        <div id="todayNews" class="news news-sm" aria-live="polite"><p class="muted">読み込み中…</p></div>
+        <div id="todayNews" class="news news-sm" aria-live="polite" hidden></div>
         <p class="sx-btn"><a class="btn dark block" href="/app/">気圧グラフを見る</a></p>
       </div>
     </section>
@@ -253,17 +250,6 @@ export function topPage() {
     <section class="sx blush" id="exp" aria-labelledby="t-exp">
       <div class="sx-in">
         ${secHead2('Experience', '体験', 't-exp')}
-        <svg class="arc" viewBox="0 0 340 96" role="img" aria-label="Calm in Every Change">
-          <defs><path id="arc1" d="M8 78 Q170 -16 332 78"/></defs>
-          <text><textPath href="#arc1" startOffset="50%" text-anchor="middle">Calm in Every Change</textPath></text>
-        </svg>
-        <div class="poem">
-          <p>「気圧」「天気」「体調」の三つが、<br>ひとつのノートに重なります。</p>
-          <p>低気圧が近づく前の晩に、<br>そっと知らせてくれる。</p>
-          <p>痛みやだるさは、ワンタップで記録。<br>重ねるほど、あなたの<br>「なりやすい条件」が見えてくる。</p>
-          <p>“ああ”と空を見上げるその前に、<br>備えられる毎日を。</p>
-        </div>
-        <div class="ppl-row c" aria-hidden="true">${person('reading', { k: 0.55 })}</div>
         <div id="hero-root" class="exp-phones"></div>
       </div>
     </section>
@@ -271,10 +257,11 @@ export function topPage() {
     <section class="sx teal" id="features" aria-labelledby="t-three">
       <div class="sx-in">
         ${secHead2('Three Features', '三つの機能', 't-three')}
-        <p class="center-copy">ウェルミーは、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
-        <a class="feat" href="/weather" style="--img: url('/hero/bg/mist.webp'); --pos: 30% 50%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
-        <a class="feat" href="/app/" style="--img: url('/hero/bg/dusk.webp'); --pos: 41% 40%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
-        <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">天気痛・気象病・気圧頭痛の対策</span></a>
+        <ul class="mini-feat">
+          <li><a href="/weather"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 2v1.6M2 8h1.6M3.8 3.8l1.1 1.1M12.2 3.8l-1.1 1.1"/><path d="M7 20a4 4 0 010-8 5.5 5.5 0 0110.4-1.2A4.6 4.6 0 0117 20z"/></svg><b>週間天気</b><span>7日間の天気と気圧</span></a></li>
+          <li><a href="/app/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5c3-.3 4-6 6.5-6.5s3.5 3.5 6 1.5 3-8.5 4.5-9"/><path d="M3.5 4.5v15.2h17"/></svg><b>気圧・記録</b><span>気圧と体調を重ねて見る</span></a></li>
+          <li><a href="/columns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C7 4 10 4.4 12 6c2-1.6 5-2 8-.5V19c-3-1.5-6-1.1-8 .5-2-1.6-5-2-8-.5z"/><path d="M12 6v13.5"/></svg><b>コラム</b><span>天気痛・気象病の対策</span></a></li>
+        </ul>
       </div>
     </section>
 
@@ -285,8 +272,7 @@ export function topPage() {
         <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
         ${LEVELS}
         <p class="sx-btn"><a class="btn dark block" href="/weather">Weekly All</a></p>
-        <div class="sx-pref"><p class="sx-pref-h">都道府県別の気圧予報</p>
-          <ul>${['hokkaido', 'miyagi', 'tokyo', 'aichi', 'osaka', 'hiroshima', 'fukuoka'].map((sl) => PREFS.find((q) => q.slug === sl)).map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">全国47都道府県</a></li><li><a href="/today">今日の全国の気圧</a></li><li><a href="/check">気象病セルフチェック</a></li></ul></div>
+        <p class="sx-more"><a href="/pressure">都道府県別の気圧予報を見る →</a></p>
       </div>
     </section>
 
@@ -307,33 +293,6 @@ export function topPage() {
           });
         })();</script>
         <p class="sx-btn"><a class="btn dark block" href="/columns">Column All</a></p>
-      </div>
-    </section>
-
-    <section class="sx cream room" id="info" aria-labelledby="t-info">
-      <div class="sx-in">
-        ${person('suitcase', { k: 0.5, cls: 'fig-tr' })}
-        ${secHead2('Information', 'サービス情報', 't-info')}
-        <dl class="info">
-          <div><dt>サービス名</dt><dd>ウェルミー</dd></div>
-          <div><dt>できること</dt><dd>気圧の予報、週間天気、体調の記録、傾向の分析、前夜の通知</dd></div>
-          <div><dt>データ</dt><dd>天気：気象庁、気圧予報：OpenWeatherMap</dd></div>
-          <div><dt>対応地域</dt><dd>全国47都道府県</dd></div>
-          <div><dt>通知</dt><dd>毎晩20時（日本時間）。翌日に「注意」以上の気圧低下が見込まれるとき</dd></div>
-          <div><dt>料金</dt><dd>現在は無料</dd></div>
-          <div><dt>プライバシー</dt><dd>氏名・メールは不要。位置情報は都道府県単位でのみ使用</dd></div>
-        </dl>
-        <p class="note-s">気圧は海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
-      </div>
-    </section>
-
-    <section class="sx teal start" id="start" aria-labelledby="t-start">
-      <span class="walker" aria-hidden="true">${person('family', { k: 0.62 })}</span>
-      <div class="sx-in">
-        ${secHead2('Start', 'はじめる', 't-start')}
-        <p class="center-copy">地域を選んで、今日の気圧を確認。<br>体調を記録して、自分の傾向を見つけましょう。</p>
-        <p class="sx-btn"><a class="btn cream block" href="/app/">気圧・記録へ</a></p>
-        <p class="sx-btn"><a class="btn ghost block" href="/app/#log">体調を記録する</a></p>
       </div>
     </section>
 
