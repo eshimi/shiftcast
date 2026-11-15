@@ -127,3 +127,6 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 
 /* 過去24時間の気圧(トップの見通しカード) */
 .tmrw-past { margin: 6px 0 0; } .tmrw-past.strong { color: #b3261e; font-weight: 700; }
+/* /app/ ホーム: 体調そらもようを「マーク」「コメント」に分けて置いたとき */
+#moodMark .mood, #moodNote .mood { margin-bottom: 0; }
+#moodMark .mood { padding-bottom: 6px; }

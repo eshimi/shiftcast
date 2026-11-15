@@ -2,8 +2,7 @@
 export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-dash" class="view">
         <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
-    <div id="moodCard" class="card mood-card" hidden></div>
-    <div id="summary" class="card summary"></div>
+    <div id="moodMark" class="card mood-card" hidden></div>
     <div class="card">
       <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>
       <div class="chart-box"><div id="yAxis" class="yaxis"></div><div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div></div>
@@ -12,6 +11,9 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <span class="muted">／ 点線=気象庁アメダス実況</span>
       </div>
     </div>
+    <div id="moodNote" class="card mood-card" hidden></div>
+    <div id="fxCard" class="card mood-card" hidden></div>
+    <div id="summary" class="card summary"></div>
     <div id="jma" class="card" hidden></div>
     <div id="stats" class="card"></div>
     <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。<a href="/terms.html">利用規約</a></p>

@@ -141,8 +141,13 @@ async function loadDash() {
       api('/week?area=' + code).catch(() => null), // 体調そらもよう(表示のみ)
     ]);
     if (code !== S.sel) return; // 切替競合
-    const mc = $('#moodCard');
-    if (wk?.moodHtml) { mc.innerHTML = wk.moodHtml + (wk.tilesHtml || ''); mc.hidden = false; } else mc.hidden = true;
+    // 上から: マーク(5段階の人物) → 気圧の推移グラフ → コメント → 4指標 → 今後24時間。体調そらもようを、マークとコメントに分けて置く
+    const mk = $('#moodMark'), nt = $('#moodNote'), fx = $('#fxCard');
+    const tmp = document.createElement('div'); tmp.innerHTML = wk?.moodHtml || '';
+    const m = tmp.querySelector('.mood'), stairs = m && m.querySelector('.stairs'), body = m && m.querySelector('.mood-body');
+    const wrap = (el) => { const d = document.createElement('div'); d.className = m.className; d.append(el); return d; };
+    if (stairs && body) { mk.replaceChildren(wrap(stairs)); nt.replaceChildren(wrap(body)); mk.hidden = nt.hidden = false; } else { mk.hidden = nt.hidden = true; }
+    if (wk?.tilesHtml) { fx.innerHTML = wk.tilesHtml; fx.hidden = false; } else fx.hidden = true;
     S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
     $('#fetched').textContent = fc.fetchedAt ? `更新 ${fmtDT(fc.fetchedAt)}` : '';
     $('#demoBadge').hidden = !fc.demo && !S.cfg.demo;
