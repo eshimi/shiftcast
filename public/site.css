@@ -454,23 +454,41 @@ body.lp { background: var(--bg); }
 .wql-face:active { background: var(--blush); }
 .wql-done { font-family: var(--serif); font-weight: 700; font-size: 16.5px; }
 
-/* 「体調を記録する」固定ボタン: モバイルは下部固定、PCはヘッダー内（.h-rec） */
-.rec-fix { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--line); }
-.rec-fix .btn { min-height: 48px; font-size: 16px; }
+/* 下部固定ナビ（モバイル）: ホーム／週間／記録／コラム。現在地のタブをハイライト。safe-area対応 */
+.bnav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; padding: 4px 6px calc(4px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--card) 92%, transparent); backdrop-filter: blur(10px); border-top: 1px solid var(--line); }
+.bnav a { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 52px; padding: 6px 2px; color: var(--muted); text-decoration: none; font-size: 11px; line-height: 1.2; letter-spacing: .04em; border-radius: 12px; }
+.bnav svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.bnav a[aria-current="page"] { color: var(--teal); font-weight: 700; }
+@media (prefers-color-scheme: dark) { .bnav a[aria-current="page"] { color: #cfe3ea; } }
 body.has-rec { padding-bottom: calc(70px + env(safe-area-inset-bottom)); }
 body.lp .lp-f { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 .site-h .h-rec { display: none; margin-left: auto; font-family: var(--serif); }
 @media (min-width: 760px) {
-  .rec-fix { display: none; }
-  body.lp .rec-fix { display: block; } /* トップはヘッダーが無いため、PCレイアウト(900px)までは下部固定を残す */
+  .bnav { display: none; }
+  body.lp .bnav { display: flex; } /* トップはヘッダーが無いため、PCレイアウト(900px)までは下部ナビを残す */
   body.has-rec { padding-bottom: 0; }
   .site-h .h-rec { display: inline-flex; background: var(--teal); border-color: var(--teal); color: #fff; }
 }
 @media (min-width: 760px) and (prefers-color-scheme: dark) { .site-h .h-rec { background: #cfe3ea; border-color: #cfe3ea; color: #10191e; } }
 @media (min-width: 900px) {
-  body.lp .rec-fix { display: none; } /* PCは左の紹介メニューに「体調を記録する」がある */
+  body.lp .bnav { display: none; } /* PCは左の紹介メニューがある */
   body.lp .lp-f { padding-bottom: calc(28px + 84px); }
 }
+
+/* 地域バーのコンパクト表示（地域名＋変更） */
+.area-cur { display: flex; align-items: baseline; gap: 12px; min-height: 38px; align-items: center; }
+.area-cur #areaName { font-family: var(--serif); font-weight: 700; font-size: 18px; letter-spacing: .06em; }
+.link-btn { border: 0; background: none; padding: 6px 2px; min-height: 44px; color: var(--accent); font: inherit; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.sx.teal .link-btn, .band.teal .link-btn { color: #fff; }
+
+/* 週間ページ: 週末の行の強調と共有・判定基準の折りたたみ */
+.day.wkend { background: color-mix(in srgb, var(--blush) 72%, var(--card)); border-color: color-mix(in srgb, var(--teal) 28%, var(--line)); }
+.wk-tag { display: inline-block; margin-top: 2px; padding: 0 8px; border-radius: 99px; background: var(--teal); color: #fff; font-size: 10.5px; font-weight: 700; letter-spacing: .08em; }
+@media (prefers-color-scheme: dark) { .wk-tag { background: #cfe3ea; color: #10191e; } }
+.share-row { margin: 14px 0 0; }
+.crit { margin: 12px 0 0; }
+.crit summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+.crit[open] summary { margin-bottom: 4px; }
 
 /* hidden属性が、.badge などの display 指定に負けて表示されてしまわないようにする */
 [hidden] { display: none !important; }

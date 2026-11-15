@@ -51,7 +51,9 @@ export const APP_BODY = `  <!-- ダッシュボード -->
 
   <!-- 分析 -->
   <section id="view-insight" class="view" hidden>
-    <div class="card"><div class="card-h"><b>あなたの傾向</b></div><p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
+    <div class="card"><div class="card-h"><b>あなたの傾向</b></div>
+      <div id="insightProg" class="iprog" hidden><p id="insightProgText"></p><div class="iprog-bar" aria-hidden="true"><i id="insightProgFill"></i></div></div>
+      <p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
     <p class="disclaimer">簡易的な統計であり、医学的な診断ではありません。気になる症状は医療機関にご相談ください。</p>
   </section>
 

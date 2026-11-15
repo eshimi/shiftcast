@@ -417,6 +417,16 @@ function editLog(l) {
 // ---------- 分析 ----------
 async function loadInsight() {
   const r = await api('/insights');
+  // 傾向表示に必要な記録件数への進捗（必要件数の定義はサーバー側のインサイト算出条件と同じ）
+  const prog = $('#insightProg');
+  if (prog && r.needed) {
+    const left = r.remaining ?? Math.max(0, r.needed - (r.analyzed || 0));
+    prog.hidden = !left;
+    if (left) {
+      $('#insightProgText').textContent = `傾向が見えるまで あと${left}件分（気圧と照合できた「痛み3以上」の記録 ${r.analyzed || 0} / ${r.needed}件）`;
+      $('#insightProgFill').style.width = `${Math.round(((r.analyzed || 0) / r.needed) * 100)}%`;
+    }
+  }
   $('#insightText').textContent = r.text;
   const d = r.detail;
   $('#insightDetail').textContent = `記録 ${r.totalLogs}件 / 不調(痛み3以上) ${r.events}件 / 気圧と照合できた件数 ${r.analyzed}件` +

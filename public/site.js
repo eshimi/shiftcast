@@ -39,14 +39,31 @@ async function initArea(onChange) {
   const sel = $('#areaSel');
   const areas = await getJson('/api/areas');
   sel.replaceChildren(...areas.map((a) => h('option', { value: a.code }, a.name)));
+  const valid = (c) => areas.some((a) => a.code === c);
   let code = new URLSearchParams(location.search).get('area') || store.get('area');
   if (!code) {
     const uid = store.get('uid');
     if (uid) { try { code = (await getJson('/api/me', { headers: { 'x-user-id': uid } })).areas?.[0]; } catch { /* 未ログイン */ } }
   }
-  areaCode = areas.some((a) => a.code === code) ? code : '13';
+  // 初回アクセス: 都道府県レベルで自動推定して確定操作を不要にする（既存の方針どおり都道府県単位のみ。座標・GPSは使わない）
+  if (!valid(code)) {
+    try { const g = await getJson('/api/geo'); if (valid(g.code)) { code = g.code; store.set('area', code); } } catch { /* 推定できなければ従来の選択UI */ }
+  }
+  const known = valid(code);
+  areaCode = known ? code : '13';
   sel.value = areaCode;
-  const set = (c) => { areaCode = c; sel.value = c; store.set('area', c); onChange(); };
+  // ふだんは「地域名＋変更」だけのコンパクト表示。推定できなかったときと「変更」時は従来の選択UI
+  const compact = (on) => {
+    const cur = $('#areaCur');
+    if (!cur) return;
+    cur.hidden = !on;
+    sel.hidden = on;
+    const loc = $('#locate'); if (loc) loc.hidden = on;
+    if (on) $('#areaName').textContent = (areas.find((a) => a.code === areaCode) || {}).name || '';
+  };
+  compact(known);
+  $('#areaChange')?.addEventListener('click', () => { compact(false); sel.focus(); });
+  const set = (c) => { areaCode = c; sel.value = c; store.set('area', c); compact(true); onChange(); };
   sel.addEventListener('change', () => set(sel.value));
   const loc = $('#locate');
   loc?.addEventListener('click', () => {
@@ -163,8 +180,9 @@ function cellFor(d) {
 function dayRow(d) {
   const p = d.pressure;
   const lv = p?.level ?? 'none';
-  return h('div', { class: `day lv-${lv}` },
-    h('div', { class: 'd' }, h('b', {}, d.label), h('small', {}, `(${d.dow})`)),
+  const wkend = d.dow === '土' || d.dow === '日'; // 週末の行を視覚的に強調（予定を立てる起点になりやすいため）
+  return h('div', { class: `day lv-${lv}${wkend ? ' wkend' : ''}` },
+    h('div', { class: 'd' }, h('b', {}, d.label), h('small', {}, `(${d.dow})`), wkend ? h('span', { class: 'wk-tag' }, '週末') : null),
     h('div', { class: 'w' }, h('span', { class: 'ic' }, wxIcon(d.key, d.icon, 36)), h('span', {}, d.text || '予報なし')),
     h('div', { class: 't' }, h('span', { class: 'hi' }, temp(d.tmax)), ' / ', h('span', { class: 'lo' }, temp(d.tmin)),
       d.pop != null ? h('small', {}, `降水確率 ${d.pop}%`) : null,
@@ -187,6 +205,24 @@ function hourCell(p) {
     h('div', { class: 'pp' }, p.rate != null && p.level !== 'none' ? LABEL[p.level] : ' '));
 }
 
+// 「この週末の見通し」を共有（Web Share API。無いブラウザはLINEの共有画面を開く）
+function initShare(w) {
+  const btn = $('#shareWeekend');
+  if (!btn) return;
+  const we = w.days.filter((d) => d.dow === '土' || d.dow === '日').slice(0, 2);
+  if (!we.length) { btn.hidden = true; return; }
+  btn.hidden = false;
+  btn.onclick = async () => {
+    const part = (d) => `${d.dow}曜 ${d.pressure ? LABEL[d.pressure.level] : '予報なし'}`;
+    const text = `今週末の気圧: ${we.map(part).join('／')}（WELING）`;
+    const url = location.origin + '/weather?area=' + areaCode;
+    if (navigator.share) {
+      try { await navigator.share({ text, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+    window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(url) + '&text=' + encodeURIComponent(text), '_blank', 'noopener');
+  };
+}
+
 let seq = 0;
 async function load() {
   const mine = ++seq;
@@ -202,6 +238,7 @@ async function load() {
       $('#days').replaceChildren(...w.days.map(dayRow));
       const hrs = w.hourly.filter((p) => p.ts >= w.now - 1.5 * 3600e3).slice(0, 10);
       $('#hourly').replaceChildren(...(hrs.length ? hrs.map(hourCell) : [h('p', { class: 'muted' }, 'データ取得中です')]));
+      initShare(w);
     }
   } catch {
     if (mine !== seq) return;

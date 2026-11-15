@@ -139,7 +139,7 @@ ${chrome ? `<footer class="site-f">
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
-${chrome && page !== 'app' ? recFix : ''}
+${chrome && page !== 'app' ? bnav(page) : ''}
 ${chrome ? STREET_SCRIPT : ''}
 ${scripts}
 ${chrome ? '<script src="/actions.js" defer></script>' : ''}
@@ -149,7 +149,10 @@ ${chrome ? '<script src="/actions.js" defer></script>' : ''}
 
 /* ---------- 共通パーツ ---------- */
 
+// 地域バー: ふだんは「地域名＋変更」だけのコンパクト表示（地域は初回アクセス時に都道府県単位で自動推定）。
+// 「変更」を押すか、推定できなかったときは、従来の選択UI（セレクト＋現在地）を表示する（site.js）。
 const areaBar = `<div class="area-bar">
+  <div class="area-cur" id="areaCur" hidden><span id="areaName"></span><button type="button" id="areaChange" class="link-btn">変更</button></div>
   <label for="areaSel" class="sr">地域</label>
   <select id="areaSel" aria-label="地域を選ぶ"></select>
   <button type="button" id="locate" class="btn sm" aria-label="現在地の都道府県を選ぶ">📍 現在地</button>
@@ -174,9 +177,17 @@ export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通�
   <p class="muted small ncta-note" data-ncta-note hidden></p>
 </section>`;
 
-// 「体調を記録する」固定ボタン（モバイル: 下部固定）。JSが使えない場合はそのまま /app/#log へ遷移し、
-// public/actions.js が読み込まれていればページ遷移なしのワンタップ記録モーダルを開く。
-const recFix = `<div class="rec-fix"><a class="btn primary block" href="/app/#log" data-quicklog>体調を記録する</a></div>`;
+// モバイルの下部固定ナビ（ホーム／週間／記録／コラム）。現在地のタブをハイライトし、safe-areaに対応。
+// 「記録」はワンタップ記録モーダル（public/actions.js）を開き、JSが使えないときは /app/#log へ遷移する。
+const bnav = (page) => {
+  const cur = (ids) => (ids.includes(page) ? ' aria-current="page"' : '');
+  return `<nav class="bnav" aria-label="メインメニュー">
+  <a href="/"${cur(['top'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>ホーム</a>
+  <a href="/weather"${cur(['weather', 'pressure', 'today'])}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 11h16M8 3.5V7M16 3.5V7"/></svg>週間</a>
+  <a href="/app/#log"${cur(['app'])} data-quicklog><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8"/></svg>記録</a>
+  <a href="/columns"${cur(['columns', 'column'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.6-4.5-2-7-2v14c2.5 0 5 .4 7 2 2-1.6 4.5-2 7-2V4c-2.5 0-5 .4-7 2z"/><path d="M12 6v14"/></svg>コラム</a>
+</nav>`;
+};
 const secHead = (en, ja, id) => `<div class="sec-h"><p class="en">${en}</p><h2 id="${id}">${ja}</h2></div>`;
 
 const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}">
@@ -333,7 +344,7 @@ export function topPage() {
       <p><a href="/terms.html">利用規約・プライバシー</a></p>
       <p class="muted">天気: 気象庁 / OpenWeatherMap　© Weling</p>
     </footer>
-    ${recFix}
+    ${bnav('top')}
   </div>
 </div>`;
   return layout({
@@ -368,7 +379,10 @@ ${areaBar}
   ${secHead('7 Days', '7日間の予報', 'w-days')}
   <div id="days" class="days" aria-live="polite"><p class="muted">読み込み中…</p></div>
   ${LEVELS}
+  <p class="share-row"><button type="button" id="shareWeekend" class="btn block" hidden>この週末の見通しを共有する</button></p>
+  <details class="crit"><summary>表示の見かた・判定基準</summary>
   <p class="muted small">気圧の欄は、その日の予測される最低・最高気圧（海面気圧）と、1時間あたりの最大の低下の段階です。気圧の予報は約5日先までのため、それより先の日は表示されません。「気温差」は、前日の同じ時刻との差が5℃以上、または今後24時間の最高と最低の差が9℃以上で「あり」、8℃以上／12℃以上で「大」とする暫定の目安です。降水は直近24時間または今後24時間の合計が1mm以上で「雨あり」、10mm以上で「まとまった雨」、30mm以上で「雨が多め」、湿度は75%以上で「高め」、85%以上で「かなり高め」としています。いずれも医学的な基準ではありません（表示のみで、通知には使っていません）。「気になる要因」は、気圧・気温差・降水・湿度のうち目安に当てはまるものを並べたものです。</p>
+  </details>
 </section>
 
 <section class="sec" aria-labelledby="w-hour">
@@ -613,7 +627,8 @@ export function checkPage() {
   <p id="chkScore" class="muted"></p>
   <p id="chkText"></p>
   <ul id="chkLinks" class="plain"></ul>
-  <p class="row"><a class="btn primary" href="/app/">気圧・記録で体調を記録する</a><a class="btn" href="/pressure">お住まいの気圧予報</a></p>
+  <p class="row"><a class="btn primary" href="/app/#log" data-quicklog>体調の記録をはじめる</a><a class="btn" href="/pressure">お住まいの気圧予報</a></p>
+  ${notifyCta()}
 </section>
 <p class="disclaimer">このチェックは、医学的に確立した診断基準ではなく、一般的に知られている傾向をもとにした目安です。回答はこの端末の中だけで処理され、保存・送信されません。気になる症状が強い・続くときは、医療機関に相談してください。</p>
 </div>`;

@@ -12,7 +12,8 @@ export const pressureSeries = (db, areaCode, from, to) =>
 
 export async function buildInsights(env, userId, now = Date.now()) {
   const logs = await all(env.DB, 'SELECT ts, pain, area_code FROM logs WHERE user_id=? AND ts<=? ORDER BY ts', userId, now);
-  const out = { totalLogs: logs.length, events: 0, analyzed: 0, text: '', detail: null };
+  // needed/remaining: 傾向表示に必要な「気圧と照合できた不調(痛み3以上)の記録」件数への進捗（インサイト算出条件 MIN_EVENTS と同じ定義）
+  const out = { totalLogs: logs.length, events: 0, analyzed: 0, needed: MIN_EVENTS, remaining: MIN_EVENTS, text: '', detail: null };
   const events = logs.filter((l) => l.pain >= PAIN_MIN && l.area_code);
   out.events = events.length;
   if (!events.length) {
@@ -32,6 +33,7 @@ export async function buildInsights(env, userId, now = Date.now()) {
     if (p1 != null && p0 != null) drops.push(p1 - p0);
   }
   out.analyzed = drops.length;
+  out.remaining = Math.max(0, MIN_EVENTS - drops.length);
   if (drops.length < MIN_EVENTS) {
     out.text = `気圧データと照合できた不調の記録が ${drops.length} 件です。${MIN_EVENTS} 件以上たまると傾向を分析します。`;
     return out;

@@ -104,3 +104,9 @@ body[data-page="app"] main { max-width: none; margin: 0; padding: 0; }
 body[data-page="app"] .site-f { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 .tabs button span { display: flex; justify-content: center; line-height: 1; margin-bottom: 3px; }
 .tabs button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 分析: 傾向表示に必要な記録件数への進捗（フェーズ2） */
+.iprog { margin: 0 0 12px; padding: 10px 12px; background: var(--surface-100); border: 1px dashed var(--line); }
+.iprog p { margin: 0 0 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+.iprog-bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.iprog-bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .4s; }

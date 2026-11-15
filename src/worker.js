@@ -59,6 +59,13 @@ app.get('/api/week', async (c) => {
 app.get('/api/columns', (c) => c.json(columnList()));
 
 app.get('/api/areas', (c) => c.json(AREAS.map(({ code, name }) => ({ code, name }))));
+// 都道府県の自動推定（CloudflareのIPジオ情報 request.cf.regionCode。日本のISO 3166-2コード="01"〜"47"）。
+// 既存の位置情報の方針どおり都道府県単位のみで、座標は使わない。推定できなければ null（クライアントは従来の選択UIへ）。
+app.get('/api/geo', (c) => {
+  const cf = c.req.raw.cf || {};
+  const code = String(cf.regionCode || '').padStart(2, '0');
+  return c.json({ code: cf.country === 'JP' && isAreaCode(code) ? code : null });
+});
 app.get('/api/nearest', (c) => {
   const lat = Number(c.req.query('lat'));
   const lon = Number(c.req.query('lon'));
