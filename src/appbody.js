@@ -3,6 +3,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-dash" class="view">
         <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
     <div id="moodBox" class="card mood-card">
+      <div id="moodNote" hidden></div>
       <div id="moodMark" hidden></div>
     <div class="mood-chart">
       <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>
@@ -12,7 +13,6 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <span class="muted">／ 点線=気象庁アメダス実況</span>
       </div>
     </div>
-      <div id="moodNote" hidden></div>
       <div id="fxCard" hidden></div>
     </div>
     <div id="summary" class="card summary"></div>

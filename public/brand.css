@@ -139,3 +139,8 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 #moodBox #moodNote { margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--line); }
 #moodBox #fxCard { margin-top: 14px; }
 #moodBox .fx-grid { margin-top: 0; }
+
+/* 並び: コメント → マーク → 気圧変化 → 4指標 */
+#moodBox #moodNote { margin-top: 0; padding-top: 0; border-top: 0; margin-bottom: 8px; }
+#moodBox #moodMark { margin-top: 4px; }
+#moodBox .mood-chart { margin-top: 12px; }
