@@ -117,8 +117,67 @@ function setMoodFigure(level) {
   img.src = `/img/people/${f}.webp`;
 }
 
-/* トップ: 明日の気圧警戒度を主役カードで表示する。一言コメントは /api/week の comments
-   （サーバー側 src/pressure.js のレベル定義と同じモジュール）から取得し、ページ間で文言がずれないようにする。 */
+/* トップ: 時間帯で主役を入れ替える。
+   朝〜夕方(JST 5:00〜16:59) = 今日(これから24時間)を大きく・明日を小さく / 夜(17:00〜4:59) = 明日を大きく・今日を小さく。
+   一言コメントは /api/week の comments（src/pressure.js のレベル定義と同じモジュール）から取得。?slot=day|night で表示確認できる。 */
+const EVENING_FROM = 17, MORNING_FROM = 5;
+function isNight(w) {
+  const q = new URLSearchParams(location.search).get('slot');
+  if (q === 'day' || q === 'night') return q === 'night';
+  const hr = jstParts(w.now).h;
+  return hr >= EVENING_FROM || hr < MORNING_FROM;
+}
+const mdDow = (d) => `${Number(d.date.slice(5, 7))}/${Number(d.date.slice(8))}（${d.dow}）`;
+
+function renderMain(w) {
+  const night = isNight(w);
+  const head = $('#t-today');
+  if (head) { head.textContent = night ? 'Tomorrow' : 'Today'; head.nextElementSibling.textContent = night ? '明日の気圧' : '今日の気圧'; }
+  if (night) { renderTomorrow(w); renderNews(w); }
+  else { renderTodayBig(w); renderTomorrowSmall(w); }
+  // 通知CTAの位置: 夜は明日カードの直下、日中は「今日→明日」の流れを切らないよう明日の小カードの下
+  const cta = document.querySelector('#today [data-ncta]'), big = $('#tmrwCard'), small = $('#todayNews');
+  if (cta && big && small) (night ? big : small).after(cta);
+}
+
+// 今日（これから24時間）の主役カード
+function renderTodayBig(w) {
+  const el = $('#tmrwCard');
+  if (!el) return;
+  const n = w.next24;
+  const lv = n.level;
+  const d = w.days && w.days[0];
+  setMoodFigure(lv);
+  el.className = `card tmrw lv-${lv}`;
+  const cur = w.current;
+  const tp = n.at != null && lv !== 'none' ? jstParts(n.at) : null;
+  el.replaceChildren(
+    h('p', { class: 'tmrw-date' }, d ? `今日 ${mdDow(d)}・これから24時間` : '今日・これから24時間', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('div', { class: 'tmrw-main' },
+      h('span', { class: `pill lv-${lv} tmrw-pill` }, LABEL[lv]),
+      d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
+    h('p', { class: 'tmrw-cmt' }, (w.comments || {})[lv] || ''),
+    tp ? h('p', { class: 'tmrw-when muted small' }, `気圧が動く時間帯の目安: ${tp.m}/${tp.d} ${tp.h}時ごろ（${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h）`) : null,
+    cur ? h('p', { class: 'tmrw-range muted small' }, `現在の海面気圧 ${Math.round(cur.pressure)} hPa${cur.d3 != null ? `（直近3時間 ${sign(cur.d3)}${Math.abs(cur.d3).toFixed(1)}）` : ''}`) : null,
+    w.temp ? h('p', { class: 'tmrw-range muted small' }, tempLine(w.temp)) : null,
+    ...(w.moodMiniHtml ? [(() => { const x = h('div', { class: 'news-mood' }); x.innerHTML = w.moodMiniHtml; return x; })()] : []),
+  );
+}
+
+// 明日の小さなカード（日中）
+function renderTomorrowSmall(w) {
+  const el = $('#todayNews');
+  if (!el) return;
+  const d = w.days && w.days[1];
+  const p = d && d.pressure;
+  const lv = p ? p.level : 'none';
+  el.replaceChildren(h('div', { class: 'news-row' },
+    h('p', { class: 'news-meta' }, h('span', {}, d ? `明日 ${mdDow(d)}` : '明日'), h('span', { class: 'news-cat' }, 'Tomorrow')),
+    h('p', { class: 'news-title' }, p ? h('span', { class: `pill lv-${lv}` }, LABEL[lv]) : '予報を準備中です', p ? `　${(w.comments || {})[lv] || ''}` : null),
+    p && lv !== 'none' && p.at != null ? h('p', { class: 'news-sub' }, `${fmtTime(p.at)}ごろ ${sign(p.rate)}${Math.abs(p.rate).toFixed(1)}hPa/h の見込み`) : null));
+}
+
+// 明日の主役カード（夜）
 function renderTomorrow(w) {
   const el = $('#tmrwCard');
   if (!el) return;
@@ -130,7 +189,7 @@ function renderTomorrow(w) {
   const comment = (w.comments || {})[lv] || '';
   const tp = p && p.at != null && lv !== 'none' ? jstParts(p.at) : null;
   el.replaceChildren(
-    h('p', { class: 'tmrw-date' }, d ? `明日 ${Number(d.date.slice(5, 7))}/${Number(d.date.slice(8))}（${d.dow}）` : '明日', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('p', { class: 'tmrw-date' }, d ? `明日 ${mdDow(d)}` : '明日', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
     h('div', { class: 'tmrw-main' },
       h('span', { class: `pill lv-${lv} tmrw-pill` }, p ? LABEL[lv] : '準備中'),
       d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
@@ -230,7 +289,7 @@ async function load() {
   try {
     const w = await getJson('/api/week?area=' + areaCode);
     if (mine !== seq) return; // 地域切替の競合
-    if (page === 'top') { renderTomorrow(w); renderNews(w); }
+    if (page === 'top') renderMain(w);
     else renderToday(w);
     if (page === 'top') {
       $('#weekStrip').replaceChildren(...w.days.map(cellFor));

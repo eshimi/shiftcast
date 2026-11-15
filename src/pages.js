@@ -217,7 +217,7 @@ export function topPage() {
     </div>
     <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
     <ol class="side-index" aria-label="このページの内容">
-      <li><a href="#today" data-sec="today">Tomorrow<small>明日・今日の気圧</small></a></li>
+      <li><a href="#today" data-sec="today">Today<small>今日・明日の気圧</small></a></li>
       <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
       <li><a href="#features" data-sec="features">Three Features<small>三つの機能</small></a></li>
       <li><a href="#weekly" data-sec="weekly">Weekly<small>今週の天気</small></a></li>
@@ -241,7 +241,7 @@ export function topPage() {
     <section class="sx cream" id="today" aria-labelledby="t-today">
       <div class="sx-in">
         <img id="todayFig" class="ppl fig-tr fig-live" alt="" aria-hidden="true" hidden>
-        ${secHead2('Tomorrow', '明日の気圧', 't-today')}
+        ${secHead2('Today', '今日の気圧', 't-today')}
         ${areaBar}
         <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
         ${notifyCta()}
