@@ -133,7 +133,7 @@ ${body}
 ${chrome ? `<footer class="site-f">
   <div class="street" data-street aria-hidden="true"></div>
   <div class="wrap">
-    <p class="f-logo"><img src="/logo-h-white.webp" alt="ウェルミー" width="115" height="40"></p>
+    <p class="f-logo"><img src="/logo-h.webp" alt="ウェルミー" width="115" height="40"></p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
     <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
@@ -297,7 +297,7 @@ export function topPage() {
     </section>
 
     <footer class="lp-f">
-      <p class="f-logo"><img src="/logo-h-white.webp" alt="ウェルミー" width="115" height="40"></p>
+      <p class="f-logo"><img src="/logo-h.webp" alt="ウェルミー" width="115" height="40"></p>
       <nav class="lp-f-nav">${footNav}</nav>
       <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
       <p><a href="/terms.html">利用規約・プライバシー</a></p>

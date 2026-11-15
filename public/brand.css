@@ -151,3 +151,18 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .tmrw-stack .stairs { margin: 10px 0 4px; }
 .tmrw-stack .tmrw-out { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
 .tmrw-stack .tmrw-out .tmrw-date { font-size: 14px; }
+
+/* フッター: ヘッダーと同じカラーのロゴ。背景は明るい水色にして、ロゴの紺の文字が読めるようにする */
+.lp-f { background: var(--wl-mist, #E8F4FA); color: var(--ink); }
+.lp-f a { color: var(--ink); }
+.lp-f .muted { color: var(--ink-muted); }
+.site-f { background: var(--surface-200); color: var(--ink); }
+.site-f a { color: var(--ink); }
+.site-f .muted { color: var(--ink-muted); }
+@media (prefers-color-scheme: dark) {
+  .lp-f, .site-f { background: #16283a; color: #eaf3fa; }
+  .lp-f a, .site-f a { color: #fff; }
+  .lp-f .muted, .site-f .muted { color: #a9bfd0; }
+  /* 暗い背景では、カラーのロゴ(紺の文字)が読めないので、白い台の上に置く */
+  .f-logo img { background: #fff; padding: 6px 12px; border-radius: 12px; box-sizing: content-box; }
+}
