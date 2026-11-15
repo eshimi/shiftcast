@@ -149,6 +149,16 @@ function renderMain(w) {
   if (cta && big && small) (night ? big : small).after(cta);
 }
 
+// 過去24時間に実際に下がった(上がった)気圧。これからの予報だけでは見えない「すでに起きた変化」を見せる
+function pastLine(w) {
+  const d = w.past && w.past.d24;
+  if (d == null) return null;
+  const strong = d <= -6;
+  return h('p', { class: `tmrw-past small${strong ? ' strong' : ' muted'}` },
+    `過去24時間の気圧 ${sign(d)}${Math.abs(d).toFixed(1)}hPa`,
+    strong ? '（すでに大きく下がっています。体調の変化に注意）' : d <= -3 ? '（やや下がっています）' : '');
+}
+
 // 今日（これから24時間）の主役カード
 function renderTodayBig(w) {
   const el = $('#tmrwCard');
@@ -167,6 +177,7 @@ function renderTodayBig(w) {
       d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
     h('p', { class: 'tmrw-cmt' }, (w.comments || {})[lv] || ''),
     tp ? h('p', { class: 'tmrw-when muted small' }, `気圧が動く時間帯の目安: ${tp.m}/${tp.d} ${tp.h}時ごろ（${sign(n.rate)}${Math.abs(n.rate).toFixed(1)}hPa/h）`) : null,
+    pastLine(w),
     cur ? h('p', { class: 'tmrw-range muted small' }, `現在の海面気圧 ${Math.round(cur.pressure)} hPa${cur.d3 != null ? `（直近3時間 ${sign(cur.d3)}${Math.abs(cur.d3).toFixed(1)}）` : ''}`) : null,
     w.temp ? h('p', { class: 'tmrw-range muted small' }, tempLine(w.temp)) : null,
     ...(w.moodMiniHtml ? [(() => { const x = h('div', { class: 'news-mood' }); x.innerHTML = w.moodMiniHtml; return x; })()] : []),
@@ -206,6 +217,7 @@ function renderTomorrow(w) {
       : h('p', { class: 'tmrw-cmt muted' }, '明日の気圧予報を準備中です。しばらくしてからもう一度ご覧ください。'),
     tp ? h('p', { class: 'tmrw-when muted small' }, `気圧が動く時間帯の目安: ${tp.h}時ごろ（${sign(p.rate)}${Math.abs(p.rate).toFixed(1)}hPa/h）`) : null,
     p ? h('p', { class: 'tmrw-range muted small' }, `予想気圧 ${Math.round(p.min)}〜${Math.round(p.max)} hPa`) : null,
+    pastLine(w),
   );
 }
 

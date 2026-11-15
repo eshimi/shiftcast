@@ -124,3 +124,6 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .mini-feat span { grid-area: s; font-size: 12.5px; opacity: .9; }
 .sx-more { margin: 14px 0 0; text-align: center; font-size: 14px; } .sx-more a { text-decoration: underline; text-underline-offset: 3px; }
 .tmrw-next { margin: 8px 0 0; }
+
+/* 過去24時間の気圧(トップの見通しカード) */
+.tmrw-past { margin: 6px 0 0; } .tmrw-past.strong { color: #b3261e; font-weight: 700; }
