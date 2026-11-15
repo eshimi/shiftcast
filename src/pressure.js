@@ -13,6 +13,16 @@ export const LEVEL_LABEL = {
 // 低下側の重さ（通知判定・最大値の比較用）。上昇注意は別系統なので0扱い。
 export const SEVERITY = { none: 0, rise: 0, slight: 1, caution: 2, warning: 3 };
 
+// レベルごとの一言コメント（明日カード等の表示用）。
+// レベル定義と同じこのモジュールで持ち、各ページ（サーバー描画・/api/week経由のクライアント描画）で文言がずれないようにする。
+export const LEVEL_COMMENT = {
+  warning: '大きく下がります。早めの休息と備えを',
+  caution: '下がり幅が目立ちます。無理のない予定に',
+  slight: '少し下がります。様子を見ながら',
+  rise: '上がった後の反動に注意',
+  none: '大きな変化は見込まれていません',
+};
+
 /** 1時間あたりの変化量(hPa/h) → レベル */
 export function levelOf(rate) {
   if (rate == null || Number.isNaN(rate)) return 'none';

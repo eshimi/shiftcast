@@ -100,10 +100,34 @@ function setMoodFigure(level) {
   img.src = `/img/people/${f}.webp`;
 }
 
+/* トップ: 明日の気圧警戒度を主役カードで表示する。一言コメントは /api/week の comments
+   （サーバー側 src/pressure.js のレベル定義と同じモジュール）から取得し、ページ間で文言がずれないようにする。 */
+function renderTomorrow(w) {
+  const el = $('#tmrwCard');
+  if (!el) return;
+  const d = w.days && w.days[1];
+  const p = d && d.pressure;
+  const lv = p ? p.level : 'none';
+  setMoodFigure(lv);
+  el.className = `card tmrw lv-${lv}`;
+  const comment = (w.comments || {})[lv] || '';
+  const tp = p && p.at != null && lv !== 'none' ? jstParts(p.at) : null;
+  el.replaceChildren(
+    h('p', { class: 'tmrw-date' }, d ? `明日 ${Number(d.date.slice(5, 7))}/${Number(d.date.slice(8))}（${d.dow}）` : '明日', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('div', { class: 'tmrw-main' },
+      h('span', { class: `pill lv-${lv} tmrw-pill` }, p ? LABEL[lv] : '準備中'),
+      d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
+    p ? h('p', { class: 'tmrw-cmt' }, comment)
+      : h('p', { class: 'tmrw-cmt muted' }, '明日の気圧予報を準備中です。しばらくしてからもう一度ご覧ください。'),
+    tp ? h('p', { class: 'tmrw-when muted small' }, `気圧が動く時間帯の目安: ${tp.h}時ごろ（${sign(p.rate)}${Math.abs(p.rate).toFixed(1)}hPa/h）`) : null,
+    p ? h('p', { class: 'tmrw-range muted small' }, `予想気圧 ${Math.round(p.min)}〜${Math.round(p.max)} hPa`) : null,
+  );
+}
+
+// 今日の気圧（明日カードの下の小さなカード）
 function renderNews(w) {
   const el = $('#todayNews');
   const n = w.next24;
-  setMoodFigure(n.level);
   const t = jstParts(w.now);
   const cur = w.current;
   const d3 = cur?.d3;
@@ -170,7 +194,7 @@ async function load() {
   try {
     const w = await getJson('/api/week?area=' + areaCode);
     if (mine !== seq) return; // 地域切替の競合
-    if (page === 'top') renderNews(w);
+    if (page === 'top') { renderTomorrow(w); renderNews(w); }
     else renderToday(w);
     if (page === 'top') {
       $('#weekStrip').replaceChildren(...w.days.map(cellFor));
@@ -181,6 +205,7 @@ async function load() {
     }
   } catch {
     if (mine !== seq) return;
+    $('#tmrwCard')?.replaceChildren(h('p', { class: 'muted' }, 'データを取得できませんでした。'));
     ($('#todayNews') || $('#today')).replaceChildren(h('p', { class: 'muted' }, 'データを取得できませんでした。しばらくしてからもう一度お試しください。'));
   }
 }

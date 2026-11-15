@@ -115,11 +115,12 @@ ${chrome ? '<link rel="stylesheet" href="/ds.css">\n<link rel="stylesheet" href=
 ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 <link rel="stylesheet" href="/brand.css">
 </head>
-<body data-page="${page}" class="${[chrome ? 'ds' : '', bodyClass].filter(Boolean).join(' ')}">
+<body data-page="${page}" class="${[chrome ? 'ds' : '', chrome && page !== 'app' ? 'has-rec' : '', bodyClass].filter(Boolean).join(' ')}">
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
     <a class="logo" href="/" aria-label="Weling トップへ">${LOGO}</a>
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
+    <a class="btn sm h-rec" href="/app/#log" data-quicklog>体調を記録する</a>
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
     ${NAV.map(([href, label, id]) => `<a href="${href}"${id === page || (id === 'columns' && page === 'column') ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
@@ -138,8 +139,10 @@ ${chrome ? `<footer class="site-f">
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
+${chrome && page !== 'app' ? recFix : ''}
 ${chrome ? STREET_SCRIPT : ''}
 ${scripts}
+${chrome ? '<script src="/actions.js" defer></script>' : ''}
 </body>
 </html>`;
 }
@@ -157,6 +160,23 @@ const LEVELS = `<div class="legend" aria-label="気圧変化の凡例">
 </div>`;
 
 const secHead2 = (en, ja, id) => `<div class="sx-h"><h2 id="${id}">${en}</h2><p class="ja">${ja}</p></div>`;
+
+// 通知登録CTA（再利用コンポーネント）。クライアント処理は public/actions.js（説明モーダルを1枚挟んでから許可リクエスト）。
+// 登録済みの端末ではボタンが「通知はオンです」に切り替わる。
+export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通知の登録">
+  <p class="ncta-h">明日が危ない日は、前の晩にお知らせ</p>
+  <p class="ncta-d">翌日が「注意」以上の気圧低下のときだけ、毎晩20時に通知します。それ以外の日は送りません。</p>
+  <div class="ncta-sample" aria-hidden="true">
+    <span class="ncta-ico"><img src="/icon-192.png" alt="" width="34" height="34"></span>
+    <span class="ncta-stxt"><b>Weling 気圧アラート</b><span>明日は「注意」の気圧低下の見込みです。早めの休息と、いつもの薬の確認を。</span><small>昨日 20:00</small></span>
+  </div>
+  <p class="ncta-btnrow"><button type="button" class="btn primary block" data-ncta-btn>通知を受け取る</button></p>
+  <p class="muted small ncta-note" data-ncta-note hidden></p>
+</section>`;
+
+// 「体調を記録する」固定ボタン（モバイル: 下部固定）。JSが使えない場合はそのまま /app/#log へ遷移し、
+// public/actions.js が読み込まれていればページ遷移なしのワンタップ記録モーダルを開く。
+const recFix = `<div class="rec-fix"><a class="btn primary block" href="/app/#log" data-quicklog>体調を記録する</a></div>`;
 const secHead = (en, ja, id) => `<div class="sec-h"><p class="en">${en}</p><h2 id="${id}">${ja}</h2></div>`;
 
 const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}">
@@ -170,7 +190,7 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
 
 export function topPage() {
-  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a>`;
+  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a><a href="/app/#log" data-quicklog>体調を記録する</a>`;
   const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
@@ -186,7 +206,7 @@ export function topPage() {
     </div>
     <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
     <ol class="side-index" aria-label="このページの内容">
-      <li><a href="#today" data-sec="today">Today<small>今日の気圧</small></a></li>
+      <li><a href="#today" data-sec="today">Tomorrow<small>明日・今日の気圧</small></a></li>
       <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
       <li><a href="#features" data-sec="features">Three Features<small>三つの機能</small></a></li>
       <li><a href="#weekly" data-sec="weekly">Weekly<small>今週の天気</small></a></li>
@@ -210,9 +230,11 @@ export function topPage() {
     <section class="sx cream" id="today" aria-labelledby="t-today">
       <div class="sx-in">
         <img id="todayFig" class="ppl fig-tr fig-live" alt="" aria-hidden="true" hidden>
-        ${secHead2('Today', '今日の気圧', 't-today')}
+        ${secHead2('Tomorrow', '明日の気圧', 't-today')}
         ${areaBar}
-        <div id="todayNews" class="news" aria-live="polite"><p class="muted">読み込み中…</p></div>
+        <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
+        ${notifyCta()}
+        <div id="todayNews" class="news news-sm" aria-live="polite"><p class="muted">読み込み中…</p></div>
         <p class="sx-btn"><a class="btn dark block" href="/app/">気圧グラフを見る</a></p>
       </div>
     </section>
@@ -311,6 +333,7 @@ export function topPage() {
       <p><a href="/terms.html">利用規約・プライバシー</a></p>
       <p class="muted">天気: 気象庁 / OpenWeatherMap　© Weling</p>
     </footer>
+    ${recFix}
   </div>
 </div>`;
   return layout({
@@ -327,7 +350,7 @@ export function topPage() {
     chrome: false,
     bodyClass: 'lp',
     extraHead: `<link rel="stylesheet" href="/hero/hero.css">\n${HERO_PICKER}`,
-    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>',
+    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>\n<script src="/actions.js" defer></script>',
   });
 }
 
@@ -354,6 +377,7 @@ ${areaBar}
 </section>
 
 <p><a class="btn primary block" href="/app/">気圧グラフと体調の記録を見る</a></p>
+${notifyCta()}
 <p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
@@ -449,6 +473,7 @@ export function pressurePage(pref, w) {
 <section class="sec"><h2 class="pg-h">近くの都道府県の気圧予報</h2>
   <ul class="chips-l">${near.map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">すべての都道府県</a></li></ul>
 </section>
+${notifyCta()}
 <p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。症状が強い・続くときは医療機関に相談してください。</p>
 </div>`;
   return layout({
@@ -748,6 +773,7 @@ ${REGIONS.map(([r, codes]) => `<p class="pref-r"><b>${esc(r)}</b>${codes.map((cd
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
   <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">気圧・記録へ</a></p>
 </div>
+${notifyCta()}
 <nav class="pager" aria-label="前後のコラム">
   ${prev ? `<a href="/columns/${esc(prev.slug)}"><small class="muted">← 前の記事</small><b>${esc(prev.title)}</b></a>` : '<span></span>'}
   ${next ? `<a href="/columns/${esc(next.slug)}" class="r"><small class="muted">次の記事 →</small><b>${esc(next.title)}</b></a>` : '<span></span>'}

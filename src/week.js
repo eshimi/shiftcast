@@ -2,7 +2,7 @@
 // 「その日の気圧の最低値・最大の下がり方（4段階）」を重ねて返す。
 import { all, get } from './db.js';
 import { AREA_BY_CODE } from './areas.js';
-import { annotate, worstDrop, interpolate, SEVERITY, LEVEL_LABEL, HOUR, jstDateStr, jstDayStart } from './pressure.js';
+import { annotate, worstDrop, interpolate, SEVERITY, LEVEL_LABEL, LEVEL_COMMENT, HOUR, jstDateStr, jstDayStart } from './pressure.js';
 import { ensureFresh, isDemo } from './weather.js';
 import { loadJmaCached } from './jma.js';
 import { loadExtras, wetInfo, factorSummary } from './extras.js';
@@ -172,6 +172,7 @@ export async function buildWeek(env, code, now = Date.now()) {
     now,
     demo: isDemo(env),
     fetchedAt,
+    comments: LEVEL_COMMENT, // レベルごとの一言コメント（src/pressure.js が唯一の定義元）
     jma: jma ? { office: jma.office, reported: jma.reported } : null,
     temp,
     rain: wet.rain,
