@@ -1,6 +1,6 @@
 {
-  "name": "Weling",
-  "short_name": "Weling",
+  "name": "ウェルミー",
+  "short_name": "ウェルミー",
   "description": "気象と暮らしをつなぐウェルビーイング。気圧・気温・降水・湿度から、今日の体調への影響を知る。",
   "start_url": "/app/",
   "scope": "/",

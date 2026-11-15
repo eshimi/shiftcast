@@ -1,4 +1,4 @@
-/* Weling ブランド。全ページの最後に読み込み、色・角丸を上書きする。
+/* ウェルミー ブランド。全ページの最後に読み込み、色・角丸を上書きする。
    カラー(ロゴの色から): Blue #1B7FD6(メイン) / Sky #A9DDF0(サブ) / Mist #E8F4FA(背景) / Navy #2D4A67(文字・フッター) / Green #8EE060(アクセント) / Base #F7FBFD
    ルール: 自然と調和するやさしい色調・余白・角丸でやわらかいUI。気圧の4段階の色(青・黄・橙・赤)は「データの意味」を表すので変えない。 */
 :root {
@@ -81,11 +81,11 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 }
 .m-brand img { height: 78px; margin-bottom: 12px; }
 
-/* 新ロゴ(Weling): 画像のロゴを使う */
+/* 新ロゴ(ウェルミー): 画像のロゴを使う */
 .site-h .logo img.logo-img { height: 36px; width: auto; border-radius: 0; }
 .site-h .logo { gap: 0; }
 .side-logo img { height: 70px; width: auto; filter: drop-shadow(0 1px 6px rgba(0, 0, 0, .25)); }
-.m-brand img { height: 190px; width: auto; margin-bottom: 14px; }
+.m-brand img { height: 170px; width: auto; margin-bottom: 14px; }
 .f-logo img, .lp-f .f-logo img, .site-f .f-logo img { height: 40px; width: auto; display: block; }
 .site-f .f-logo, .lp-f .f-logo { margin-bottom: 10px; }
 

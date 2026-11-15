@@ -10,7 +10,7 @@ import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 const SITE = SITE_NAME;
-const SITE_TITLE = 'Weling'; // <title>・og:site_name・構造化データのサイト名(表示上のロゴ・本文は「Weling」)
+const SITE_TITLE = 'ウェルミー'; // <title>・og:site_name・構造化データのサイト名(表示上のロゴ・本文は「ウェルミー」)
 const TAGLINE = '気圧と体調のノート';
 // トップのHERO背景をランダムに選ぶ（描画前に実行）。直前に見たものとは別の写真にする。?hero=0|1|2 で固定表示も可能。
 // 写真ごとに、文字が読めるよう暗いオーバーレイの色・濃さ(a=[上,中,下])と、画面に見せたい位置(p)を設定している。
@@ -67,7 +67,7 @@ const STREET_SCRIPT = `<script>
 })();
 </script>`;
 
-const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="Weling" width="102" height="36">';
+const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="ウェルミー" width="104" height="36">';
 
 const NAV = [
   ['/', 'トップ', 'top'],
@@ -118,7 +118,7 @@ ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 <body data-page="${page}" class="${[chrome ? 'ds' : '', chrome && page !== 'app' ? 'has-rec' : '', bodyClass].filter(Boolean).join(' ')}">
 ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
-    <a class="logo" href="/" aria-label="Weling トップへ">${LOGO}</a>
+    <a class="logo" href="/" aria-label="ウェルミー トップへ">${LOGO}</a>
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
     <a class="btn sm h-rec" href="/app/#log" data-quicklog>体調を記録する</a>
   </div>
@@ -133,7 +133,7 @@ ${body}
 ${chrome ? `<footer class="site-f">
   <div class="street" data-street aria-hidden="true"></div>
   <div class="wrap">
-    <p class="f-logo"><img src="/logo-h-white.webp" alt="Weling" width="114" height="40"></p>
+    <p class="f-logo"><img src="/logo-h-white.webp" alt="ウェルミー" width="115" height="40"></p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
     <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
@@ -207,7 +207,7 @@ export function topPage() {
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
-      <a class="side-logo" href="/" aria-label="Weling トップへ"><img src="/logo-h-white.webp" alt="Weling" width="199" height="70"><small class="logo-sub">Feel Better, Every Day.</small></a>
+      <a class="side-logo" href="/" aria-label="ウェルミー トップへ"><img src="/logo-h-white.webp" alt="ウェルミー" width="199" height="70"><small class="logo-sub">Feel Better, Every Day.</small></a>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">
@@ -230,9 +230,9 @@ export function topPage() {
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
       <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">気圧・記録へ</a></nav>
-      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（Weling：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
+      <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（ウェルミー：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
-        <img src="/logo-v-white.webp" alt="Weling" width="143" height="190">
+        <img src="/logo-v-white.webp" alt="ウェルミー" width="241" height="190">
         <span class="m-tag">今日を知って、心地よく暮らす。</span>
       </div>
       <a class="m-scroll" href="#today" aria-label="下へスクロール">SCROLL</a>
@@ -271,7 +271,7 @@ export function topPage() {
     <section class="sx teal" id="features" aria-labelledby="t-three">
       <div class="sx-in">
         ${secHead2('Three Features', '三つの機能', 't-three')}
-        <p class="center-copy">Welingは、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
+        <p class="center-copy">ウェルミーは、週間天気、気圧・記録、コラムの<br>三つで、気圧との付き合いを支えます。</p>
         <a class="feat" href="/weather" style="--img: url('/hero/bg/mist.webp'); --pos: 30% 50%"><span class="en">WEEKLY FORECAST</span><b>週間天気</b><span class="d">1週間の天気と、気圧が下がる日の目安</span></a>
         <a class="feat" href="/app/" style="--img: url('/hero/bg/dusk.webp'); --pos: 41% 40%"><span class="en">PRESSURE &amp; LOG</span><b>気圧・記録</b><span class="d">気圧グラフに、体調の記録を重ねて見る</span></a>
         <a class="feat" href="/columns" style="--img: url('/hero/bg/sea.webp'); --pos: 58% 58%"><span class="en">COLUMN</span><b>コラム</b><span class="d">天気痛・気象病・気圧頭痛の対策</span></a>
@@ -315,7 +315,7 @@ export function topPage() {
         ${person('suitcase', { k: 0.5, cls: 'fig-tr' })}
         ${secHead2('Information', 'サービス情報', 't-info')}
         <dl class="info">
-          <div><dt>サービス名</dt><dd>Weling</dd></div>
+          <div><dt>サービス名</dt><dd>ウェルミー</dd></div>
           <div><dt>できること</dt><dd>気圧の予報、週間天気、体調の記録、傾向の分析、前夜の通知</dd></div>
           <div><dt>データ</dt><dd>天気：気象庁、気圧予報：OpenWeatherMap</dd></div>
           <div><dt>対応地域</dt><dd>全国47都道府県</dd></div>
@@ -338,11 +338,11 @@ export function topPage() {
     </section>
 
     <footer class="lp-f">
-      <p class="f-logo"><img src="/logo-h-white.webp" alt="Weling" width="114" height="40"></p>
+      <p class="f-logo"><img src="/logo-h-white.webp" alt="ウェルミー" width="115" height="40"></p>
       <nav class="lp-f-nav">${footNav}</nav>
       <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
       <p><a href="/terms.html">利用規約・プライバシー</a></p>
-      <p class="muted">天気: 気象庁 / OpenWeatherMap　© Weling</p>
+      <p class="muted">天気: 気象庁 / OpenWeatherMap　© ウェルミー</p>
     </footer>
     ${bnav('top')}
   </div>
@@ -718,7 +718,7 @@ const ABOUT_FAQ = [
 
 export function aboutPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>Welingとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>ウェルミーとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap about">
 <section><h2 class="en-h">WHAT YOU CAN DO<small>できること</small></h2>
 <div class="ab-verbs">${ABOUT_VERBS.map(([v, en, t, d, ic], i) => `<article class="ab-verb"><span class="ic">${ic}</span><p class="en">${en}</p><h3>${i + 1}. ${esc(v)}</h3><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join('')}</div></section>
@@ -736,7 +736,7 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 </div>`;
   return layout({
     rawTitle: `${SITE_TITLE}とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
-    description: 'Welingは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
+    description: 'ウェルミーは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
     keywords: COLUMN_KEYWORDS,
     page: 'about',
     path: '/about',
