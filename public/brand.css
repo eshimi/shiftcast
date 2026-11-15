@@ -130,3 +130,12 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 /* /app/ ホーム: 体調そらもようを「マーク」「コメント」に分けて置いたとき */
 #moodMark .mood, #moodNote .mood { margin-bottom: 0; }
 #moodMark .mood { padding-bottom: 6px; }
+
+/* /app/ ホーム: マーク・グラフ・コメント・4指標を、1つの枠の中に置く */
+#moodBox { padding: 14px 14px 16px; }
+#moodBox .mood-flat { border: 0; border-left: 0; background: transparent; padding: 0; margin: 0; }
+#moodBox .mood-flat .mood-body { padding-top: 4px; }
+#moodBox .mood-chart { margin: 14px 0 6px; padding-top: 10px; border-top: 1px dashed var(--line); }
+#moodBox #moodNote { margin-top: 10px; padding-top: 12px; border-top: 1px dashed var(--line); }
+#moodBox #fxCard { margin-top: 14px; }
+#moodBox .fx-grid { margin-top: 0; }

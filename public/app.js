@@ -145,7 +145,7 @@ async function loadDash() {
     const mk = $('#moodMark'), nt = $('#moodNote'), fx = $('#fxCard');
     const tmp = document.createElement('div'); tmp.innerHTML = wk?.moodHtml || '';
     const m = tmp.querySelector('.mood'), stairs = m && m.querySelector('.stairs'), body = m && m.querySelector('.mood-body');
-    const wrap = (el) => { const d = document.createElement('div'); d.className = m.className; d.append(el); return d; };
+    const wrap = (el) => { const d = document.createElement('div'); d.className = m.className + ' mood-flat'; d.append(el); return d; };
     if (stairs && body) { mk.replaceChildren(wrap(stairs)); nt.replaceChildren(wrap(body)); mk.hidden = nt.hidden = false; } else { mk.hidden = nt.hidden = true; }
     if (wk?.tilesHtml) { fx.innerHTML = wk.tilesHtml; fx.hidden = false; } else fx.hidden = true;
     S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
