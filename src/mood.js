@@ -8,10 +8,34 @@ export const MOOD_POINTS = {
   temp: { none: 0, mid: 1, big: 2 },
   rain: { none: 0, small: 0, mid: 1, big: 2 },
   hum: { none: 0, mid: 1, big: 2 },
+  // 過去24時間に実際に下がった量(hPa)。予報の「これから」だけでは、すでに下がった分を見落とすため
+  past24: [[-10, 3], [-6, 2], [-3, 1]], // [下がった量の上限, 加点]
+  lowPressure: [[1000, 2], [1008, 1]], // [気圧の上限, 加点]
   overlapBonus: 1, // 気になる要因が3つ以上重なったときの加点
   overlapFrom: 3,
 };
-export const MOOD_MAX = 6 + 2 + 2 + 2 + 1; // 13
+export const MOOD_MAX = 6 + 2 + 2 + 2 + 3 + 2 + 1; // 18
+const r1 = (x) => Math.round(x * 10) / 10;
+
+/** 過去24時間の実際の気圧の動き。points=[{ts, pressure}]（ts昇順、実測が望ましい）。足りなければ null を返す項目あり。 */
+export function pastInfo(points, now) {
+  const pts = points.filter((p) => p.pressure != null && p.ts <= now);
+  if (pts.length < 3) return null;
+  const near = (ts, tol) => { let b = null; for (const p of pts) if (Math.abs(p.ts - ts) <= tol && (!b || Math.abs(p.ts - ts) < Math.abs(b.ts - ts))) b = p; return b; };
+  const cur = pts[pts.length - 1];
+  if (now - cur.ts > 3 * 3600e3) return null;
+  const a24 = near(cur.ts - 24 * 3600e3, 2.5 * 3600e3);
+  const a12 = near(cur.ts - 12 * 3600e3, 2.5 * 3600e3);
+  // 毎時の最大の低下(隣り合う点の間隔が45分〜1.5時間のとき)
+  let maxDrop = null;
+  for (let i = 1; i < pts.length; i++) {
+    const dh = (pts[i].ts - pts[i - 1].ts) / 3600e3;
+    if (pts[i].ts < cur.ts - 24 * 3600e3 || dh < 0.75 || dh > 1.5) continue;
+    const r = (pts[i].pressure - pts[i - 1].pressure) / dh;
+    if (maxDrop == null || r < maxDrop) maxDrop = r;
+  }
+  return { cur: r1(cur.pressure), d24: a24 ? r1(cur.pressure - a24.pressure) : null, d12: a12 ? r1(cur.pressure - a12.pressure) : null, maxDrop: maxDrop == null ? null : r1(maxDrop) };
+}
 // 合計点(気になる要因の多さ) → 体調レベル。5が「気候が快調」、1が「体調不良に注意」(数字が大きいほど快調)。
 export const MOOD_LEVELS = [
   { level: 5, key: 'great', st: '気候が快調', label: '気候が快調', max: 1, desc: '体調への影響は、ほぼなさそうです。活動にも向いた日です。', short: '活動にも向いた日' },
@@ -22,15 +46,16 @@ export const MOOD_LEVELS = [
 ];
 export const moodScore = (points) => 100 - Math.round((points / MOOD_MAX) * 100); // 高いほど快調
 
-export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24 }) {
-  const f = factorSummary({ pressureLevel, temp, rain, hum });
+export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24, past }) {
+  const f = factorSummary({ pressureLevel, temp, rain, hum, past });
   const parts = {
     pressure: MOOD_POINTS.pressure[pressureLevel] ?? 0,
     temp: MOOD_POINTS.temp[temp?.level] ?? 0,
     rain: MOOD_POINTS.rain[rain?.level] ?? 0,
     hum: MOOD_POINTS.hum[hum?.level] ?? 0,
+    past: (() => { const d = past?.d24; const a = d == null ? 0 : (MOOD_POINTS.past24.find(([lim]) => d <= lim)?.[1] ?? 0); const c = past?.cur; const b = c == null ? 0 : (MOOD_POINTS.lowPressure.find(([lim]) => c < lim)?.[1] ?? 0); return a + b; })(),
   };
-  let points = parts.pressure + parts.temp + parts.rain + parts.hum;
+  let points = parts.pressure + parts.temp + parts.rain + parts.hum + parts.past;
   const bonus = f.count >= MOOD_POINTS.overlapFrom ? MOOD_POINTS.overlapBonus : 0;
   points += bonus;
   const lv = MOOD_LEVELS.find((l) => points <= l.max);

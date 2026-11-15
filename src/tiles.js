@@ -21,8 +21,8 @@ const dogImg = (level, cls = '') => { const p = PERSON[MOOD_PERSON[level]]; retu
 export const moodStairs = (level) => `<div class="stairs" role="img" aria-label="体調そらもよう 5段階の${level}（${esc(MOOD_BY_LEVEL[level].label)}）">${[1, 2, 3, 4, 5].map((i) => `<div class="st st-${i}${i === level ? ' on' : ''}" data-l="${i}">${dogImg(i)}<div class="blk"><b>${i}</b></div><span class="stl">${esc(MOOD_BY_LEVEL[i].st)}</span></div>`).join('')}</div>`;
 
 const hm = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}/${d.getUTCDate()} ${d.getUTCHours()}時ごろ`; };
-const CH_NAME = { pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
-const CH_ICON = { pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
+const CH_NAME = { past: '過去の低下', pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
+const CH_ICON = { past: 'pressure', pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
 
 // 5段階の早見表(レベル・状況・スコアの範囲)。レベル1→5(体調不良に注意→気候が快調)の順
 const MOOD_GUIDE = [...MOOD_LEVELS].reverse().map((l) => {
@@ -52,7 +52,7 @@ export function moodBlockHtml(w) {
     <p class="mood-r">${esc(m.reason)}</p>
     <details class="mood-guide"><summary>5段階の見かた</summary>
       <table class="mg"><thead><tr><th>レベル</th><th>状況</th><th>スコア</th></tr></thead><tbody>${MOOD_GUIDE.map((g) => `<tr class="${g.level === m.level ? 'now' : ''}"><th scope="row"><span class="lvno sm">${g.level}</span>${esc(g.label)}</th><td>${esc(g.desc)}</td><td>${g.range}</td></tr>`).join('')}</tbody></table>
-      <p class="muted small">スコアは、気圧・気温差・降水・湿度の目安を点数にして0〜100に換算したものです。暫定の目安で、医学的な基準ではありません。</p>
+      <p class="muted small">スコアは、気圧(これから24時間の変化と、過去24時間に実際に下がった量、気圧の低さ)・気温差・降水・湿度の目安を点数にして0〜100に換算したものです。暫定の目安で、医学的な基準ではありません。</p>
     </details>
   </div>
 </div>`;
@@ -82,7 +82,7 @@ export function factorTilesHtml(w) {
   const t = w.temp, r = w.rain, h = w.humidity;
   const tiles = [
     cur
-      ? tile('pressure', '気圧', `lv-${n.level}`, Math.round(cur.pressure), 'hPa', '', [cur.d3 != null ? `${arrow(cur.d3)}直近3時間 ${sgn(cur.d3)}${Math.abs(cur.d3).toFixed(1)}` : '', '今後24時間'].filter(Boolean), pill(`lv-${n.level}`, n.label))
+      ? tile('pressure', '気圧', `lv-${n.level}`, Math.round(cur.pressure), 'hPa', '', [cur.d3 != null ? `${arrow(cur.d3)}直近3時間 ${sgn(cur.d3)}${Math.abs(cur.d3).toFixed(1)}` : '', w.past && w.past.d24 != null ? `${arrow(w.past.d24)}過去24時間 ${sgn(w.past.d24)}${Math.abs(w.past.d24).toFixed(1)}hPa` : '', '今後24時間'].filter(Boolean), pill(`lv-${n.level}`, n.label))
       : na('pressure', '気圧'),
     t
       ? tile('temp', '気温', `tp-${t.level}`, Math.round(t.now), '℃', '', [t.d24 != null ? `${arrow(t.d24)}前日同時刻比 ${sgn(t.d24)}${Math.abs(t.d24).toFixed(1)}℃` : '', `今後24時間 ${Math.round(t.min)}〜${Math.round(t.max)}℃`].filter(Boolean), pill(`tp-${t.level}`, t.label))

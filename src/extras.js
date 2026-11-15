@@ -74,8 +74,10 @@ export function wetInfo({ obs, fc }, now) {
 }
 
 /** 気圧・気温差・降水・湿度のうち、気になる要因を並べて文章にする(表示専用)。 */
-export function factorSummary({ pressureLevel, temp, rain, hum }) {
+export function factorSummary({ pressureLevel, temp, rain, hum, past }) {
   const f = [];
+  if (past && past.d24 != null && past.d24 <= -6) f.push({ key: 'past', text: `過去24時間の気圧低下（${past.d24.toFixed(1)}hPa）` });
+  else if (past && past.cur != null && past.cur < 1008) f.push({ key: 'past', text: '低めの気圧' });
   if (['slight', 'caution', 'warning'].includes(pressureLevel)) f.push({ key: 'pressure', text: pressureLevel === 'slight' ? '気圧のやや大きな低下' : '気圧の大きな低下' });
   else if (pressureLevel === 'rise') f.push({ key: 'pressure', text: '気圧の上昇' });
   if (temp && temp.level !== 'none') f.push({ key: 'temp', text: temp.level === 'big' ? '大きな気温差' : '気温差' });

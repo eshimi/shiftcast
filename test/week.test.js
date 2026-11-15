@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { weatherInfo, dailyPressure, mergeWeek, tempInfo } from '../src/week.js';
 import { wetInfo, factorSummary } from '../src/extras.js';
-import { moodInfo, MOOD_MAX } from '../src/mood.js';
+import { moodInfo, MOOD_MAX, pastInfo } from '../src/mood.js';
 import { summarizeWeekly } from '../src/jma.js';
 import { annotate } from '../src/pressure.js';
 
@@ -164,4 +164,36 @@ test('moodInfo: 4つの指標を5段階の体調レベル(5=気候が快調〜1=
   assert.match(bad.reason, /重なっています/);
   // データが無い要素は 0 点として扱う
   assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).level, 5);
+});
+
+test('pastInfo: 過去24時間の実際の気圧の低下(毎時の実測)', () => {
+  const now = at('2026-11-15', 22);
+  // 24時間前 1018 → 現在 1006(−12)、途中に 1時間で −1.6 の低下
+  const pts = [];
+  for (let h = 24; h >= 0; h--) pts.push({ ts: now - h * H, pressure: 1018 - (24 - h) * 0.5 });
+  pts[13] = { ts: pts[13].ts, pressure: pts[12].pressure - 1.6 };
+  const p = pastInfo(pts, now);
+  assert.equal(p.cur, pts[24].pressure);
+  assert.ok(p.d24 <= -10, 'd24=' + p.d24);
+  assert.ok(p.maxDrop <= -1.5, 'maxDrop=' + p.maxDrop);
+  assert.equal(pastInfo([{ ts: now, pressure: 1010 }], now), null);
+});
+
+test('moodInfo: すでに下がった分(過去24時間)と低い気圧も判定に入れる', () => {
+  // これからの気圧は安定でも、過去24時間で −11.8hPa、湿度かなり高め → 「体調に影響しそう」
+  const m = moodInfo({ pressureLevel: 'none', temp: { level: 'none' }, rain: { level: 'small' }, hum: { level: 'big' }, past: { cur: 1006.3, d24: -11.8 } });
+  assert.equal(m.parts.past, 4); // 3(−10以下) + 1(1008未満)
+  assert.equal(m.level, 2);
+  assert.ok(m.factors.includes('past'));
+  assert.match(m.reason, /過去24時間の気圧低下/);
+  // 過去のデータが無ければ従来どおり
+  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null, past: null }).level, 5);
+  // 軽い低下は軽く加点
+  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null, past: { cur: 1012, d24: -3.4 } }).parts.past, 1);
+});
+
+test('annotate: 45分未満の近すぎる2点の変化は評価しない(極端な値を出さない)', () => {
+  const a = annotate([{ ts: 0, pressure: 1016 }, { ts: 3 * H, pressure: 1015 }, { ts: 3 * H + 10e3, pressure: 1014 }]);
+  assert.equal(a[2].rate, null);
+  assert.equal(a[2].level, 'none');
 });

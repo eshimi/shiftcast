@@ -6,6 +6,7 @@ import { annotate, worstDrop, interpolate, SEVERITY, LEVEL_LABEL, LEVEL_COMMENT,
 import { ensureFresh, isDemo } from './weather.js';
 import { loadJmaCached } from './jma.js';
 import { loadExtras, wetInfo, factorSummary } from './extras.js';
+import { pastInfo } from './mood.js';
 import { moodInfo } from './mood.js';
 
 // 気象庁の天気コード(telop)の主なもの。無い場合は百の位(1晴/2曇/3雨/4雪)で代用する。
@@ -165,6 +166,8 @@ export async function buildWeek(env, code, now = Date.now()) {
   const next = ann.filter((p) => p.ts > now && p.ts <= now + 24 * HOUR);
   const worst = worstDrop(next);
   const temp = tempInfo(rows, now);
+  const jmaObs = await all(env.DB, `SELECT ts,pressure FROM points WHERE area_code=? AND source='jma' AND ts BETWEEN ? AND ? AND pressure IS NOT NULL ORDER BY ts`, code, now - 30 * HOUR, now);
+  const pastP = pastInfo(jmaObs.length >= 12 ? jmaObs : rows.filter((r) => r.pressure != null && r.ts <= now), now);
   const wet = wetInfo(await loadExtras(env.DB, code), now);
   const fetchedAt = Number((await get(env.DB, 'SELECT v FROM meta WHERE k=?', 'fetched:' + code))?.v || 0) || null;
   return {
@@ -177,8 +180,9 @@ export async function buildWeek(env, code, now = Date.now()) {
     temp,
     rain: wet.rain,
     humidity: wet.hum,
-    factors: factorSummary({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum }),
-    mood: moodInfo({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum, next24: worst ? { level: worst.level, at: worst.ts, rate: worst.rate } : null }),
+    factors: factorSummary({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum, past: pastP }),
+    past: pastP,
+    mood: moodInfo({ pressureLevel: worst ? worst.level : 'none', temp, rain: wet.rain, hum: wet.hum, past: pastP, next24: worst ? { level: worst.level, at: worst.ts, rate: worst.rate } : null }),
     current: cur ? { pressure: Math.round(cur.pressure * 10) / 10, d3: cur && ago3 ? Math.round((cur.pressure - ago3.pressure) * 10) / 10 : null } : null,
     next24: worst
       ? { level: worst.level, label: LEVEL_LABEL[worst.level], rate: worst.rate, at: worst.ts, severe: SEVERITY[worst.level] >= SEVERITY.caution }

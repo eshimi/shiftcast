@@ -33,13 +33,14 @@ export function levelOf(rate) {
   return 'none';
 }
 
-/** 点列(ts昇順)に rate/level を付与。6時間超の欠測をまたぐ区間は評価しない。 */
+/** 点列(ts昇順)に rate/level を付与。6時間超の欠測をまたぐ区間と、45分未満の近すぎる区間(整数hPaを短時間で割ると極端な値になる)は評価しない。 */
+export const MIN_GAP_H = 0.75;
 export function annotate(points) {
   return points.map((p, i) => {
     if (i === 0) return { ...p, rate: null, level: 'none' };
     const q = points[i - 1];
     const dh = (p.ts - q.ts) / HOUR;
-    if (dh <= 0 || dh > 6 || p.pressure == null || q.pressure == null) return { ...p, rate: null, level: 'none' };
+    if (dh < MIN_GAP_H || dh > 6 || p.pressure == null || q.pressure == null) return { ...p, rate: null, level: 'none' };
     const rate = (p.pressure - q.pressure) / dh;
     return { ...p, rate: Math.round(rate * 100) / 100, level: levelOf(rate) };
   });
