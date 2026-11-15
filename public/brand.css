@@ -144,3 +144,10 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 #moodBox #moodNote { margin-top: 0; padding-top: 0; border-top: 0; margin-bottom: 8px; }
 #moodBox #moodMark { margin-top: 4px; }
 #moodBox .mood-chart { margin-top: 12px; }
+
+/* トップの見通しカード: コメント → マーク → 気圧の見通し */
+.tmrw-stack .mood-flat { border: 0; background: transparent; padding: 0; margin: 0; display: block; }
+.tmrw-stack .mood-flat .mood-body { padding: 0; }
+.tmrw-stack .stairs { margin: 10px 0 4px; }
+.tmrw-stack .tmrw-out { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
+.tmrw-stack .tmrw-out .tmrw-date { font-size: 14px; }

@@ -133,15 +133,26 @@ function renderMain(w) {
   const night = isNight(w);
   const head = $('#t-today');
   if (head) { head.textContent = night ? 'Tomorrow' : 'Today'; head.nextElementSibling.textContent = night ? '明日の気圧' : '今日の気圧'; }
-  // 見通しは1枚のカードに統合する(別カードにしない): 夜=明日のカード+体調そらもよう / 日中=今日のカード(体調そらもよう入り)+明日の1行
+  // 1枚のカードに、上から「コメント → マーク → 気圧の見通し」の順で置く(/app/ のホームと同じ並び)。
+  // 夜=明日の見通し / 日中=今日の見通し(+明日の1行)
   const card = $('#tmrwCard');
-  if (night) {
-    renderTomorrow(w);
-    if (card && w.moodMiniHtml) { const x = h('div', { class: 'news-mood' }); x.innerHTML = w.moodMiniHtml; card.append(x); }
-  } else {
+  if (night) renderTomorrow(w);
+  else {
     renderTodayBig(w);
     const d1 = w.days && w.days[1], p1 = d1 && d1.pressure;
     if (card && p1) card.append(h('p', { class: 'tmrw-next' }, h('span', { class: 'muted small' }, `明日 ${mdDow(d1)}　`), h('span', { class: `pill lv-${p1.level}` }, LABEL[p1.level])));
+  }
+  if (card && w.moodHtml) {
+    const tmp = document.createElement('div'); tmp.innerHTML = w.moodHtml;
+    const m = tmp.querySelector('.mood'), stairs = m && m.querySelector('.stairs'), body = m && m.querySelector('.mood-body');
+    if (stairs && body) {
+      body.querySelector('.mood-guide')?.remove(); // 「5段階の見かた」は /app/ で
+      const out = h('div', { class: 'tmrw-out' });
+      [...card.childNodes].forEach((n) => { if (!(n.classList && (n.classList.contains('tmrw-range') || n.classList.contains('news-mood')))) out.append(n); });
+      const wrap = (el) => { const d = document.createElement('div'); d.className = m.className + ' mood-flat'; d.append(el); return d; };
+      card.replaceChildren(wrap(body), wrap(stairs), out);
+      card.classList.add('tmrw-stack');
+    }
   }
   const sm = $('#todayNews'); if (sm) sm.hidden = true;
   // 通知CTAの位置: 夜は明日カードの直下、日中は「今日→明日」の流れを切らないよう明日の小カードの下
