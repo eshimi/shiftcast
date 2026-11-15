@@ -89,6 +89,8 @@ const meOf = async (db, u) => ({
   id: u.id,
   notify: !!u.notify,
   hasPush: !!u.fcm_token,
+  notifyMin: u.notify_min === 'warning' ? 'warning' : 'caution', // 通知しきい値（注意以上 / 警戒のみ）
+  notifyHour: Number.isInteger(u.notify_hour) ? u.notify_hour : 20, // 通知時刻(JST)
   areas: (await all(db, 'SELECT area_code code FROM user_areas WHERE user_id=? ORDER BY pos', u.id)).map((r) => r.code),
   tags: (await all(db, 'SELECT tag FROM user_tags WHERE user_id=? ORDER BY rowid', u.id)).map((r) => r.tag),
   myMeds: (await all(db, 'SELECT name FROM my_meds WHERE user_id=? ORDER BY rowid', u.id)).map((r) => r.name),
@@ -97,9 +99,18 @@ const meOf = async (db, u) => ({
 app.get('/api/me', async (c) => c.json(await meOf(c.env.DB, c.get('user'))));
 
 app.put('/api/me', async (c) => {
-  const { areas, notify, fcm_token } = await body(c);
+  const { areas, notify, fcm_token, notify_min, notify_hour } = await body(c);
   const u = c.get('user');
   const stmts = [];
+  if (notify_min !== undefined) {
+    if (!['caution', 'warning'].includes(notify_min)) return bad(c, 'bad_notify_min');
+    stmts.push(['UPDATE users SET notify_min=? WHERE id=?', notify_min, u.id]);
+  }
+  if (notify_hour !== undefined) {
+    const hNum = Number(notify_hour);
+    if (!Number.isInteger(hNum) || hNum < 0 || hNum > 23) return bad(c, 'bad_notify_hour');
+    stmts.push(['UPDATE users SET notify_hour=? WHERE id=?', hNum, u.id]);
+  }
   if (areas !== undefined) {
     if (!Array.isArray(areas) || !areas.length || areas.length > 3 || !areas.every(isAreaCode)) return bad(c, 'bad_areas');
     stmts.push(['DELETE FROM user_areas WHERE user_id=?', u.id]);

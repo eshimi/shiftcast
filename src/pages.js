@@ -747,6 +747,35 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 }
 
 const ref = (t) => esc(t).replace(/\[\[(\/[a-z]+|[a-z-]+)\|([^\]]+)\]\]/g, (_, slug, label) => (slug.startsWith('/') ? `<a href="${slug}">${label}</a>` : findColumn(slug) ? `<a href="/columns/${slug}">${label}</a>` : label));
+
+/* ---------- 用語集の統合(フェーズ3-3): コラム本文の用語から /glossary の該当アンカーへリンク ----------
+   記事ごとに各用語の最初の1回だけリンクする。長い用語を優先して照合し（「気圧頭痛」が「気圧」として
+   リンクされないように）、既存のリンクの中はさわらない。 */
+const GL_TERMS = GLOSSARY
+  .map(([t], i) => [t.replace(/（.*$/, ''), i + 1])
+  .filter(([t]) => t.length >= 2)
+  .sort((a, b) => b[0].length - a[0].length);
+function linkTermsInText(text, seen) {
+  for (const [term, n] of GL_TERMS) {
+    if (seen.has(n)) continue;
+    const at = text.indexOf(term);
+    if (at < 0) continue;
+    seen.add(n);
+    return linkTermsInText(text.slice(0, at), seen) + `<a class="gl-ref" href="/glossary#g${n}" title="用語集で「${term}」を見る">${term}</a>` + linkTermsInText(text.slice(at + term.length), seen);
+  }
+  return text;
+}
+function linkGlossary(html, seen) {
+  let inA = 0;
+  return html.split(/(<[^>]*>)/).map((part) => {
+    if (part.startsWith('<')) {
+      if (/^<a[\s>]/i.test(part)) inA++;
+      else if (/^<\/a/i.test(part)) inA = Math.max(0, inA - 1);
+      return part;
+    }
+    return inA || !part ? part : linkTermsInText(part, seen);
+  }).join('');
+}
 function renderBlock(b) {
   if (b.h) return `<h2>${esc(b.h)}</h2>`;
   if (b.p) return `<p>${ref(b.p)}</p>`;
@@ -777,7 +806,7 @@ export function columnPage(slug) {
   <h1>${esc(c.title)}</h1>
   <p class="muted small">約${c.readMin}分 ・ 更新 ${COLUMN_UPDATED}</p>
   <p class="lead">${esc(c.summary)}</p>
-  ${c.blocks.map(renderBlock).join('\n  ')}
+  ${(() => { const seen = new Set(); return c.blocks.map((b) => (b.h ? renderBlock(b) : linkGlossary(renderBlock(b), seen))).join('\n  '); })()}
 </article>
 ${related.length ? `<section class="related" aria-labelledby="rel-h"><h2 id="rel-h">あわせて読みたい</h2><ul>${related.map((r) => `<li><a href="/columns/${esc(r.slug)}">${esc(r.title)}</a><span class="muted small">${esc(r.summary)}</span></li>`).join('')}</ul></section>` : ''}
 <details class="pref-d"><summary>お住まいの地域の気圧予報を見る（全国47都道府県）</summary>

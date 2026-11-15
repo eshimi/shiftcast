@@ -1,7 +1,7 @@
 // アラート判定＆事前通知（FCM HTTP v1 を fetch + WebCrypto で直接呼ぶ。firebase-admin はWorkers非対応）
 import { all, get, run } from './db.js';
 import { AREA_BY_CODE } from './areas.js';
-import { annotate, worstDrop, SEVERITY, LEVEL_LABEL, jstDayStart, jstDateStr, HOUR } from './pressure.js';
+import { annotate, worstDrop, SEVERITY, LEVEL_LABEL, jstDayStart, jstDateStr, jstHour, HOUR } from './pressure.js';
 
 const b64url = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const enc = (o) => b64url(new TextEncoder().encode(JSON.stringify(o)));
@@ -51,15 +51,19 @@ export async function forecastForDay(db, areaCode, dayStart) {
 export async function runAlertBatch(env, now = Date.now()) {
   const tomorrow = jstDayStart(now) + 24 * HOUR;
   const dateStr = jstDateStr(tomorrow);
-  const users = await all(env.DB, 'SELECT id, fcm_token FROM users WHERE notify=1 AND fcm_token IS NOT NULL AND (last_notified IS NULL OR last_notified<>?)', dateStr);
+  // 通知時刻(JST)が現在の時間帯のユーザーだけが対象（既定は20時。notify_hour列が無い旧データはNULL→既定扱い）
+  const hourNow = jstHour(now);
+  const defHour = Number(env.ALERT_HOUR ?? 20);
+  const users = await all(env.DB, 'SELECT id, fcm_token, notify_min, notify_hour FROM users WHERE notify=1 AND fcm_token IS NOT NULL AND (last_notified IS NULL OR last_notified<>?) AND COALESCE(notify_hour, ?)=?', dateStr, defHour, hourNow);
   const send = fcmClient(env);
   let sent = 0;
   for (const u of users) {
+    const minSev = SEVERITY[u.notify_min === 'warning' ? 'warning' : 'caution']; // しきい値（注意以上/警戒のみ）
     const areas = await all(env.DB, 'SELECT area_code FROM user_areas WHERE user_id=? ORDER BY pos', u.id);
     let hit = null;
     for (const { area_code } of areas) {
       const w = await forecastForDay(env.DB, area_code, tomorrow);
-      if (w && SEVERITY[w.level] >= SEVERITY.caution && (!hit || w.rate < hit.w.rate)) hit = { w, area_code };
+      if (w && SEVERITY[w.level] >= minSev && (!hit || w.rate < hit.w.rate)) hit = { w, area_code };
     }
     if (!hit) continue;
     const hh = new Date(hit.w.ts + 9 * HOUR).getUTCHours();

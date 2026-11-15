@@ -21,20 +21,23 @@ export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-log" class="view" hidden>
     <div class="card">
       <div class="card-h"><b id="formTitle">体調を記録</b><button id="cancelEdit" class="link" hidden>編集をやめる</button></div>
-      <label class="lbl">痛みの度合い</label>
+      <label class="lbl">いまの体調（タップするだけで記録できます）</label>
       <div id="pain" class="pain" role="radiogroup" aria-label="痛みの度合い"></div>
-      <label class="lbl">症状</label>
-      <div id="tags" class="chips multiline"></div>
-      <div class="row"><input id="newTag" placeholder="独自タグを追加" maxlength="20"><button id="addTag" class="btn sm">追加</button></div>
-      <label class="lbl">服薬</label>
-      <div id="myMeds" class="chips multiline"></div>
-      <div class="row"><input id="medQ" placeholder="医薬品名で検索" autocomplete="off"></div>
-      <div id="medSug" class="sug"></div>
-      <div id="selMeds" class="chips multiline"></div>
-      <label class="lbl" for="when">日時</label>
-      <input id="when" type="datetime-local">
-      <label class="lbl" for="note">メモ</label>
-      <textarea id="note" rows="2" maxlength="500" placeholder="任意"></textarea>
+      <details id="logMore" class="log-more">
+        <summary>くわしく記録する（症状・服薬・日時・メモ）<span class="muted">任意</span></summary>
+        <label class="lbl">症状</label>
+        <div id="tags" class="chips multiline"></div>
+        <div class="row"><input id="newTag" placeholder="独自タグを追加" maxlength="20"><button id="addTag" class="btn sm">追加</button></div>
+        <label class="lbl">服薬</label>
+        <div id="myMeds" class="chips multiline"></div>
+        <div class="row"><input id="medQ" placeholder="医薬品名で検索" autocomplete="off"></div>
+        <div id="medSug" class="sug"></div>
+        <div id="selMeds" class="chips multiline"></div>
+        <label class="lbl" for="when">日時</label>
+        <input id="when" type="datetime-local">
+        <label class="lbl" for="note">メモ</label>
+        <textarea id="note" rows="2" maxlength="500" placeholder="任意"></textarea>
+      </details>
       <button id="save" class="btn primary block">記録する</button>
     </div>
     <div class="card">
@@ -67,9 +70,16 @@ export const APP_BODY = `  <!-- ダッシュボード -->
     </div>
     <div class="card">
       <div class="card-h"><b>プッシュ通知</b></div>
-      <p class="muted">毎晩、翌日に「注意」以上の気圧低下が予測されるときだけ通知します。</p>
+      <p class="muted">毎晩、翌日に選んだレベル以上の気圧低下が予測されるときだけ通知します。</p>
       <label class="switch"><input type="checkbox" id="notifyChk"> 気圧低下アラートを受け取る</label>
       <div id="pushState" class="muted"></div>
+      <label class="lbl" for="notifyMin">通知するレベル</label>
+      <select id="notifyMin">
+        <option value="caution">「注意」以上（これまでどおり）</option>
+        <option value="warning">「警戒」のみ</option>
+      </select>
+      <label class="lbl" for="notifyHour">通知する時刻（前の晩）</label>
+      <select id="notifyHour">${[17, 18, 19, 20, 21, 22, 23].map((hh) => `<option value="${hh}">${hh}:00ごろ</option>`).join('')}</select>
     </div>
     <div class="card">
       <div class="card-h"><b>マイ薬リスト</b></div>

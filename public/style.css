@@ -110,3 +110,9 @@ body[data-page="app"] .site-f { padding-bottom: calc(96px + env(safe-area-inset-
 .iprog p { margin: 0 0 8px; font-size: 13px; line-height: 1.6; color: var(--muted); }
 .iprog-bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
 .iprog-bar i { display: block; height: 100%; width: 0; background: var(--accent); border-radius: 99px; transition: width .4s; }
+
+/* 記録フォームの二段構え（フェーズ3-1）: 初期表示は顔アイコンのみ、詳細は折りたたみ */
+.log-more { margin: 14px 0 12px; border: 1px dashed var(--line); padding: 10px 12px; }
+.log-more summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.log-more summary .muted { margin-left: 8px; font-weight: 400; }
+.log-more[open] summary { margin-bottom: 4px; }

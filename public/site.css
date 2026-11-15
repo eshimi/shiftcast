@@ -494,3 +494,7 @@ body.lp .lp-f { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
 [hidden] { display: none !important; }
 
 @media (min-width: 760px) { .st .stl { height: 2.2em; } }
+
+/* コラム本文の用語集リンク（フェーズ3-3）: 控えめな点線下線で本文の流れを邪魔しない */
+.article .gl-ref { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--teal-2); text-underline-offset: 4px; }
+.article .gl-ref:hover { color: var(--accent); }

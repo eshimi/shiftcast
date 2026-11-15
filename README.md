@@ -28,6 +28,7 @@ Cronの動作確認: `curl "http://localhost:8787/cdn-cgi/handler/scheduled?cron
 | `FIREBASE_VAPID_KEY` | 任意 | Web Pushの公開鍵 |
 
 設定値は `wrangler.jsonc` の `vars`（ALERT_HOUR / WEATHER_INTERVAL_H / MIN_K / EXTRA_AREAS / ALL_AREAS）で変更できます。
+通知時刻としきい値（注意以上／警戒のみ）はユーザーごとに設定でき、`ALERT_HOUR` はその既定値（未設定ユーザー向け）です。通知バッチは毎時の最初のCron枠で起動し、該当時刻のユーザーだけに送信します。
 無料プランはサブリクエストが1回の実行で50までのため、`ALL_AREAS=1` は有料プラン向けです。
 
 ## 医薬品データの差し替え

@@ -5,7 +5,7 @@ const COLOR = { rise: '#3b82f6', slight: '#eab308', caution: '#f97316', warning:
 const FACES = ['🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読み込めない場合の代用
 const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level - 1]));
 const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
-const DEFAULT_TAGS = ['頭痛', 'だるさ', 'めまい', '肩こり', '吐き気', '関節痛', '眠気'];
+const DEFAULT_TAGS = ['頭痛', 'だるさ', 'めまい', '肩こり', '吐き気', '関節痛', '眠気', '睡眠の質が悪い'];
 const HOUR = 3600e3;
 const FONT = getComputedStyle(document.body).fontFamily; // グラフ内の文字も、ページと同じフォント(明朝体)にそろえる
 
@@ -410,6 +410,7 @@ function editLog(l) {
   S.editId = l.id; S.pain = l.pain; S.tags = new Set(l.tags); S.meds = new Set(l.meds);
   $('#note').value = l.note; $('#when').value = toLocalInput(l.ts);
   $('#formTitle').textContent = '記録を編集'; $('#save').textContent = '更新する'; $('#cancelEdit').hidden = false;
+  const more = $('#logMore'); if (more) more.open = true; // 編集時は詳細項目を開いて見せる
   S.me.tags = [...new Set([...S.me.tags, ...l.tags.filter((t) => !DEFAULT_TAGS.includes(t) && !S.me.tags.includes(t))])];
   renderPain(); renderTags(); renderMyMeds(); renderSelMeds(); window.scrollTo(0, 0);
 }
@@ -443,6 +444,8 @@ function renderSettings() {
   $('#addArea').disabled = S.me.areas.length >= 3;
   $('#notifyChk').checked = S.me.notify && S.me.hasPush;
   $('#pushState').textContent = S.me.hasPush ? '通知: この端末で有効' : '通知: この端末では未設定';
+  if ($('#notifyMin')) $('#notifyMin').value = S.me.notifyMin || 'caution';
+  if ($('#notifyHour')) $('#notifyHour').value = String(S.me.notifyHour ?? 20);
   const ml = $('#myMedList'); ml.replaceChildren();
   if (!S.me.myMeds.length) ml.append(h('li', {}, h('span', { class: 'muted' }, '登録なし')));
   S.me.myMeds.forEach((m) => ml.append(h('li', {}, m, h('button', { class: 'link', onclick: async () => { await api('/mymeds?v=' + encodeURIComponent(m), { method: 'DELETE' }); S.me = await api('/me'); S.meds.delete(m); renderSettings(); renderMyMeds(); renderSelMeds(); } }, '削除'))));
@@ -474,6 +477,16 @@ $('#notifyChk').addEventListener('change', async (e) => {
     else S.me = await api('/me', { method: 'PUT', body: { notify: false } });
     toast(e.target.checked ? '通知をオンにしました' : '通知をオフにしました');
   } catch (err) { e.target.checked = false; toast(err.message); }
+  renderSettings();
+});
+// 通知のしきい値・時刻（フェーズ3-2。初期値は現行どおり「注意以上・20時」）
+$('#notifyMin')?.addEventListener('change', async (e) => {
+  try { S.me = await api('/me', { method: 'PUT', body: { notify_min: e.target.value } }); toast('通知するレベルを変更しました'); } catch { toast('変更できませんでした'); }
+  renderSettings();
+});
+$('#notifyHour')?.addEventListener('change', async (e) => {
+  const v = Number(e.target.value); // await中にrenderSettingsで値が書き換わってもトースト文言がずれないよう退避
+  try { S.me = await api('/me', { method: 'PUT', body: { notify_hour: v } }); toast(`通知時刻を${v}時に変更しました`); } catch { toast('変更できませんでした'); }
   renderSettings();
 });
 $('#wipe').addEventListener('click', async () => {
