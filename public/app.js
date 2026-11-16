@@ -84,7 +84,7 @@ function show(v, { push = true } = {}) {
   S.view = v;
   document.body.dataset.view = v;
   document.querySelectorAll('.view').forEach((e) => (e.hidden = e.id !== 'view-' + v));
-  document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  document.querySelectorAll('.tabs button').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); if (b.dataset.v === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (push && location.hash !== '#' + v) { try { history.pushState(null, '', '#' + v); } catch { /* 無視 */ } }
   if (v === 'dash') loadDash();
   if (v === 'log') loadLogs();
@@ -100,8 +100,8 @@ window.addEventListener('popstate', fromHash);
 // ---------- ダッシュボード ----------
 function renderChips() {
   const box = $('#areaChips'); box.replaceChildren();
-  const mk = (code, label) => h('button', { class: 'chip' + (S.sel === code ? ' on' : ''), role: 'tab', onclick: () => { S.sel = code; renderChips(); loadDash(); } }, label);
-  box.append(h('button', { class: 'chip', onclick: locate }, '📍 現在地' + (S.cur ? `（${S.areaName[S.cur]}）` : '')));
+  const mk = (code, label) => h('button', { class: 'chip' + (S.sel === code ? ' on' : ''), type: 'button', role: 'tab', 'aria-selected': S.sel === code ? 'true' : 'false', 'aria-current': S.sel === code ? 'true' : null, onclick: () => { S.sel = code; renderChips(); loadDash(); } }, label);
+  box.append(h('button', { class: 'chip', type: 'button', onclick: locate }, '現在地' + (S.cur ? `（${S.areaName[S.cur]}）` : '')));
   const codes = [...new Set([...(S.cur ? [S.cur] : []), ...S.me.areas])];
   codes.forEach((c) => box.append(mk(c, S.areaName[c])));
 }
@@ -174,18 +174,24 @@ function renderSummary(fc) {
   const next = fc.points.filter((p) => p.ts > now && p.ts <= now + 24 * HOUR && p.level !== 'none');
   const sev = { warning: 4, caution: 3, slight: 2, rise: 1 };
   const worst = next.sort((a, b) => sev[b.level] - sev[a.level] || a.rate - b.rate)[0];
-  const el = $('#summary'); el.className = 'card summary ' + (worst ? worst.level : '');
+  const lv = worst?.level || 'none';
+  const el = $('#summary'); el.className = `card summary astrip lv-${lv}`;
   const last = [...fc.points].reverse().find((p) => p.ts <= now) || fc.points[0];
-  const lvKey = worst?.level || 'none';
-  const ico = window.FACE ? window.FACE.level(lvKey, 46) : { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼' }[worst?.level] || '✅'; // faces.js(手描き風)が無ければ絵文字
+  const ARROW = {
+    up: '<path d="M12 19V6M12 6l-5 5M12 6l5 5"/>',
+    down: '<path d="M12 5v13M12 18l-5-5M12 18l5-5"/>',
+    ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  };
+  const kind = lv === 'rise' ? 'up' : lv === 'none' ? 'ok' : 'down';
+  const ico = h('span', { class: 'astrip-ico', 'aria-hidden': 'true' });
+  ico.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ARROW[kind]}</svg>`;
   el.replaceChildren(
-    h('div', { class: 'ico' }, ico),
-    h('div', {},
-      h('b', {}, worst ? `今後24時間: ${LABEL[worst.level]}` : '今後24時間: 大きな変動なし'),
-      h('div', { class: 'muted' }, worst
-        ? `${fmtDT(worst.ts)}ごろ ${worst.rate > 0 ? '+' : ''}${worst.rate.toFixed(1)} hPa/h`
-        : '気圧は比較的安定する見込みです'),
-      last?.pressure != null ? h('div', { class: 'muted' }, `現在の海面気圧 約${Math.round(last.pressure)} hPa`) : null),
+    ico,
+    h('div', { class: 'astrip-txt' },
+      h('div', { class: 'astrip-h' }, h('span', { class: 'astrip-s' }, '今後24時間'), h('b', {}, worst ? `気圧は${LABEL[worst.level]}` : '気圧は安定')),
+      h('div', { class: 'astrip-d' },
+        worst ? [`${fmtDT(worst.ts)}ごろ `, h('b', { class: 'astrip-r' }, `${worst.rate > 0 ? '+' : ''}${worst.rate.toFixed(1)} hPa/h`)] : '大きな変動は見込まれていません',
+        last?.pressure != null ? `・現在 約${Math.round(last.pressure)} hPa` : '')),
   );
 }
 

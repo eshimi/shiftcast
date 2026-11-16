@@ -22,3 +22,81 @@ body[data-page="app"] .sec-h { margin: 18px 2px 10px; font-size: 15px; font-weig
 body[data-page="app"] .sec-t { margin: 0; font-size: 15px; font-weight: 700; }
 body[data-page="app"] .chart-card .card-h { align-items: center; }
 body[data-page="app"] .fx-wrap-app .fx-grid { margin-top: 0; }
+
+/* ---- フェーズ2: カード/タイルの見た目統一・配色トークン・アラート帯 ---- */
+body[data-page="app"] {
+  --ap-blue: #2B7FD4; --ap-navy: #1F3A57; --ap-text: #26323F; --ap-muted: #5B6B7C; --ap-bg: #EEF4FA; --ap-card: #FFFFFF; --ap-line: #E3EBF2;
+  --lv-rise: #3B82D6; --lv-slight: #E0A32E; --lv-caution: #E07B39; --lv-warning: #DC5245; --lv-good: #2FA785;
+  --lv-rise-bg: #E4EFFB; --lv-slight-bg: #FBF3DE; --lv-caution-bg: #FBEBDD; --lv-warning-bg: #FBE4E1; --lv-good-bg: #E6F5EF;
+  --lv-rise-tx: #1F5FA8; --lv-slight-tx: #7A5200; --lv-caution-tx: #A24610; --lv-warning-tx: #A82A1F; --lv-good-tx: #1B7A5E;
+  background: var(--ap-bg); color: var(--ap-text);
+}
+body[data-page="app"] main, body[data-page="app"] .app-main { background: transparent; }
+body[data-page="app"] .card { background: var(--ap-card); border: 1px solid var(--ap-line); border-radius: 16px; box-shadow: none; }
+body[data-page="app"] .muted, body[data-page="app"] .upd { color: var(--ap-muted); }
+body[data-page="app"] .sec-h, body[data-page="app"] .sec-t { color: var(--ap-navy); }
+/* アプリバー: ロゴ + 「記録する」(スマホではナビの行を隠す) */
+body[data-page="app"] .site-h { background: #fff; border-bottom: 1px solid var(--ap-line); }
+body[data-page="app"] .site-h .h-rec { display: inline-flex; align-items: center; justify-content: center; margin-left: auto; height: 36px; padding: 0 16px; border: 0; border-radius: 18px; background: var(--ap-blue); color: #fff; font-family: var(--font-sans); font-size: 13px; font-weight: 700; text-decoration: none; }
+@media (max-width: 759px) { body[data-page="app"] .site-h .nav { display: none; } }
+/* 地域トグル */
+body[data-page="app"] .seg-toggle { display: inline-flex; gap: 0; padding: 3px; background: #DCE7F2; border-radius: 10px; overflow: visible; }
+body[data-page="app"] .seg-toggle .chip { height: 30px; padding: 0 13px; border: 0; border-radius: 8px; background: transparent; color: var(--ap-muted); font-size: 13px; font-weight: 500; }
+body[data-page="app"] .seg-toggle .chip.on, body[data-page="app"] .seg-toggle .chip[aria-current="true"] { background: #fff; color: var(--ap-navy); font-weight: 700; box-shadow: 0 1px 2px rgba(31, 58, 87, .12); }
+/* 今日の体調そらもよう(主役カード) */
+body[data-page="app"] .mhero { background: linear-gradient(160deg, #E8F1FA 0%, #F2F8FD 55%, #FAFCFE 100%); border-color: #CBDDEE; }
+body[data-page="app"] .mhero-en { color: var(--ap-navy); }
+body[data-page="app"] .mhero-score b { color: var(--ap-navy); }
+body[data-page="app"] .mhero-score small { color: var(--ap-muted); }
+body[data-page="app"] .mhero-label { color: var(--ap-navy); font-family: var(--font-sans); }
+body[data-page="app"] .mhero-badge { background: var(--ap-blue); }
+body[data-page="app"] .mhero-cmt { color: #3C4A58; }
+/* 気圧アラート帯 */
+body[data-page="app"] .astrip { display: flex; align-items: center; gap: 13px; margin: 12px 0 0; padding: 14px 16px; border-radius: 16px; background: var(--lv-rise-bg); border: 1px solid #C6DDF4; border-left-width: 1px; }
+body[data-page="app"] .astrip .astrip-ico { flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--lv-rise); display: flex; align-items: center; justify-content: center; }
+body[data-page="app"] .astrip.lv-slight { background: var(--lv-slight-bg); border-color: #F0DDA8; } body[data-page="app"] .astrip.lv-slight .astrip-ico { background: var(--lv-slight); }
+body[data-page="app"] .astrip.lv-caution { background: var(--lv-caution-bg); border-color: #F2CDB1; } body[data-page="app"] .astrip.lv-caution .astrip-ico { background: var(--lv-caution); }
+body[data-page="app"] .astrip.lv-warning { background: var(--lv-warning-bg); border-color: #F1BDB7; } body[data-page="app"] .astrip.lv-warning .astrip-ico { background: var(--lv-warning); }
+body[data-page="app"] .astrip.lv-none { background: var(--lv-good-bg); border-color: #BFE3D5; } body[data-page="app"] .astrip.lv-none .astrip-ico { background: var(--lv-good); }
+body[data-page="app"] .astrip-h { display: flex; align-items: baseline; gap: 8px; }
+body[data-page="app"] .astrip-s { font-size: 12px; color: var(--ap-muted); }
+body[data-page="app"] .astrip-h b { font-size: 15px; color: var(--ap-navy); }
+body[data-page="app"] .astrip-d { margin-top: 3px; font-size: 12px; color: var(--ap-muted); }
+body[data-page="app"] .astrip.lv-rise .astrip-r { color: var(--lv-rise-tx); } body[data-page="app"] .astrip.lv-slight .astrip-r { color: var(--lv-slight-tx); }
+body[data-page="app"] .astrip.lv-caution .astrip-r { color: var(--lv-caution-tx); } body[data-page="app"] .astrip.lv-warning .astrip-r { color: var(--lv-warning-tx); }
+/* グラフのカード */
+body[data-page="app"] .chart-card { margin: 12px 0 0; padding: 16px 14px 14px; }
+body[data-page="app"] .chart-card .unit { font-size: 11px; color: var(--ap-muted); }
+body[data-page="app"] .chart-card .legend { display: flex; flex-wrap: wrap; gap: 8px 14px; padding: 10px 4px 0; margin-top: 4px; border-top: 1px solid #EEF2F6; font-size: 11px; color: var(--ap-muted); }
+body[data-page="app"] .chart-card .legend span { display: inline-flex; align-items: center; gap: 5px; }
+/* いまの天気(2×2): 同じレイアウトのカードに統一 */
+body[data-page="app"] .fx-wrap-app .fx-grid { gap: 10px; }
+body[data-page="app"] .fx-wrap-app .fx { background: #fff; border: 1px solid var(--ap-line); border-top: 1px solid var(--ap-line); border-radius: 14px; padding: 13px 14px; display: flex; flex-direction: column; }
+body[data-page="app"] .fx-wrap-app .fx-h b { font-size: 12px; font-weight: 500; color: var(--ap-muted); }
+body[data-page="app"] .fx-wrap-app .fxi { width: 18px; height: 18px; stroke-width: 3.4; }
+body[data-page="app"] .fx-wrap-app .fx-v { margin-top: 6px; font-size: 26px; color: var(--ap-navy); font-family: var(--font-latin); }
+body[data-page="app"] .fx-wrap-app .fx-v small { font-size: 12px; color: var(--ap-muted); font-family: var(--font-sans); }
+body[data-page="app"] .fx-wrap-app .fx-cap { margin-top: 6px; color: var(--ap-muted); }
+body[data-page="app"] .fx-wrap-app .fx-r { margin-top: 4px; font-size: 11px; color: var(--ap-muted); }
+body[data-page="app"] .fx-wrap-app .fx-p { margin-top: auto; padding-top: 8px; }
+body[data-page="app"] .fx-wrap-app .pill { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 700; border: 0; background: #EEF2F6; color: #4A5A6B; }
+body[data-page="app"] .fx-wrap-app .pill.lv-none { background: var(--lv-good-bg); color: var(--lv-good-tx); }
+body[data-page="app"] .fx-wrap-app .pill.lv-rise { background: var(--lv-rise-bg); color: var(--lv-rise-tx); }
+body[data-page="app"] .fx-wrap-app .pill.lv-slight { background: var(--lv-slight-bg); color: var(--lv-slight-tx); }
+body[data-page="app"] .fx-wrap-app .pill.lv-caution { background: var(--lv-caution-bg); color: var(--lv-caution-tx); }
+body[data-page="app"] .fx-wrap-app .pill.lv-warning { background: var(--lv-warning-bg); color: var(--lv-warning-tx); }
+body[data-page="app"] .fx-wrap-app .fx-temp .pill.tp-mid, body[data-page="app"] .fx-wrap-app .fx-temp .pill.tp-big { background: var(--lv-caution-bg); color: var(--lv-caution-tx); }
+body[data-page="app"] .fx-wrap-app .fx-rain .pill.tp-small, body[data-page="app"] .fx-wrap-app .fx-rain .pill.tp-mid, body[data-page="app"] .fx-wrap-app .fx-rain .pill.tp-big { background: var(--lv-rise-bg); color: var(--lv-rise-tx); }
+body[data-page="app"] .fx-wrap-app .fx-hum .pill.tp-mid, body[data-page="app"] .fx-wrap-app .fx-hum .pill.tp-big { background: var(--lv-rise-bg); color: var(--lv-rise-tx); }
+/* 気象庁の天気予報 */
+body[data-page="app"] #jma { margin-top: 18px; padding: 14px 16px; }
+body[data-page="app"] #jma > b { display: block; margin-bottom: 4px; font-size: 14px; color: var(--ap-navy); }
+body[data-page="app"] .jma-day { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 0; border-bottom: 1px solid #EEF2F6; font-size: 12px; }
+body[data-page="app"] .jma-day b { width: 70px; font-size: 13px; color: var(--ap-text); }
+body[data-page="app"] .disclaimer { color: #6B7A89; font-size: 11px; }
+body[data-page="app"] .disclaimer a { color: var(--ap-blue); }
+/* 下部タブ */
+body[data-page="app"] .tabs { background: #fff; border-top: 1px solid var(--ap-line); border-radius: 0; }
+body[data-page="app"] .tabs button { color: #5F6E7D; min-height: 56px; }
+body[data-page="app"] .tabs button.on, body[data-page="app"] .tabs button[aria-current="page"] { color: var(--ap-blue); font-weight: 700; box-shadow: none; }
+body[data-page="app"] .sec-h { text-align: left; }
