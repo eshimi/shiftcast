@@ -166,3 +166,18 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
   /* 暗い背景では、カラーのロゴ(紺の文字)が読めないので、白い台の上に置く */
   .f-logo img { background: #fff; padding: 6px 12px; border-radius: 12px; box-sizing: content-box; }
 }
+
+/* 見通しの期間と、6時間ごとの時間帯 */
+.slots { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 10px 0 6px; }
+.slot { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 4px 9px; background: var(--surface-100, #fff); border: 1px solid var(--line); border-top: 4px solid var(--line); border-radius: 12px; min-width: 0; text-align: center; }
+.slot.lv-rise { border-top-color: var(--rise); } .slot.lv-slight { border-top-color: var(--slight); } .slot.lv-caution { border-top-color: var(--caution); } .slot.lv-warning { border-top-color: var(--warning); }
+.slot.first { box-shadow: 0 0 0 2px color-mix(in srgb, var(--wl-sage, #1B7FD6) 45%, transparent); }
+.slot-t { font-size: 12px; letter-spacing: .02em; line-height: 1.3; white-space: nowrap; } .slot-t:first-line { font-size: 12px; }
+.slot .pill { font-size: 12px; padding: 1px 8px; }
+.slot-p { font-size: 10.5px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.slot.na { opacity: .55; }
+.tmrw-date { line-height: 1.6; }
+
+.slots-wrap { margin: 8px 0 6px; } .slots-wrap .slots { margin: 0; } .slots-note { margin: 6px 0 0; }
+.slot-now { font-size: 10px; color: var(--wl-sage, #1B7FD6); font-weight: 700; line-height: 1; } .slot-now.sp { visibility: hidden; }
+.slot-t { font-size: 13px; }

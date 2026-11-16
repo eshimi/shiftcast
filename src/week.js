@@ -187,6 +187,7 @@ export async function buildWeek(env, code, now = Date.now()) {
     next24: worst
       ? { level: worst.level, label: LEVEL_LABEL[worst.level], rate: worst.rate, at: worst.ts, severe: SEVERITY[worst.level] >= SEVERITY.caution }
       : { level: 'none', label: LEVEL_LABEL.none, rate: null, at: null, severe: false },
+    hourly48: ann.filter((p) => p.ts >= now - 3 * HOUR && p.ts <= now + 52 * HOUR).map((p) => ({ ts: p.ts, pressure: p.pressure, rate: p.rate, level: p.level })), // 時間帯ごとの見通し(トップ)用
     hourly: ann.filter((p) => p.ts >= now - 3 * HOUR && p.ts <= now + 27 * HOUR).map((p) => ({ ts: p.ts, temp: p.temp, pressure: p.pressure, icon: owmIcon(p.icon), key: owmKey(p.icon), rate: p.rate, level: p.level })),
     days,
   };

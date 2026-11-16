@@ -160,6 +160,40 @@ function renderMain(w) {
   if (cta && big && small) (night ? big : small).after(cta);
 }
 
+// ---- 見通しの期間と、時間帯ごとの状況 ----
+const DOWS = ['日', '月', '火', '水', '木', '金', '土'];
+const dowOf = (ts) => DOWS[new Date(ts + 9 * 3600e3).getUTCDay()];
+const hhmm = (ts) => `${jstParts(ts).h}時`;
+const mdOf = (ts) => { const p = jstParts(ts); return `${p.m}/${p.d}（${dowOf(ts)}）`; };
+// 「いつからいつまで」を明記する: 例 11/16（月）14時 〜 11/17（火）14時（24時間）
+function rangeLabel(from, to) { return `${mdOf(from)}${hhmm(from)} 〜 ${mdOf(to)}${hhmm(to)}`; }
+const SEV = { none: 0, rise: 0, slight: 1, caution: 2, warning: 3 };
+function pAt(pts, ts) {
+  const a = [...pts].reverse().find((p) => p.ts <= ts), b = pts.find((p) => p.ts >= ts);
+  if (a && b && a !== b) return a.pressure + ((b.pressure - a.pressure) * (ts - a.ts)) / (b.ts - a.ts);
+  return (a || b) ? (a || b).pressure : null;
+}
+// 6時間ごとの4つの時間帯。それぞれの気圧のレベル(その時間帯でいちばん大きな変化)と、はじめ→おわりの気圧
+function slotStrip(w, startTs, firstIsNow) {
+  const pts = (w.hourly48 || []).filter((p) => p.pressure != null);
+  if (pts.length < 2) return null;
+  const items = [];
+  for (let i = 0; i < 4; i++) {
+    const s = startTs + i * 6 * 3600e3, e = s + 6 * 3600e3;
+    const inW = pts.filter((p) => p.ts > s && p.ts <= e && p.rate != null);
+    let lv = 'none', worst = null;
+    for (const p of inW) { if (SEV[p.level] > SEV[lv] || (lv === 'none' && p.level === 'rise')) { lv = p.level; worst = p; } }
+    const p0 = pAt(pts, s), p1 = pAt(pts, e);
+    const covered = pts.some((p) => p.ts >= e) || (pts.length && pts[pts.length - 1].ts >= e - 3600e3);
+    items.push(h('div', { class: `slot lv-${lv}${i === 0 ? ' first' : ''}${covered ? '' : ' na'}` },
+      h('b', { class: 'slot-t' }, `${jstParts(s).h}〜${jstParts(e).h}時`),
+      i === 0 && firstIsNow ? h('span', { class: 'slot-now' }, 'いまから') : h('span', { class: 'slot-now sp' }, '　'),
+      covered ? h('span', { class: `pill lv-${lv}` }, LABEL[lv]) : h('span', { class: 'muted small' }, '予報なし'),
+      covered && p0 != null && p1 != null ? h('span', { class: 'slot-p' }, `${Math.round(p0)}→${Math.round(p1)}`) : null));
+  }
+  return h('div', { class: 'slots-wrap' }, h('div', { class: 'slots', role: 'list', 'aria-label': '6時間ごとの気圧の見通し' }, ...items), h('p', { class: 'slots-note muted small' }, '6時間ごとの気圧のレベル。下の数字は、はじめ→おわりの気圧(hPa)'));
+}
+
 // 過去24時間に実際に下がった(上がった)気圧。これからの予報だけでは見えない「すでに起きた変化」を見せる
 function pastLine(w) {
   const d = w.past && w.past.d24;
@@ -182,7 +216,8 @@ function renderTodayBig(w) {
   const cur = w.current;
   const tp = n.at != null && lv !== 'none' ? jstParts(n.at) : null;
   el.replaceChildren(
-    h('p', { class: 'tmrw-date' }, d ? `今日 ${mdDow(d)}・これから24時間` : '今日・これから24時間', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('p', { class: 'tmrw-date' }, `今日　${rangeLabel(w.now, w.now + 24 * 3600e3)}（これから24時間）`, '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    slotStrip(w, w.now, true),
     h('div', { class: 'tmrw-main' },
       h('span', { class: `pill lv-${lv} tmrw-pill` }, LABEL[lv]),
       d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
@@ -220,7 +255,8 @@ function renderTomorrow(w) {
   const comment = (w.comments || {})[lv] || '';
   const tp = p && p.at != null && lv !== 'none' ? jstParts(p.at) : null;
   el.replaceChildren(
-    h('p', { class: 'tmrw-date' }, d ? `明日 ${mdDow(d)}` : '明日', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('p', { class: 'tmrw-date' }, d ? `明日　${mdDow(d)} 0時 〜 24時（1日）` : '明日', '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    d ? slotStrip(w, Date.parse(d.date + 'T00:00:00+09:00'), false) : null,
     h('div', { class: 'tmrw-main' },
       h('span', { class: `pill lv-${lv} tmrw-pill` }, p ? LABEL[lv] : '準備中'),
       d && (d.key || d.icon) ? h('span', { class: 'tmrw-wx' }, wxIcon(d.key, d.icon, 30), d.text ? h('small', { class: 'muted' }, d.text) : null) : null),
