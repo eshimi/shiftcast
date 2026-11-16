@@ -1,7 +1,7 @@
 /* global Chart */
 const $ = (s) => document.querySelector(s);
 const LABEL = { none: '安定', rise: '上昇注意', slight: 'やや注意', caution: '注意', warning: '警戒' };
-const COLOR = { rise: '#3b82f6', slight: '#eab308', caution: '#f97316', warning: '#dc2626' };
+const COLOR = { rise: '#3B82D6', slight: '#E0A32E', caution: '#E07B39', warning: '#DC5245' };
 const FACES = ['🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読み込めない場合の代用
 const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level - 1]));
 const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
@@ -222,9 +222,15 @@ const overlay = {
       else { ctx.font = `16px ${FONT}`; ctx.fillText(wxIcon(p.icon), px, a.top + 14); }
       if (p.temp != null) { ctx.font = `12px ${FONT}`; ctx.fillText(Math.round(p.temp) + '°', px, a.top + 40); }
     });
-    // 現在時刻線
-    const nx = x.getPixelForValue(chart.$now);
-    ctx.strokeStyle = '#888'; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(nx, a.top); ctx.lineTo(nx, a.bottom); ctx.stroke(); ctx.setLineDash([]);
+    // 現在時刻: 青い縦線と「今」のラベル、現在の気圧の点
+    const nx = x.getPixelForValue(chart.$now), ny = (() => { const v = pressureAt(pts, chart.$now); return v == null ? null : y.getPixelForValue(v); })();
+    ctx.save();
+    ctx.fillStyle = 'rgba(43, 127, 212, .06)'; ctx.fillRect(nx, a.top, a.right - nx, a.bottom - a.top);   // これから(予報)の側をうっすら色づけ
+    ctx.strokeStyle = '#2B7FD4'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(nx, a.top - 14); ctx.lineTo(nx, a.bottom); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#2B7FD4'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(nx - 13, a.top - 32, 26, 17, 8) : ctx.rect(nx - 13, a.top - 32, 26, 17); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = `700 11px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText('今', nx, a.top - 19.5);
+    if (ny != null) { ctx.fillStyle = 'rgba(43, 127, 212, .16)'; ctx.beginPath(); ctx.arc(nx, ny, 9, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#2B7FD4'; ctx.beginPath(); ctx.arc(nx, ny, 4.5, 0, Math.PI * 2); ctx.fill(); }
+    ctx.restore();
     // 過去の痛み記録アイコン
     ctx.font = `22px ${FONT}`;
     (chart.$logs || []).forEach((l) => {
@@ -257,8 +263,10 @@ function drawChart(fc, logs) {
   const min = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 3), max = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 9);
   const data = {
     datasets: [
-      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#0b0b0c', borderWidth: 2.5, pointRadius: 2, tension: 0.3 },
-      { label: 'アメダス実況', data: fc.observed.map((o) => ({ x: o.ts, y: o.pressure })), borderColor: '#10b981', borderDash: [4, 4], borderWidth: 2, pointRadius: 3, hidden: !fc.observed.length },
+      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: '#1F3A57', borderWidth: 2.5, pointRadius: (c) => (c.raw && c.raw.x > fc.now ? 0 : 2), pointBackgroundColor: '#1F3A57', tension: 0.3,
+        // 実況(いままで)=実線(ネイビー) / 予報(これから)=点線(青)
+        segment: { borderColor: (c) => (c.p0.parsed.x >= fc.now ? '#2B7FD4' : '#1F3A57'), borderDash: (c) => (c.p0.parsed.x >= fc.now ? [6, 5] : undefined) } },
+      { label: 'アメダス実況', data: fc.observed.map((o) => ({ x: o.ts, y: o.pressure })), borderColor: '#1F3A57', borderWidth: 2, pointRadius: 0, hidden: !fc.observed.length }, // 実況は実線
     ],
   };
   const opts = {

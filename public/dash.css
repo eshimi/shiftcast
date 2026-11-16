@@ -100,3 +100,20 @@ body[data-page="app"] .tabs { background: #fff; border-top: 1px solid var(--ap-l
 body[data-page="app"] .tabs button { color: #5F6E7D; min-height: 56px; }
 body[data-page="app"] .tabs button.on, body[data-page="app"] .tabs button[aria-current="page"] { color: var(--ap-blue); font-weight: 700; box-shadow: none; }
 body[data-page="app"] .sec-h { text-align: left; }
+
+/* ---- フェーズ3: 色のセマンティクス(良い=緑、注意が強まるほど 青→黄→橙→赤) ---- */
+body[data-page="app"] .mhero.lv-5 { background: linear-gradient(160deg, #D8ECE0 0%, #E7F3EC 45%, #F4FAF6 100%); border-color: #CFE6DA; }
+body[data-page="app"] .mhero.lv-4 { background: linear-gradient(160deg, #DCEAF8 0%, #EAF3FB 50%, #F6FAFE 100%); border-color: #C6DDF4; }
+body[data-page="app"] .mhero.lv-3 { background: linear-gradient(160deg, #F8EBC4 0%, #FBF3DE 50%, #FEFBF1 100%); border-color: #F0DDA8; }
+body[data-page="app"] .mhero.lv-2 { background: linear-gradient(160deg, #F9DDC6 0%, #FBEBDD 50%, #FEF6EF 100%); border-color: #F2CDB1; }
+body[data-page="app"] .mhero.lv-1 { background: linear-gradient(160deg, #F7D2CE 0%, #FBE4E1 50%, #FEF3F1 100%); border-color: #F1BDB7; }
+body[data-page="app"] .mhero.lv-5 .mhero-en { color: #2E6E55; } body[data-page="app"] .mhero.lv-4 .mhero-en { color: #1F5FA8; }
+body[data-page="app"] .mhero.lv-3 .mhero-en { color: #7A5200; } body[data-page="app"] .mhero.lv-2 .mhero-en { color: #A24610; } body[data-page="app"] .mhero.lv-1 .mhero-en { color: #A82A1F; }
+body[data-page="app"] .mhero.lv-5 .mhero-score { border-color: #2FA785; } body[data-page="app"] .mhero.lv-5 .mhero-score b { color: #1B7A5E; }
+body[data-page="app"] .mhero.lv-4 .mhero-score { border-color: #3B82D6; } body[data-page="app"] .mhero.lv-4 .mhero-score b { color: #1F5FA8; }
+body[data-page="app"] .mhero.lv-3 .mhero-score { border-color: #E0A32E; } body[data-page="app"] .mhero.lv-3 .mhero-score b { color: #7A5200; }
+body[data-page="app"] .mhero.lv-2 .mhero-score { border-color: #E07B39; } body[data-page="app"] .mhero.lv-2 .mhero-score b { color: #A24610; }
+body[data-page="app"] .mhero.lv-1 .mhero-score { border-color: #DC5245; } body[data-page="app"] .mhero.lv-1 .mhero-score b { color: #A82A1F; }
+/* バッジは白い文字で4.5:1以上になる濃さにする */
+body[data-page="app"] .mhero.lv-5 .mhero-badge { background: #1F8A66; } body[data-page="app"] .mhero.lv-4 .mhero-badge { background: #2B6DB8; }
+body[data-page="app"] .mhero.lv-3 .mhero-badge { background: #E0A32E; color: #3A2600; } body[data-page="app"] .mhero.lv-2 .mhero-badge { background: #B8501A; } body[data-page="app"] .mhero.lv-1 .mhero-badge { background: #C93E33; }

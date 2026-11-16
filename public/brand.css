@@ -197,3 +197,9 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
   .m-title { top: 64px; font-size: 20px; }
   .m-brand img { height: 84px; }
 }
+
+/* 体調そらもようの色(全ページ共通): 良い=緑、注意が強まるほど 青→黄→橙→赤。5が良い(快調)、1が悪い */
+.mood-5 { --mc: #2FA785; } .mood-4 { --mc: #3B82D6; } .mood-3 { --mc: #E0A32E; } .mood-2 { --mc: #E07B39; } .mood-1 { --mc: #DC5245; }
+.st-5 { --c: #2FA785; --c2: #23896B; } .st-4 { --c: #3B82D6; --c2: #2B6DB8; } .st-3 { --c: #E0A32E; --c2: #C28A18; } .st-2 { --c: #E07B39; --c2: #C26226; } .st-1 { --c: #DC5245; --c2: #C13E32; }
+.mg tr:nth-child(1) .lvno { background: #DC5245; } .mg tr:nth-child(2) .lvno { background: #E07B39; } .mg tr:nth-child(3) .lvno { background: #E0A32E; color: #3A2600; } .mg tr:nth-child(4) .lvno { background: #3B82D6; } .mg tr:nth-child(5) .lvno { background: #2FA785; }
+.lvno { color: #fff; } .mood-3 .lvno { color: #3A2600; }
