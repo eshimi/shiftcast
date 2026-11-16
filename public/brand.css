@@ -203,3 +203,38 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 .st-5 { --c: #2FA785; --c2: #23896B; } .st-4 { --c: #3B82D6; --c2: #2B6DB8; } .st-3 { --c: #E0A32E; --c2: #C28A18; } .st-2 { --c: #E07B39; --c2: #C26226; } .st-1 { --c: #DC5245; --c2: #C13E32; }
 .mg tr:nth-child(1) .lvno { background: #DC5245; } .mg tr:nth-child(2) .lvno { background: #E07B39; } .mg tr:nth-child(3) .lvno { background: #E0A32E; color: #3A2600; } .mg tr:nth-child(4) .lvno { background: #3B82D6; } .mg tr:nth-child(5) .lvno { background: #2FA785; }
 .lvno { color: #fff; } .mood-3 .lvno { color: #3A2600; }
+
+/* ---- トップ・週間天気・都道府県別: 気圧・記録と同じ配色(良い=緑、注意が強まるほど 青→黄→橙→赤)とトーン ---- */
+:root {
+  --ap-blue: #2B7FD4; --ap-navy: #1F3A57; --ap-text: #26323F; --ap-muted: #5B6B7C; --ap-bg: #EEF4FA; --ap-line: #E3EBF2;
+  --lv-rise: #3B82D6; --lv-slight: #E0A32E; --lv-caution: #E07B39; --lv-warning: #DC5245; --lv-good: #2FA785;
+  --lv-rise-bg: #E4EFFB; --lv-slight-bg: #FBF3DE; --lv-caution-bg: #FBEBDD; --lv-warning-bg: #FBE4E1; --lv-good-bg: #E6F5EF;
+  --lv-rise-tx: #1F5FA8; --lv-slight-tx: #7A5200; --lv-caution-tx: #A24610; --lv-warning-tx: #A82A1F; --lv-good-tx: #1B7A5E;
+  --rise: #3B82D6; --slight: #E0A32E; --caution: #E07B39; --warning: #DC5245;
+}
+body[data-page="weather"], body[data-page="pressure"], body[data-page="today"], body.lp { color: var(--ap-text); }
+body[data-page="weather"], body[data-page="pressure"], body[data-page="today"] { background: var(--ap-bg); }
+body[data-page="weather"] .card, body[data-page="pressure"] .card, body.lp .card { border: 1px solid var(--ap-line); border-radius: 16px; }
+/* 気圧のレベルの印(ラベル)は、同じ色と、読める文字色で */
+.pill.lv-rise { background: var(--lv-rise); color: #fff; }
+.pill.lv-slight { background: var(--lv-slight); color: #3A2600; }
+.pill.lv-caution { background: #B8501A; color: #fff; }
+.pill.lv-warning { background: #C93E33; color: #fff; }
+.pill.lv-none { background: var(--lv-good-bg); color: var(--lv-good-tx); border: 0; }
+/* 見通しカードの左の線・時間帯の枠 */
+.tmrw.lv-rise, .day.lv-rise, .cell.lv-rise, .today.lv-rise { border-left-color: var(--lv-rise); }
+.tmrw.lv-slight, .day.lv-slight, .cell.lv-slight, .today.lv-slight { border-left-color: var(--lv-slight); }
+.tmrw.lv-caution, .day.lv-caution, .cell.lv-caution, .today.lv-caution { border-left-color: var(--lv-caution); }
+.tmrw.lv-warning, .day.lv-warning, .cell.lv-warning, .today.lv-warning { border-left-color: var(--lv-warning); }
+.tmrw.lv-none, .day.lv-none, .today.lv-none { border-left-color: var(--lv-good); }
+.cell.lv-rise { border-top-color: var(--lv-rise); } .cell.lv-slight { border-top-color: var(--lv-slight); } .cell.lv-caution { border-top-color: var(--lv-caution); } .cell.lv-warning { border-top-color: var(--lv-warning); }
+.fx.lv-rise { border-top-color: var(--lv-rise); } .fx.lv-slight { border-top-color: var(--lv-slight); } .fx.lv-caution { border-top-color: var(--lv-caution); } .fx.lv-warning { border-top-color: var(--lv-warning); } .fx.lv-none { border-top-color: var(--lv-good); }
+/* 凡例の丸 */
+.dot.lv-rise { background: var(--lv-rise); } .dot.lv-slight { background: var(--lv-slight); } .dot.lv-caution { background: var(--lv-caution); } .dot.lv-warning { background: var(--lv-warning); }
+/* 時間帯の欄 */
+.slot.lv-none { border-top-color: var(--lv-good); }
+/* トップ・見通しカードのコメント */
+.tmrw-cmt { color: var(--ap-navy); }
+/* 見出しの帯・ボタンは、気圧・記録と同じ青 */
+body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary, body[data-page="today"] .btn.primary, body.lp .btn.dark, body.lp .btn.primary { background: var(--ap-blue); border-color: var(--ap-blue); color: #fff; }
+.site-h .nav a[aria-current="page"], .bnav a[aria-current="page"] { color: var(--ap-blue); border-bottom-color: var(--ap-blue); }
