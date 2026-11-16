@@ -216,7 +216,7 @@ function renderTodayBig(w) {
   const cur = w.current;
   const tp = n.at != null && lv !== 'none' ? jstParts(n.at) : null;
   el.replaceChildren(
-    h('p', { class: 'tmrw-date' }, `今日　${rangeLabel(w.now, w.now + 24 * 3600e3)}（これから24時間）`, '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+    h('p', { class: 'tmrw-date' }, `今日　${mdOf(w.now)}${hhmm(w.now)}〜の24時間`, '　', w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
     slotStrip(w, w.now, true),
     h('div', { class: 'tmrw-main' },
       h('span', { class: `pill lv-${lv} tmrw-pill` }, LABEL[lv]),
