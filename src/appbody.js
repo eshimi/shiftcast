@@ -24,6 +24,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
 
   <!-- 記録 -->
   <section id="view-log" class="view" hidden>
+    <h1 class="view-t">体調を記録</h1>
     <div class="card">
       <div class="card-h"><b id="formTitle">体調を記録</b><button id="cancelEdit" class="link" hidden>編集をやめる</button></div>
       <label class="lbl">いまの体調（タップするだけで記録できます）</label>
@@ -59,6 +60,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
 
   <!-- 分析 -->
   <section id="view-insight" class="view" hidden>
+    <h1 class="view-t">あなたの傾向</h1>
     <div class="card"><div class="card-h"><b>あなたの傾向</b></div>
       <div id="insightProg" class="iprog" hidden><p id="insightProgText"></p><div class="iprog-bar" aria-hidden="true"><i id="insightProgFill"></i></div></div>
       <p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
@@ -67,6 +69,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
 
   <!-- 設定 -->
   <section id="view-settings" class="view" hidden>
+    <h1 class="view-t">設定</h1>
     <div class="card">
       <div class="card-h"><b>エリア</b></div>
       <p class="muted">1つ目が主エリアです（通知・地域統計に使用）。位置情報は都道府県単位に丸め、GPS座標は保存しません。</p>

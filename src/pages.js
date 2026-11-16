@@ -484,7 +484,7 @@ ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</
 
 export function appPage() {
   const body = `
-<div class="page-head has-ppl app-head"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl app-head"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><p class="app-h1" role="heading" aria-level="1">気圧・記録</p><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap app-main">
 ${APP_BODY}
 </div>
