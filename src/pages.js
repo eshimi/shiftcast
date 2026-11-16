@@ -120,7 +120,7 @@ ${chrome ? `<header class="site-h">
   <div class="wrap h-in">
     <a class="logo" href="/" aria-label="ウェルミー トップへ">${LOGO}</a>
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
-    <a class="btn sm h-rec" href="/app/#log" data-quicklog>体調を記録する</a>
+    <a class="btn sm h-rec" href="/app/#log" data-quicklog>${page === 'app' ? '記録する' : '体調を記録する'}</a>
   </div>
   <nav class="wrap nav" aria-label="メインメニュー">
     ${NAV.map(([href, label, id]) => `<a href="${href}"${id === page || (id === 'columns' && page === 'column') ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
@@ -484,7 +484,7 @@ ${REGIONS.map(([r, codes]) => `<section class="sec"><h2 class="pg-h">${esc(r)}</
 
 export function appPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl app-head"><div class="wrap"><p class="en">PRESSURE &amp; LOG</p><h1>気圧・記録</h1><p>気圧の予報と、頭痛・体調の記録。自分のパターンを見つけるノートです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap app-main">
 ${APP_BODY}
 </div>
@@ -496,7 +496,7 @@ ${APP_TABS}`;
     path: '/app/',
     body,
     wide: true,
-    extraHead: '<link rel="stylesheet" href="/style.css">',
+    extraHead: '<link rel="stylesheet" href="/style.css">\n<link rel="stylesheet" href="/dash.css">',
     scripts: '<script src="/vendor/chart.js"></script>\n<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/app.js" type="module"></script>',
   });
 }

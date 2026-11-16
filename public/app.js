@@ -82,6 +82,7 @@ const VIEWS = ['dash', 'log', 'insight', 'settings'];
 function show(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'dash';
   S.view = v;
+  document.body.dataset.view = v;
   document.querySelectorAll('.view').forEach((e) => (e.hidden = e.id !== 'view-' + v));
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
   if (push && location.hash !== '#' + v) { try { history.pushState(null, '', '#' + v); } catch { /* 無視 */ } }
@@ -141,17 +142,31 @@ async function loadDash() {
       api('/week?area=' + code).catch(() => null), // 体調そらもよう(表示のみ)
     ]);
     if (code !== S.sel) return; // 切替競合
-    // 上から: マーク(5段階の人物) → 気圧の推移グラフ → コメント → 4指標 → 今後24時間。体調そらもようを、マークとコメントに分けて置く
-    const mk = $('#moodMark'), nt = $('#moodNote'), fx = $('#fxCard');
-    const tmp = document.createElement('div'); tmp.innerHTML = wk?.moodHtml || '';
-    const m = tmp.querySelector('.mood'), stairs = m && m.querySelector('.stairs'), body = m && m.querySelector('.mood-body');
-    const wrap = (el) => { const d = document.createElement('div'); d.className = m.className + ' mood-flat'; d.append(el); return d; };
-    if (stairs && body) { mk.replaceChildren(wrap(stairs)); nt.replaceChildren(wrap(body)); mk.hidden = nt.hidden = false; } else { mk.hidden = nt.hidden = true; }
+    // 上から: 今日の体調そらもよう(主役) → 気圧アラート帯 → 気圧グラフ → いまの天気(2×2)
+    renderMoodHero(wk?.mood);
+    const fx = $('#fxCard');
     if (wk?.tilesHtml) { fx.innerHTML = wk.tilesHtml; fx.hidden = false; } else fx.hidden = true;
     S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
-    $('#fetched').textContent = fc.fetchedAt ? `更新 ${fmtDT(fc.fetchedAt)}` : '';
+    $('#fetched').textContent = fc.fetchedAt ? `${fmtDT(fc.fetchedAt)} 更新` : '';
     $('#demoBadge').hidden = !fc.demo && !S.cfg.demo;
   } catch (e) { toast('気象データを取得できませんでした'); }
+}
+
+// 今日の体調そらもよう(主役カード): スコアの円・5段階中◯・ラベル・一文コメント
+function renderMoodHero(m) {
+  const el = $('#moodHero');
+  if (!m) { el.hidden = true; return; }
+  el.hidden = false;
+  el.className = `mhero lv-${m.level}`;
+  el.replaceChildren(
+    h('p', { class: 'mhero-en' }, '今日の体調そらもよう'),
+    h('div', { class: 'mhero-main' },
+      h('div', { class: 'mhero-score', role: 'img', 'aria-label': `スコア ${m.score} / 100` }, h('b', {}, String(m.score)), h('small', {}, '/ 100')),
+      h('div', { class: 'mhero-txt' },
+        h('span', { class: 'mhero-badge' }, `5段階中 ${m.level}`),
+        h('p', { class: 'mhero-label' }, m.label))),
+    h('p', { class: 'mhero-cmt' }, m.desc),
+    m.factors && m.factors.length ? h('p', { class: 'mhero-why' }, m.reason) : null);
 }
 
 function renderSummary(fc) {

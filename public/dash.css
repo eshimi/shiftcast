@@ -1,0 +1,24 @@
+/* /app/#dash「気圧・記録」のホーム画面のデザイン。
+   並び: アプリバー → 地域トグル+更新時刻 → 今日の体調そらもよう(主役) → 気圧アラート帯 → 気圧グラフ → いまの天気(2×2) → 気象庁の予報 → 注意書き → 下部タブ
+   取得データ・API・計算は変えず、構成順と見た目だけを変える。/app/ だけに読み込む。 */
+
+/* ---- フェーズ1: 構成 ---- */
+body[data-page="app"][data-view="dash"] .app-head { display: none; }       /* 従来の大きな見出しと人物は、ホームでは出さない */
+body[data-page="app"] .app-main { padding-top: 6px; }
+body[data-page="app"] .dash-loc { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 0 4px; }
+body[data-page="app"] .dash-loc .chips { padding-bottom: 0; }
+body[data-page="app"] .upd { font-size: 12px; white-space: nowrap; }
+body[data-page="app"] .mhero { margin: 10px 0 0; padding: 16px 16px 18px; border-radius: 20px; border: 1px solid var(--line); background: var(--card); }
+body[data-page="app"] .mhero-en { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+body[data-page="app"] .mhero-main { display: flex; align-items: center; gap: 16px; margin-top: 10px; }
+body[data-page="app"] .mhero-score { flex: none; width: 88px; height: 88px; border-radius: 50%; background: #fff; border: 3px solid var(--line); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+body[data-page="app"] .mhero-score b { font-size: 34px; line-height: 1; font-family: var(--font-latin); }
+body[data-page="app"] .mhero-score small { font-size: 10px; margin-top: 2px; }
+body[data-page="app"] .mhero-badge { display: inline-block; padding: 3px 10px; border-radius: 999px; background: var(--wl-sage); color: #fff; font-size: 11px; font-weight: 700; }
+body[data-page="app"] .mhero-label { margin: 6px 0 0; font-size: 24px; font-weight: 700; line-height: 1.25; }
+body[data-page="app"] .mhero-cmt { margin: 14px 0 0; font-size: 13px; line-height: 1.7; }
+body[data-page="app"] .mhero-why { margin: 6px 0 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
+body[data-page="app"] .sec-h { margin: 18px 2px 10px; font-size: 15px; font-weight: 700; }
+body[data-page="app"] .sec-t { margin: 0; font-size: 15px; font-weight: 700; }
+body[data-page="app"] .chart-card .card-h { align-items: center; }
+body[data-page="app"] .fx-wrap-app .fx-grid { margin-top: 0; }

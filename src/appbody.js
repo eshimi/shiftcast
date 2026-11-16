@@ -1,21 +1,22 @@
 // /app/ の画面本体（共通のヘッダー・フッターは pages.js の layout が付ける）。client は public/app.js
 export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-dash" class="view">
-        <div id="areaChips" class="chips" role="tablist" aria-label="エリア"></div>
-    <div id="moodBox" class="card mood-card">
-      <div id="moodNote" hidden></div>
-      <div id="moodMark" hidden></div>
-    <div class="mood-chart">
-      <div class="card-h"><b>気圧の推移・予報</b><span id="fetched" class="muted"></span></div>
+    <div class="dash-loc">
+      <div id="areaChips" class="chips seg-toggle" role="tablist" aria-label="エリア"></div>
+      <span id="fetched" class="upd"></span>
+    </div>
+    <section id="moodHero" class="mhero" aria-label="今日の体調そらもよう" hidden></section>
+    <div id="summary" class="card summary astrip"></div>
+    <section class="card chart-card" aria-label="気圧の推移・予報">
+      <div class="card-h"><h2 class="sec-t">気圧の推移・予報</h2><span class="unit">hPa</span></div>
       <div class="chart-box"><div id="yAxis" class="yaxis"></div><div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div></div>
       <div class="legend">
-        <i class="lg rise"></i>上昇注意 <i class="lg slight"></i>やや注意 <i class="lg caution"></i>注意 <i class="lg warning"></i>警戒
-        <span class="muted">／ 点線=気象庁アメダス実況</span>
+        <span><i class="lg rise"></i>上昇注意</span> <span><i class="lg slight"></i>やや注意</span> <span><i class="lg caution"></i>注意</span> <span><i class="lg warning"></i>警戒</span>
+        <span class="muted">点線＝予報</span>
       </div>
-    </div>
-      <div id="fxCard" hidden></div>
-    </div>
-    <div id="summary" class="card summary"></div>
+    </section>
+    <h2 class="sec-h">いまの天気</h2>
+    <div id="fxCard" class="fx-wrap-app" hidden></div>
     <div id="jma" class="card" hidden></div>
     <div id="stats" class="card"></div>
     <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。<a href="/terms.html">利用規約</a></p>
