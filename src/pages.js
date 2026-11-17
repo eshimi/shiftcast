@@ -73,12 +73,21 @@ const STREET_SCRIPT = `<script>
 
 const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="ウェルミー" width="104" height="36">';
 
-const NAV = [
-  ['/', 'トップ', 'top'],
-  ['/weather', '週間天気', 'weather'],
-  ['/today', '全国の地図', 'today'],
-  ['/columns', 'コラム', 'columns'],
+// ヘッダーの2段ナビ: 種類別のグループ(1段目) → そのグループのページ(2段目)。ラベルは各ページの h1(ページ見出し)の先頭と同じ言葉にそろえる。
+// [id, ラベル, URL]。id は layout の page 名(コラム記事は 'column' も 'columns' として扱う)
+const NAV_GROUPS = [
+  { name: '気圧を見る', items: [['weather', '週間天気', '/weather'], ['today', '全国の地図', '/today'], ['pressure', '都道府県別の気圧予報', '/pressure']] },
+  { name: '体調を整える', items: [['care', '今日の過ごし方', '/care'], ['check', '気象病セルフチェック', '/check']] },
+  { name: '記録・分析', items: [['app', '気圧・記録', '/app/']] },
+  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
 ];
+const navHtml = (page) => {
+  const id = page === 'column' ? 'columns' : page;
+  const cur = NAV_GROUPS.find((g) => g.items.some((i) => i[0] === id));
+  const row1 = NAV_GROUPS.map((g) => `<a href="${g.items[0][2]}"${g === cur ? ' aria-current="true" class="on"' : ''}>${g.name}</a>`).join('');
+  const sub = cur && cur.items.length > 1 ? `\n  <nav class="wrap nav nav-sub" aria-label="${cur.name}のページ">${cur.items.map(([i, l, h]) => `<a href="${h}"${i === id ? ' aria-current="page"' : ''}>${l}</a>`).join('')}</nav>` : '';
+  return `<nav class="wrap nav nav-groups" aria-label="メインメニュー">${row1}</nav>${sub}`;
+};
 
 // フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
 const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap">';
@@ -128,10 +137,7 @@ ${chrome ? `<header class="site-h">
     ${page === 'app' ? '<span id="demoBadge" class="badge" hidden>デモデータ</span>' : ''}
     <a class="btn sm h-rec" href="/app/#log" data-quicklog>${page === 'app' ? '記録する' : '体調を記録する'}</a>
   </div>
-  <nav class="wrap nav" aria-label="メインメニュー">
-    ${NAV.map(([href, label, id]) => `<a href="${href}"${id === page || (id === 'columns' && page === 'column') ? ' aria-current="page"' : ''}>${label}</a>`).join('')}
-    <a href="/app/"${page === 'app' ? ' aria-current="page"' : ''}>気圧・記録</a>
-  </nav>
+  ${navHtml(page)}
 </header>` : ''}
 ${chrome ? `<main${wide ? '' : ' class="wrap"'}>
 ${body}
@@ -366,7 +372,7 @@ ${notifyCta()}
 
 export function columnsPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>天気痛・気象病のコラム</h1><p>気圧の変化による頭痛や不調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">COLUMN</p><h1>コラム｜天気痛・気象病</h1><p>気圧の変化による頭痛や不調との付き合い方を、やさしくまとめました。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap">
 <div class="col-list">${COLUMNS.map((c) => columnCard(c)).join('')}</div>
 <p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
@@ -537,7 +543,7 @@ export function todayPage(sum) {
   }
   const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstMD(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('jogger', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>全国の地図｜今日の気圧と天気痛の目安（${esc(date)}）</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('jogger', { k: 0.5 })}</div></div>
 <div class="wrap">
 <section class="sec"><h2 class="pg-h">全国の地図</h2>
 <p class="muted small">各県の色は、その県が属する地方の代表都市(北海道=札幌、東北=仙台、関東=東京、中部=名古屋、近畿=大阪、中国=広島、四国=松山、九州=福岡、沖縄=那覇)の、今日の体調そらもようです。県を押すと、その県の気圧予報が開きます。</p>
@@ -665,7 +671,7 @@ ${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="
 
 export function glossaryPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>天気痛・気象病の用語集</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('shopping', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GLOSSARY</p><h1>用語集｜天気痛・気象病</h1><p>気圧や天気の用語、頭痛のタイプ、本サービスの指標を、やさしく説明します。</p></div><div class="pg-ppl" aria-hidden="true">${person('shopping', { k: 0.5 })}</div></div>
 <div class="wrap">
 <ul class="chips-l gl-index" aria-label="用語の一覧">${GLOSSARY.map(([t], i) => `<li><a href="#g${i + 1}">${esc(t.replace(/（.*$/, ''))}</a></li>`).join('')}</ul>
 <dl class="gl">
@@ -734,7 +740,7 @@ const ABOUT_FAQ = [
 
 export function aboutPage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>ウェルミーとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">ABOUT</p><h1>サービス紹介｜ウェルミーとは</h1><p>気圧と体調のノート。天気で揺れる体調を、記録と予報でやさしく支えるWebアプリです。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap about">
 <section><h2 class="en-h">WHAT YOU CAN DO<small>できること</small></h2>
 <div class="ab-verbs">${ABOUT_VERBS.map(([v, en, t, d, ic], i) => `<article class="ab-verb"><span class="ic">${ic}</span><p class="en">${en}</p><h3>${i + 1}. ${esc(v)}</h3><b>${esc(t)}</b><p>${esc(d)}</p></article>`).join('')}</div></section>

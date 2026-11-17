@@ -303,3 +303,12 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .mc-svg { width: 100%; height: auto; display: block; } .mc-svg text { font-size: 10px; fill: var(--color-ink-muted); font-family: var(--font-ui); }
 .mc-n { margin: 2px 0 0; font-size: 11px; color: var(--color-ink-muted); }
 .mood .care-list span { display: none; } .mood .care-list li { padding-bottom: 0; }
+
+/* ヘッダーの2段ナビ: 1段目=種類(グループ) / 2段目=そのグループのページ */
+.site-h .nav-groups { padding-top: 2px; }
+.site-h .nav-groups a { font-weight: 700; color: var(--color-ink-muted); }
+.site-h .nav-groups a.on { color: var(--color-primary-deep); border-bottom-color: var(--color-primary); }
+.site-h .nav-sub { background: var(--color-mist); border-top: 1px solid var(--color-border); max-width: none; }
+.site-h .nav-sub { padding-left: max(var(--space-4), calc((100% - 728px) / 2)); padding-right: var(--space-4); }
+.site-h .nav-sub a { font-size: 13px; font-weight: 500; padding: 7px 12px; }
+.site-h .nav-sub a[aria-current="page"] { color: var(--color-primary-deep); font-weight: 700; border-bottom-color: var(--color-primary); }
