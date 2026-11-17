@@ -14,7 +14,7 @@ import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
 import { todaySummary } from './today.js';
 import { factorTilesHtml, moodBlockHtml, moodMiniHtml } from './tiles.js';
-import { carePage, checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
+import { carePage, breathePage, checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
 const bad = (c, msg, status = 400) => c.json({ error: msg }, status);
@@ -258,6 +258,7 @@ app.get('/today', async (c) => {
 });
 app.get('/check', (c) => html(c, checkPage()));
 app.get('/care', (c) => html(c, carePage()));
+app.get('/breathe', (c) => html(c, breathePage()));
 app.get('/glossary', (c) => html(c, glossaryPage()));
 app.get('/about', (c) => html(c, aboutPage()));
 app.get('/columns', (c) => html(c, columnsPage()));

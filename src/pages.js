@@ -136,7 +136,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo"><img src="/logo-h.webp" alt="ウェルミー" width="115" height="40"></p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/care">今日の過ごし方</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/care">今日の過ごし方</a> ・ <a href="/breathe">呼吸を整える</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -621,7 +621,7 @@ ${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="
 </section>
 <section class="sec"><h2 class="pg-h">つらいときは</h2>
 <ul class="plain">${CARE_HELP.map((x) => `<li><a href="${x.href}">${esc(x.t)}</a></li>`).join('')}</ul>
-<p class="row"><a class="btn primary" href="/app/#log">いまの体調を記録する</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+<p class="row"><a class="btn primary" href="/app/#log">いまの体調を記録する</a><a class="btn" href="/breathe">呼吸を整える</a><a class="btn" href="/app/">気圧・記録へ</a></p>
 </section>
 <p class="disclaimer">ここに載せている内容は、一般的に知られているセルフケアの情報で、医師の監修は受けていません。診断や治療の代わりにはなりません。持病がある方、薬を使っている方は、医師・薬剤師にご相談ください。症状が強い・続くときや、「経験したことのない激しい頭痛」「ろれつが回らない」「手足に力が入らない」などがあるときは、すぐに医療機関を受診してください。</p>
 </div>`;
@@ -634,6 +634,47 @@ ${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="
     body,
     wide: true,
     scripts: '<script src="/care.js" defer></script>',
+  });
+}
+
+/* ---------- 呼吸を整える(/breathe) ---------- */
+export function breathePage() {
+  const body = `
+<div class="page-head"><div class="wrap"><p class="en">BREATHE</p><h1>呼吸を整える</h1><p>気圧の変化で高ぶった自律神経を、ゆっくりした呼吸で整えます。吐く息を長めにするのがコツです。</p></div></div>
+<div class="wrap">
+<section class="card breathe" id="breathe" aria-label="呼吸ガイド">
+  <div class="stage">
+    <div class="orb-wrap"><div class="halo"></div><div class="orb"><span class="count"></span></div></div>
+    <p class="phase">準備ができたら</p>
+    <p class="hint">楽な姿勢で、肩の力を抜いて。吐く息を少し長めに。</p>
+  </div>
+  <div class="controls">
+    <div class="patterns" aria-label="呼吸のリズム">
+      <button type="button" class="pat" data-key="relax" aria-pressed="true"><b>ゆったり</b><small>リラックス</small></button>
+      <button type="button" class="pat" data-key="n478" aria-pressed="false"><b>4-7-8</b><small>深く鎮める・入眠</small></button>
+      <button type="button" class="pat" data-key="box" aria-pressed="false"><b>ボックス</b><small>整える・集中</small></button>
+    </div>
+    <p class="desc"></p>
+    <button type="button" class="btn primary start">はじめる</button>
+    <div class="meta">
+      <button type="button" class="chime" aria-pressed="false"><span class="dot"></span>やさしい音</button>
+      <span class="cycle">0 呼吸</span>
+    </div>
+  </div>
+</section>
+<p class="row" style="margin-top:14px"><a class="btn" href="/care">今日の過ごし方へ</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+<p class="disclaimer">呼吸法は、気象病のつらさをやわらげる一般的なセルフケアのひとつで、医師の監修を受けたものではありません。息苦しさや強い症状があるときは無理をせず、必要に応じて医療機関にご相談ください。</p>
+</div>`;
+  return layout({
+    title: '呼吸を整える｜気圧の不調をやわらげる呼吸ガイド',
+    description: '気圧の変化で高ぶった自律神経を、ゆっくりした呼吸で整えるガイド。吐く息を長めにする「ゆったり」など3つのリズム。通信なしで使えます。',
+    keywords: ['気象病 呼吸', '天気痛 セルフケア', '自律神経 呼吸法', '4-7-8呼吸'],
+    page: 'breathe',
+    path: '/breathe',
+    body,
+    wide: true,
+    extraHead: '<link rel="stylesheet" href="/breathe.css">',
+    scripts: '<script src="/breathe.js" defer></script>',
   });
 }
 

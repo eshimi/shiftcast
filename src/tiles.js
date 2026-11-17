@@ -43,7 +43,7 @@ export function careBlockHtml(m) {
   return `<div class="care-box" role="group" aria-label="今日の過ごし方">
   <p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p>
   <ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol>
-  <p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p>
+  <p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a><a class="btn sm" href="/breathe">呼吸を整える</a></p>
   <p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>
 </div>`;
 }
