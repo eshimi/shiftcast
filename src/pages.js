@@ -4,6 +4,7 @@ import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, SITE_NAME, OG_IMAGE } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
+import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
@@ -135,7 +136,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo"><img src="/logo-h.webp" alt="ウェルミー" width="115" height="40"></p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/care">今日の過ごし方</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -601,6 +602,38 @@ export function checkPage() {
     body,
     wide: true,
     scripts: '<script src="/check.js" defer></script>',
+  });
+}
+
+/* ---------- 今日の対策(/care) ---------- */
+
+export function carePage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S CARE</p><h1>今日の過ごし方・体調を整える対策</h1><p>気圧・気温差・降水・湿度で体調が崩れやすい日の、セルフケアのまとめです。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
+<div class="wrap care-page">
+<section id="careToday" class="card care-today" hidden aria-live="polite"></section>
+<section class="sec"><h2 class="pg-h">要因別の対策</h2>
+<p class="muted small">体調そらもようの判定に効いた要因は、「今日の要因」と表示されます。</p>
+${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="${k}"><h3>${esc(f.title)}<span class="care-badge" hidden>今日の要因</span></h3><p class="care-why">${esc(f.why)}</p><ul>${f.tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ul></article>`).join('\n')}
+</section>
+<section class="sec"><h2 class="pg-h">時間帯別の過ごし方</h2>
+<div class="care-times">${CARE_TIMES.map((x) => `<article><h3>${esc(x.t)}</h3><ul>${x.tips.map((y) => `<li>${esc(y)}</li>`).join('')}</ul></article>`).join('')}</div>
+</section>
+<section class="sec"><h2 class="pg-h">つらいときは</h2>
+<ul class="plain">${CARE_HELP.map((x) => `<li><a href="${x.href}">${esc(x.t)}</a></li>`).join('')}</ul>
+<p class="row"><a class="btn primary" href="/app/#log">いまの体調を記録する</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+</section>
+<p class="disclaimer">ここに載せている内容は、一般的に知られているセルフケアの情報で、医師の監修は受けていません。診断や治療の代わりにはなりません。持病がある方、薬を使っている方は、医師・薬剤師にご相談ください。症状が強い・続くときや、「経験したことのない激しい頭痛」「ろれつが回らない」「手足に力が入らない」などがあるときは、すぐに医療機関を受診してください。</p>
+</div>`;
+  return layout({
+    title: '今日の過ごし方・体調を整える対策｜気圧・気温差・湿度で崩れやすい日に',
+    description: '気圧の低下、気温差、雨、湿度で体調が崩れやすい日の、セルフケアのまとめ。要因別・時間帯別の過ごし方と、つらいときの案内。',
+    keywords: ['天気痛 対策', '気象病 対策', '気圧 頭痛', 'セルフケア'],
+    page: 'care',
+    path: '/care',
+    body,
+    wide: true,
+    scripts: '<script src="/care.js" defer></script>',
   });
 }
 

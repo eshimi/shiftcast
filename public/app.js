@@ -30,6 +30,7 @@ function h(tag, attrs = {}, ...kids) {
   for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
   return e;
 }
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 function toast(msg) {
   const t = $('#toast');
   t.textContent = msg; t.hidden = false;
@@ -166,7 +167,8 @@ function renderMoodHero(m) {
         h('span', { class: 'mhero-badge' }, `5段階中 ${m.level}`),
         h('p', { class: 'mhero-label' }, m.label))),
     h('p', { class: 'mhero-cmt' }, m.desc),
-    m.factors && m.factors.length ? h('p', { class: 'mhero-why' }, m.reason) : null);
+    m.factors && m.factors.length ? h('p', { class: 'mhero-why' }, m.reason) : null,
+    m.care ? (() => { const d = h('div', { class: 'care-box' }); d.innerHTML = `<p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p><ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol><p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p><p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>`; return d; })() : null);
 }
 
 function renderSummary(fc) {

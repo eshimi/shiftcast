@@ -2,6 +2,7 @@
 // 表示専用の暫定のロジックで、医学的に検証された基準ではない。通知には使わない。
 // 重み: 気圧は体調との関係の報告が最も多いと考え、他の要因より大きくしている。
 import { factorSummary } from './extras.js';
+import { careFor } from './care.js';
 
 export const MOOD_POINTS = {
   pressure: { none: 0, rise: 1, slight: 2, caution: 4, warning: 6 },
@@ -65,5 +66,5 @@ export function moodInfo({ pressureLevel = 'none', temp, rain, hum, next24, past
     : names.length === 1 ? `「${names[0]}」が気になります。`
       : `「${names.join('」と「')}」が重なっています。`;
   const worst = next24 && next24.level !== 'none' && next24.at ? { at: next24.at, rate: next24.rate } : null;
-  return { desc: lv.desc, short: lv.short, points, max: MOOD_MAX, score: moodScore(points), level: lv.level, key: lv.key, label: lv.label, reason, factors: f.factors, parts, bonus, worst };
+  return { care: careFor(lv.level, f.factors), desc: lv.desc, short: lv.short, points, max: MOOD_MAX, score: moodScore(points), level: lv.level, key: lv.key, label: lv.label, reason, factors: f.factors, parts, bonus, worst };
 }

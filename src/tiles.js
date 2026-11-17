@@ -36,6 +36,18 @@ const MOOD_GUIDE = [...MOOD_LEVELS].reverse().map((l) => {
 // つづけて読めるように、各レベルの下限を「ひとつ下のレベルの上限+1」にそろえる
 MOOD_GUIDE.forEach((g, i) => { g.range = `${i === 0 ? 0 : MOOD_GUIDE[i - 1].hi + 1}〜${g.hi}`; });
 
+const CARE_CH = { past: '過去の低下', pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度', general: '全般' };
+/** 今日の過ごし方(レベルが注意の段階のときだけ)。短く3つと、詳しいページへの入口 */
+export function careBlockHtml(m) {
+  if (!m || !m.care) return '';
+  return `<div class="care-box" role="group" aria-label="今日の過ごし方">
+  <p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p>
+  <ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol>
+  <p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p>
+  <p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>
+</div>`;
+}
+
 /** 体調そらもよう(大きなパネル) */
 export function moodBlockHtml(w) {
   const m = w?.mood;
@@ -50,6 +62,7 @@ export function moodBlockHtml(w) {
     <p class="mood-s">スコア <b>${m.score}</b> / 100<small>（高いほど快調）</small>${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
     <div class="fx-chips">${chips}</div>
     <p class="mood-r">${esc(m.reason)}</p>
+    ${careBlockHtml(m)}
     <details class="mood-guide"><summary>5段階の見かた</summary>
       <table class="mg"><thead><tr><th>レベル</th><th>状況</th><th>スコア</th></tr></thead><tbody>${MOOD_GUIDE.map((g) => `<tr class="${g.level === m.level ? 'now' : ''}"><th scope="row"><span class="lvno sm">${g.level}</span>${esc(g.label)}</th><td>${esc(g.desc)}</td><td>${g.range}</td></tr>`).join('')}</tbody></table>
       <p class="muted small">スコアは、気圧(これから24時間の変化と、過去24時間に実際に下がった量、気圧の低さ)・気温差・降水・湿度の目安を点数にして0〜100に換算したものです。暫定の目安で、医学的な基準ではありません。</p>

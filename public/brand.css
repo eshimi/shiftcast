@@ -238,3 +238,20 @@ body[data-page="weather"] .card, body[data-page="pressure"] .card, body.lp .card
 /* 見出しの帯・ボタンは、気圧・記録と同じ青 */
 body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary, body[data-page="today"] .btn.primary, body.lp .btn.dark, body.lp .btn.primary { background: var(--ap-blue); border-color: var(--ap-blue); color: #fff; }
 .site-h .nav a[aria-current="page"], .bnav a[aria-current="page"] { color: var(--ap-blue); border-bottom-color: var(--ap-blue); }
+
+/* 今日の過ごし方(体調そらもようのカードと /care) */
+.care-box { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 14px; background: #F7FAFD; }
+.care-h { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; } .care-h b { font-size: 15px; color: var(--ap-navy, #1F3A57); } .care-h small { font-size: 11px; color: var(--ap-muted, #5B6B7C); }
+.care-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: c; }
+.care-list li { counter-increment: c; position: relative; padding-left: 28px; font-size: 13px; line-height: 1.6; }
+.care-list li::before { content: counter(c); position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: var(--ap-blue, #2B7FD4); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.care-list b { display: block; color: var(--ap-navy, #1F3A57); } .care-list span { display: block; color: var(--ap-muted, #5B6B7C); font-size: 12.5px; }
+.care-more { margin: 12px 0 4px; text-align: center; } .care-note { margin: 4px 0 0; font-size: 11px; color: var(--ap-muted, #5B6B7C); text-align: center; }
+.care-page .care-today { padding: 14px 16px; margin-bottom: 8px; } .care-lv { margin: 6px 0 4px; display: flex; align-items: center; gap: 10px; font-size: 20px; } .care-d { margin: 0; font-size: 13px; color: var(--ap-muted, #5B6B7C); }
+.care-f { margin: 14px 0; padding: 14px 16px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 16px; background: #fff; }
+.care-f.on { border-color: var(--ap-blue, #2B7FD4); box-shadow: 0 0 0 2px rgba(43, 127, 212, .15); }
+.care-f h3 { margin: 0 0 6px; font-size: 16px; color: var(--ap-navy, #1F3A57); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.care-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--ap-blue, #2B7FD4); color: #fff; }
+.care-why { margin: 0 0 8px; font-size: 13px; color: var(--ap-muted, #5B6B7C); }
+.care-f ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; } .care-f li b { display: block; font-size: 14px; } .care-f li span { font-size: 12.5px; color: var(--ap-muted, #5B6B7C); line-height: 1.6; }
+.care-times { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .care-times article { padding: 12px 14px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 14px; background: #fff; } .care-times h3 { margin: 0 0 6px; font-size: 15px; } .care-times ul { margin: 0; padding-left: 1.1em; font-size: 13px; line-height: 1.7; }

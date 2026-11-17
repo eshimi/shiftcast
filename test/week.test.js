@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { weatherInfo, dailyPressure, mergeWeek, tempInfo } from '../src/week.js';
 import { wetInfo, factorSummary } from '../src/extras.js';
 import { moodInfo, MOOD_MAX, pastInfo } from '../src/mood.js';
+import { careFor } from '../src/care.js';
 import { summarizeWeekly } from '../src/jma.js';
 import { annotate } from '../src/pressure.js';
 
@@ -196,4 +197,20 @@ test('annotate: 45分未満の近すぎる2点の変化は評価しない(極端
   const a = annotate([{ ts: 0, pressure: 1016 }, { ts: 3 * H, pressure: 1015 }, { ts: 3 * H + 10e3, pressure: 1014 }]);
   assert.equal(a[2].rate, null);
   assert.equal(a[2].level, 'none');
+});
+
+test('careFor: レベル3以下のときだけ、効いた要因の順に今日の対策を3つ出す', () => {
+  assert.equal(careFor(4, ['pressure']), null);
+  assert.equal(careFor(5, []), null);
+  const c = careFor(2, ['past', 'hum']);
+  assert.equal(c.tips.length, 3);
+  assert.equal(c.tips[0].f, 'past');
+  assert.equal(c.tips[1].f, 'hum');
+  // 要因が無くても(レベルが低いとき)全般の対策で3つ埋める
+  assert.equal(careFor(1, []).tips.length, 3);
+  // moodInfo に組み込まれている
+  const m = moodInfo({ pressureLevel: 'warning', temp: { level: 'big' }, rain: { level: 'mid' }, hum: { level: 'big' } });
+  assert.equal(m.level, 1);
+  assert.equal(m.care.tips.length, 3);
+  assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).care, null);
 });
