@@ -6,8 +6,7 @@
   --bg: #F7FBFD; --card: #ffffff; --fg: #1F3347; --muted: #566B7E; --line: #D2E3EE;
   --blush: #E8F4FA; --teal: #1B7FD6; --teal-2: #4C9BE0; --accent: #1B7FD6; --accent-fg: #ffffff;
   --rise: #3b82f6; --slight: #eab308; --caution: #f97316; --warning: #dc2626;
-  --serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-  --sans: -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+  --serif: var(--font-heading); --sans: var(--font-ui);
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #10191e; --card: #1a272d; --fg: #eef3f4; --muted: #9fb0b8; --line: #263941; --blush: #16232a; --teal: #0b1418; --teal-2: #1d3039; --accent: #cfe3ea; --accent-fg: #10191e; }

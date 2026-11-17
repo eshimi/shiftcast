@@ -1,0 +1,41 @@
+/* ウェルミー デザイントークン(正)。全ページで最初に読み込む。
+   読み込み順: tokens.css → ds.css/header.css/site.css(共通ベース) → コンポーネント(ds-pages/style/dash) → brand.css(旧変数の橋渡し)
+   旧トークン(--wl-* / --ap-* / ds.css の --surface-* など)は brand.css でこの値へのaliasにしている。新規の色・フォントは必ずここのトークンを参照する。 */
+:root {
+  /* 色 */
+  --color-primary: #1B7FD6; --color-primary-deep: #0F5FA8; --color-primary-soft: #A9DDF0; --color-mist: #E8F4FA;
+  --color-bg: #F7FBFD; --color-card: #FFFFFF;
+  --color-ink: #1F3347; --color-ink-muted: #566B7E;
+  --color-border: #D2E3EE; --color-border-strong: #7E9AB0;
+  --color-focus: #1B7FD6;
+  /* 角丸 */
+  --radius-sm: 10px; --radius-md: 16px; --radius-pill: 999px;
+  /* 余白 */
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-6: 24px; --space-8: 32px; --space-12: 48px; --space-16: 64px;
+  /* レベル色(気圧の意味の色。pill・カード線・凡例・グラフ帯すべてここを参照) */
+  --lv-rise: #3B82D6; --lv-slight: #E0A32E; --lv-caution: #E07B39; --lv-warning: #DC5245; --lv-good: #2FA785;
+  --lv-rise-bg: #E4EFFB; --lv-slight-bg: #FBF3DE; --lv-caution-bg: #FBEBDD; --lv-warning-bg: #FBE4E1; --lv-good-bg: #E6F5EF;
+  --lv-rise-tx: #1F5FA8; --lv-slight-tx: #7A5200; --lv-caution-tx: #A24610; --lv-warning-tx: #A82A1F; --lv-good-tx: #1B7A5E;
+  /* フォント: ロゴ/英字装飾・和文見出し(明朝)・UI全般(ゴシック) */
+  --font-logo: "Jost", "Noto Sans JP", sans-serif;
+  --font-heading: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --font-ui: -apple-system, "Hiragino Sans", "Noto Sans JP", "Yu Gothic", sans-serif;
+  /* 文字サイズ階梯(本文の下限は16pxが目安。密度の高いUI部品は15pxのまま) */
+  --fs-display: 56px; --lh-display: 64px; --fw-display: 700;
+  --fs-heading: 28px; --lh-heading: 36px; --fw-heading: 700;
+  --fs-subheading: 18px; --lh-subheading: 28px; --fw-subheading: 600;
+  --fs-body: 15px; --lh-body: 24px; --fw-body: 400;
+  --fs-label: 13px; --lh-label: 18px; --fw-label: 500;
+  --fs-caption: 12px; --lh-caption: 18px; --fw-caption: 400;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-primary: #5FAEEF; --color-primary-deep: #8CC6F5; --color-primary-soft: #A9DDF0; --color-mist: #182838;
+    --color-bg: #101c28; --color-card: #182838;
+    --color-ink: #eaf3fa; --color-ink-muted: #a9bfd0;
+    --color-border: #2b4157; --color-border-strong: #7f9bb0;
+    --color-focus: #A9DDF0;
+    --lv-rise-bg: #1B2F47; --lv-slight-bg: #3A3118; --lv-caution-bg: #3B2A1E; --lv-warning-bg: #3D2321; --lv-good-bg: #163329;
+    --lv-rise-tx: #9CC6F2; --lv-slight-tx: #F0CC76; --lv-caution-tx: #F2B184; --lv-warning-tx: #F5A49C; --lv-good-tx: #84D9BC;
+  }
+}

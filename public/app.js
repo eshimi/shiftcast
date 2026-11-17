@@ -1,7 +1,7 @@
 /* global Chart */
 const $ = (s) => document.querySelector(s);
 const LABEL = { none: '安定', rise: '上昇注意', slight: 'やや注意', caution: '注意', warning: '警戒' };
-const COLOR = { rise: '#3B82D6', slight: '#E0A32E', caution: '#E07B39', warning: '#DC5245' };
+const COLOR = new Proxy({}, { get: (_, k) => (getComputedStyle(document.documentElement).getPropertyValue(`--lv-${k}`).trim() || '#999') });
 const FACES = ['🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読み込めない場合の代用
 const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level - 1]));
 const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];

@@ -2,28 +2,32 @@
    カラー(ロゴの色から): Blue #1B7FD6(メイン) / Sky #A9DDF0(サブ) / Mist #E8F4FA(背景) / Navy #2D4A67(文字・フッター) / Green #8EE060(アクセント) / Base #F7FBFD
    ルール: 自然と調和するやさしい色調・余白・角丸でやわらかいUI。気圧の4段階の色(青・黄・橙・赤)は「データの意味」を表すので変えない。 */
 :root {
-  --wl-sage: #1B7FD6; --wl-sage-deep: #0F5FA8; --wl-mint: #A9DDF0; --wl-mist: #E8F4FA; --wl-sun: #8EE060; --wl-ivory: #F7FBFD;
-  /* デザインシステムのトークン(ds.css)を上書き */
-  --surface-100: #F7FBFD; --surface-200: #E8F4FA; --surface-300: #D4E8F2;
-  --ink: #1F3347; --ink-muted: #566B7E; --brand-black: #1B7FD6; --on-brand: #ffffff;
-  --border: #D2E3EE; --border-strong: #7E9AB0; --focus: #1B7FD6;
-  --radius-none: 16px; --radius-sm: 10px;
+  /* 旧トークン → 新トークン(tokens.css)のalias。新規コードは --color-* / --lv-* / --font-* を使う */
+  --wl-sage: var(--color-primary); --wl-sage-deep: var(--color-primary-deep); --wl-mint: var(--color-primary-soft); --wl-mist: var(--color-mist); --wl-sun: #8EE060; --wl-ivory: var(--color-bg);
+  /* デザインシステム(ds.css)のトークンを上書き */
+  --surface-100: var(--color-bg); --surface-200: var(--color-mist); --surface-300: #D4E8F2;
+  --ink: var(--color-ink); --ink-muted: var(--color-ink-muted); --brand-black: var(--color-primary); --on-brand: #ffffff;
+  --border: var(--color-border); --border-strong: var(--color-border-strong); --focus: var(--color-focus);
+  --radius-none: var(--radius-md);
+  --font-sans: var(--font-ui); --font-latin: var(--font-logo);
   /* トップページ(site.css)の変数 */
-  --bg: #F7FBFD; --card: #ffffff; --fg: #1F3347; --muted: #566B7E; --line: #D2E3EE;
-  --blush: #E8F4FA; --teal: #1B7FD6; --teal-2: #4C9BE0; --accent: #1B7FD6; --accent-fg: #ffffff;
+  --bg: var(--color-bg); --card: var(--color-card); --fg: var(--color-ink); --muted: var(--color-ink-muted); --line: var(--color-border);
+  --blush: var(--color-mist); --teal: var(--color-primary); --teal-2: #4C9BE0; --accent: var(--color-primary); --accent-fg: #ffffff;
   --face-stroke: #1F5E9C;
-  --wl-font: "Jost", "Noto Sans JP", "Hiragino Sans", sans-serif;
+  --serif: var(--font-heading); --sans: var(--font-ui);
+  --wl-font: var(--font-logo);
+  /* /app・週間天気用の旧名 */
+  --ap-blue: var(--color-primary); --ap-navy: var(--color-ink); --ap-text: var(--color-ink); --ap-muted: var(--color-ink-muted); --ap-bg: var(--color-bg); --ap-card: var(--color-card); --ap-line: var(--color-border);
+  --rise: var(--lv-rise); --slight: var(--lv-slight); --caution: var(--lv-caution); --warning: var(--lv-warning);
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --surface-100: #101c28; --surface-200: #182838; --surface-300: #223548;
-    --ink: #eaf3fa; --ink-muted: #a9bfd0; --brand-black: #A9DDF0; --on-brand: #0e1a26;
-    --border: #2b4157; --border-strong: #7f9b86; --focus: #A9DDF0;
-    --bg: #101c28; --card: #182838; --fg: #eaf3fa; --muted: #a9bfd0; --line: #2b4157;
-    --blush: #182838; --teal: #2D4A67; --teal-2: #3a678f; --accent: #A9DDF0; --accent-fg: #0e1a26;
-    --face-stroke: #A9DDF0;
-  }
+  :root { --surface-300: #223548; --on-brand: #0e1a26; --face-stroke: #A9DDF0; --accent-fg: #0e1a26; --teal: #2D4A67; --teal-2: #3a678f; --accent: #A9DDF0; --brand-black: #A9DDF0; }
 }
+body.ds { --serif: var(--font-heading); --sans: var(--font-ui); }
+body[data-page="app"] { --ap-blue: var(--color-primary); --ap-navy: var(--color-ink); --ap-text: var(--color-ink); --ap-muted: var(--color-ink-muted); --ap-bg: var(--color-bg); --ap-card: var(--color-card); --ap-line: var(--color-border); }
+/* 数値は桁揺れしない等幅数字 */
+body, .big, .fx-v, .mhero-score b, .st-n, .num { font-variant-numeric: tabular-nums; }
+.ds h1, .ds h2, .ds h3 { font-family: var(--font-heading); }
 /* ---- 角丸でやわらかいUI ---- */
 .btn, .ds .btn, .site-h .h-app, .m-nav .m-app { border-radius: 999px; }
 .btn.primary, .btn.dark, .ds .btn.primary { background: var(--wl-sage); border-color: var(--wl-sage); color: #fff; }
@@ -199,28 +203,21 @@ input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12
 }
 
 /* 体調そらもようの色(全ページ共通): 良い=緑、注意が強まるほど 青→黄→橙→赤。5が良い(快調)、1が悪い */
-.mood-5 { --mc: #2FA785; } .mood-4 { --mc: #3B82D6; } .mood-3 { --mc: #E0A32E; } .mood-2 { --mc: #E07B39; } .mood-1 { --mc: #DC5245; }
-.st-5 { --c: #2FA785; --c2: #23896B; } .st-4 { --c: #3B82D6; --c2: #2B6DB8; } .st-3 { --c: #E0A32E; --c2: #C28A18; } .st-2 { --c: #E07B39; --c2: #C26226; } .st-1 { --c: #DC5245; --c2: #C13E32; }
-.mg tr:nth-child(1) .lvno { background: #DC5245; } .mg tr:nth-child(2) .lvno { background: #E07B39; } .mg tr:nth-child(3) .lvno { background: #E0A32E; color: #3A2600; } .mg tr:nth-child(4) .lvno { background: #3B82D6; } .mg tr:nth-child(5) .lvno { background: #2FA785; }
+.mood-5 { --mc: var(--lv-good); } .mood-4 { --mc: var(--lv-rise); } .mood-3 { --mc: var(--lv-slight); } .mood-2 { --mc: var(--lv-caution); } .mood-1 { --mc: var(--lv-warning); }
+.st-5 { --c: var(--lv-good); --c2: #23896B; } .st-4 { --c: var(--lv-rise); --c2: #2B6DB8; } .st-3 { --c: var(--lv-slight); --c2: #C28A18; } .st-2 { --c: var(--lv-caution); --c2: #C26226; } .st-1 { --c: var(--lv-warning); --c2: #C13E32; }
+.mg tr:nth-child(1) .lvno { background: var(--lv-warning); } .mg tr:nth-child(2) .lvno { background: var(--lv-caution); } .mg tr:nth-child(3) .lvno { background: var(--lv-slight); color: #3A2600; } .mg tr:nth-child(4) .lvno { background: var(--lv-rise); } .mg tr:nth-child(5) .lvno { background: var(--lv-good); }
 .lvno { color: #fff; } .mood-3 .lvno { color: #3A2600; }
 
 /* ---- トップ・週間天気・都道府県別: 気圧・記録と同じ配色(良い=緑、注意が強まるほど 青→黄→橙→赤)とトーン ---- */
-:root {
-  --ap-blue: #2B7FD4; --ap-navy: #1F3A57; --ap-text: #26323F; --ap-muted: #5B6B7C; --ap-bg: #EEF4FA; --ap-line: #E3EBF2;
-  --lv-rise: #3B82D6; --lv-slight: #E0A32E; --lv-caution: #E07B39; --lv-warning: #DC5245; --lv-good: #2FA785;
-  --lv-rise-bg: #E4EFFB; --lv-slight-bg: #FBF3DE; --lv-caution-bg: #FBEBDD; --lv-warning-bg: #FBE4E1; --lv-good-bg: #E6F5EF;
-  --lv-rise-tx: #1F5FA8; --lv-slight-tx: #7A5200; --lv-caution-tx: #A24610; --lv-warning-tx: #A82A1F; --lv-good-tx: #1B7A5E;
-  --rise: #3B82D6; --slight: #E0A32E; --caution: #E07B39; --warning: #DC5245;
-}
 body[data-page="weather"], body[data-page="pressure"], body[data-page="today"], body.lp { color: var(--ap-text); }
 body[data-page="weather"], body[data-page="pressure"], body[data-page="today"] { background: var(--ap-bg); }
 body[data-page="weather"] .card, body[data-page="pressure"] .card, body.lp .card { border: 1px solid var(--ap-line); border-radius: 16px; }
 /* 気圧のレベルの印(ラベル)は、同じ色と、読める文字色で */
-.pill.lv-rise { background: var(--lv-rise); color: #fff; }
-.pill.lv-slight { background: var(--lv-slight); color: #3A2600; }
-.pill.lv-caution { background: #B8501A; color: #fff; }
-.pill.lv-warning { background: #C93E33; color: #fff; }
-.pill.lv-none { background: var(--lv-good-bg); color: var(--lv-good-tx); border: 0; }
+.pill.lv-rise { background: var(--lv-rise-bg); color: var(--lv-rise-tx); border: 1px solid var(--lv-rise); }
+.pill.lv-slight { background: var(--lv-slight-bg); color: var(--lv-slight-tx); border: 1px solid var(--lv-slight); }
+.pill.lv-caution { background: var(--lv-caution-bg); color: var(--lv-caution-tx); border: 1px solid var(--lv-caution); }
+.pill.lv-warning { background: var(--lv-warning-bg); color: var(--lv-warning-tx); border: 1px solid var(--lv-warning); }
+.pill.lv-none { background: var(--lv-good-bg); color: var(--lv-good-tx); border: 1px solid var(--lv-good); }
 /* 見通しカードの左の線・時間帯の枠 */
 .tmrw.lv-rise, .day.lv-rise, .cell.lv-rise, .today.lv-rise { border-left-color: var(--lv-rise); }
 .tmrw.lv-slight, .day.lv-slight, .cell.lv-slight, .today.lv-slight { border-left-color: var(--lv-slight); }
@@ -240,21 +237,21 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .site-h .nav a[aria-current="page"], .bnav a[aria-current="page"] { color: var(--ap-blue); border-bottom-color: var(--ap-blue); }
 
 /* 今日の過ごし方(体調そらもようのカードと /care) */
-.care-box { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 14px; background: #F7FAFD; }
-.care-h { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; } .care-h b { font-size: 15px; color: var(--ap-navy, #1F3A57); } .care-h small { font-size: 11px; color: var(--ap-muted, #5B6B7C); }
+.care-box { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--ap-line); border-radius: 14px; background: #F7FAFD; }
+.care-h { margin: 0 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; } .care-h b { font-size: 15px; color: var(--ap-navy); } .care-h small { font-size: 11px; color: var(--ap-muted); }
 .care-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; counter-reset: c; }
 .care-list li { counter-increment: c; position: relative; padding-left: 28px; font-size: 13px; line-height: 1.6; }
-.care-list li::before { content: counter(c); position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: var(--ap-blue, #2B7FD4); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
-.care-list b { display: block; color: var(--ap-navy, #1F3A57); } .care-list span { display: block; color: var(--ap-muted, #5B6B7C); font-size: 12.5px; }
-.care-more { margin: 12px 0 4px; text-align: center; } .care-note { margin: 4px 0 0; font-size: 11px; color: var(--ap-muted, #5B6B7C); text-align: center; }
-.care-page .care-today { padding: 14px 16px; margin-bottom: 8px; } .care-lv { margin: 6px 0 4px; display: flex; align-items: center; gap: 10px; font-size: 20px; } .care-d { margin: 0; font-size: 13px; color: var(--ap-muted, #5B6B7C); }
-.care-f { margin: 14px 0; padding: 14px 16px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 16px; background: #fff; }
-.care-f.on { border-color: var(--ap-blue, #2B7FD4); box-shadow: 0 0 0 2px rgba(43, 127, 212, .15); }
-.care-f h3 { margin: 0 0 6px; font-size: 16px; color: var(--ap-navy, #1F3A57); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.care-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--ap-blue, #2B7FD4); color: #fff; }
-.care-why { margin: 0 0 8px; font-size: 13px; color: var(--ap-muted, #5B6B7C); }
-.care-f ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; } .care-f li b { display: block; font-size: 14px; } .care-f li span { font-size: 12.5px; color: var(--ap-muted, #5B6B7C); line-height: 1.6; }
-.care-times { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .care-times article { padding: 12px 14px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 14px; background: #fff; } .care-times h3 { margin: 0 0 6px; font-size: 15px; } .care-times ul { margin: 0; padding-left: 1.1em; font-size: 13px; line-height: 1.7; }
+.care-list li::before { content: counter(c); position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 50%; background: var(--ap-blue); color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.care-list b { display: block; color: var(--ap-navy); } .care-list span { display: block; color: var(--ap-muted); font-size: 12.5px; }
+.care-more { margin: 12px 0 4px; text-align: center; } .care-note { margin: 4px 0 0; font-size: 11px; color: var(--ap-muted); text-align: center; }
+.care-page .care-today { padding: 14px 16px; margin-bottom: 8px; } .care-lv { margin: 6px 0 4px; display: flex; align-items: center; gap: 10px; font-size: 20px; } .care-d { margin: 0; font-size: 13px; color: var(--ap-muted); }
+.care-f { margin: 14px 0; padding: 14px 16px; border: 1px solid var(--ap-line); border-radius: 16px; background: #fff; }
+.care-f.on { border-color: var(--ap-blue); box-shadow: 0 0 0 2px rgba(43, 127, 212, .15); }
+.care-f h3 { margin: 0 0 6px; font-size: 16px; color: var(--ap-navy); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.care-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--ap-blue); color: #fff; }
+.care-why { margin: 0 0 8px; font-size: 13px; color: var(--ap-muted); }
+.care-f ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; } .care-f li b { display: block; font-size: 14px; } .care-f li span { font-size: 12.5px; color: var(--ap-muted); line-height: 1.6; }
+.care-times { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .care-times article { padding: 12px 14px; border: 1px solid var(--ap-line); border-radius: 14px; background: #fff; } .care-times h3 { margin: 0 0 6px; font-size: 15px; } .care-times ul { margin: 0; padding-left: 1.1em; font-size: 13px; line-height: 1.7; }
 
 /* トップの「今日の過ごし方」は、タイトルだけの3行(説明は /care で) */
 .tmrw-stack .care-box { padding: 10px 12px; }
@@ -268,34 +265,34 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 /* 階段とコメントを1つにまとめる: いまの段のラベルを大きく、その下に一言 */
 .st.on .stl { font-size: 13px; font-weight: 700; padding: 5px 8px; line-height: 1.3; }
 .mood .mood-body { padding-top: 6px; }
-.mood-m { font-size: 15px; font-weight: 700; line-height: 1.7; color: var(--ap-navy, #1F3A57); }
+.mood-m { font-size: 15px; font-weight: 700; line-height: 1.7; color: var(--ap-navy); }
 .tmrw-stack .stairs { margin: 0 0 6px; }
 @media (min-width: 760px) { .st.on .stl { font-size: 15px; } }
 
 .st.on .stl { font-size: 11px; padding: 3px 6px; }
-.mood-cap { margin: 2px 0 4px; font-size: 24px; line-height: 1.3; color: var(--ap-navy, #1F3A57); } .mood-cap b { font-weight: 700; }
+.mood-cap { margin: 2px 0 4px; font-size: 24px; line-height: 1.3; color: var(--ap-navy); } .mood-cap b { font-weight: 700; }
 .mood .mood-en { margin-top: 10px; }
 
-.care-page .crumb { margin: 10px 0 4px; font-size: 12px; color: var(--ap-muted, #5B6B7C); } .care-page .crumb a { text-decoration: underline; text-underline-offset: 3px; }
-.care-back { margin: 0 0 10px; font-size: 14px; } .care-back a { text-decoration: none; color: var(--ap-blue, #2B7FD4); font-weight: 700; }
+.care-page .crumb { margin: 10px 0 4px; font-size: 12px; color: var(--ap-muted); } .care-page .crumb a { text-decoration: underline; text-underline-offset: 3px; }
+.care-back { margin: 0 0 10px; font-size: 14px; } .care-back a { text-decoration: none; color: var(--ap-blue); font-weight: 700; }
 .care-bottom { margin: 18px 0 8px; }
 
 /* 47都道府県のタイル地図 */
 .tmap { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 3px; margin: 14px 0 8px; }
 .tm { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 6px; font-size: clamp(8px, 2.5vw, 12px); font-weight: 700; line-height: 1.1; text-decoration: none; color: #fff; background: #B8C4D0; min-width: 0; overflow: hidden; }
-.tm:hover, .tm:focus-visible { outline: 2px solid var(--ap-navy, #1F3A57); outline-offset: 1px; }
-.tm-5 { background: #2FA785; } .tm-4 { background: #3B82D6; } .tm-3 { background: #E0A32E; color: #3A2600; } .tm-2 { background: #E07B39; color: #3A1600; } .tm-1 { background: #DC5245; } .tm-0 { background: #B8C4D0; color: #26323F; }
+.tm:hover, .tm:focus-visible { outline: 2px solid var(--ap-navy); outline-offset: 1px; }
+.tm-5 { background: var(--lv-good); } .tm-4 { background: var(--lv-rise); } .tm-3 { background: var(--lv-slight); color: #3A2600; } .tm-2 { background: var(--lv-caution); color: #3A1600; } .tm-1 { background: var(--lv-warning); } .tm-0 { background: #B8C4D0; color: var(--color-ink); }
 .tmap-legend { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; } .tmap-legend li { display: inline-flex; align-items: center; gap: 5px; } .tmap-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .tm { letter-spacing: -.04em; padding: 0 1px; } .tm[href$="/hokkaido"] { font-size: clamp(7px, 2.1vw, 10px); }
 
 /* ドット(点描)の日本地図 */
 .dmap { margin: 14px auto 8px; max-width: 520px; } .dmap svg { display: block; width: 100%; height: auto; }
-.mp circle { fill: #B8C4D0; } .mp.tm-5 circle { fill: #2FA785; } .mp.tm-4 circle { fill: #3B82D6; } .mp.tm-3 circle { fill: #E0A32E; } .mp.tm-2 circle { fill: #E07B39; } .mp.tm-1 circle { fill: #DC5245; }
+.mp circle { fill: #B8C4D0; } .mp.tm-5 circle { fill: var(--lv-good); } .mp.tm-4 circle { fill: var(--lv-rise); } .mp.tm-3 circle { fill: var(--lv-slight); } .mp.tm-2 circle { fill: var(--lv-caution); } .mp.tm-1 circle { fill: var(--lv-warning); }
 .mp.alt circle { opacity: .72; }
-.mp:hover circle, .mp:focus-visible circle { opacity: 1; stroke: #1F3A57; stroke-width: .12; }
+.mp:hover circle, .mp:focus-visible circle { opacity: 1; stroke: var(--color-ink); stroke-width: .12; }
 .mp:focus-visible { outline: none; }
 .dmap figcaption { text-align: center; min-height: 1.6em; margin-top: 4px; }
 
-.map-link { margin: 6px 2px 0; font-size: 13px; text-align: right; } .map-link a { color: var(--ap-blue, #2B7FD4); font-weight: 700; text-decoration: none; }
+.map-link { margin: 6px 2px 0; font-size: 13px; text-align: right; } .map-link a { color: var(--ap-blue); font-weight: 700; text-decoration: none; }
 .sx-btn2 { margin-top: 8px; }
 .sx-more a + a { margin-left: 4px; }

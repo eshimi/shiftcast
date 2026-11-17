@@ -25,10 +25,6 @@ body[data-page="app"] .fx-wrap-app .fx-grid { margin-top: 0; }
 
 /* ---- フェーズ2: カード/タイルの見た目統一・配色トークン・アラート帯 ---- */
 body[data-page="app"] {
-  --ap-blue: #2B7FD4; --ap-navy: #1F3A57; --ap-text: #26323F; --ap-muted: #5B6B7C; --ap-bg: #EEF4FA; --ap-card: #FFFFFF; --ap-line: #E3EBF2;
-  --lv-rise: #3B82D6; --lv-slight: #E0A32E; --lv-caution: #E07B39; --lv-warning: #DC5245; --lv-good: #2FA785;
-  --lv-rise-bg: #E4EFFB; --lv-slight-bg: #FBF3DE; --lv-caution-bg: #FBEBDD; --lv-warning-bg: #FBE4E1; --lv-good-bg: #E6F5EF;
-  --lv-rise-tx: #1F5FA8; --lv-slight-tx: #7A5200; --lv-caution-tx: #A24610; --lv-warning-tx: #A82A1F; --lv-good-tx: #1B7A5E;
   background: var(--ap-bg); color: var(--ap-text);
 }
 body[data-page="app"] main, body[data-page="app"] .app-main { background: transparent; }
@@ -104,19 +100,19 @@ body[data-page="app"] .sec-h { text-align: left; }
 /* ---- フェーズ3: 色のセマンティクス(良い=緑、注意が強まるほど 青→黄→橙→赤) ---- */
 body[data-page="app"] .mhero.lv-5 { background: linear-gradient(160deg, #D8ECE0 0%, #E7F3EC 45%, #F4FAF6 100%); border-color: #CFE6DA; }
 body[data-page="app"] .mhero.lv-4 { background: linear-gradient(160deg, #DCEAF8 0%, #EAF3FB 50%, #F6FAFE 100%); border-color: #C6DDF4; }
-body[data-page="app"] .mhero.lv-3 { background: linear-gradient(160deg, #F8EBC4 0%, #FBF3DE 50%, #FEFBF1 100%); border-color: #F0DDA8; }
-body[data-page="app"] .mhero.lv-2 { background: linear-gradient(160deg, #F9DDC6 0%, #FBEBDD 50%, #FEF6EF 100%); border-color: #F2CDB1; }
-body[data-page="app"] .mhero.lv-1 { background: linear-gradient(160deg, #F7D2CE 0%, #FBE4E1 50%, #FEF3F1 100%); border-color: #F1BDB7; }
-body[data-page="app"] .mhero.lv-5 .mhero-en { color: #2E6E55; } body[data-page="app"] .mhero.lv-4 .mhero-en { color: #1F5FA8; }
-body[data-page="app"] .mhero.lv-3 .mhero-en { color: #7A5200; } body[data-page="app"] .mhero.lv-2 .mhero-en { color: #A24610; } body[data-page="app"] .mhero.lv-1 .mhero-en { color: #A82A1F; }
-body[data-page="app"] .mhero.lv-5 .mhero-score { border-color: #2FA785; } body[data-page="app"] .mhero.lv-5 .mhero-score b { color: #1B7A5E; }
-body[data-page="app"] .mhero.lv-4 .mhero-score { border-color: #3B82D6; } body[data-page="app"] .mhero.lv-4 .mhero-score b { color: #1F5FA8; }
-body[data-page="app"] .mhero.lv-3 .mhero-score { border-color: #E0A32E; } body[data-page="app"] .mhero.lv-3 .mhero-score b { color: #7A5200; }
-body[data-page="app"] .mhero.lv-2 .mhero-score { border-color: #E07B39; } body[data-page="app"] .mhero.lv-2 .mhero-score b { color: #A24610; }
-body[data-page="app"] .mhero.lv-1 .mhero-score { border-color: #DC5245; } body[data-page="app"] .mhero.lv-1 .mhero-score b { color: #A82A1F; }
+body[data-page="app"] .mhero.lv-3 { background: linear-gradient(160deg, #F8EBC4 0%, var(--lv-slight-bg) 50%, #FEFBF1 100%); border-color: #F0DDA8; }
+body[data-page="app"] .mhero.lv-2 { background: linear-gradient(160deg, #F9DDC6 0%, var(--lv-caution-bg) 50%, #FEF6EF 100%); border-color: #F2CDB1; }
+body[data-page="app"] .mhero.lv-1 { background: linear-gradient(160deg, #F7D2CE 0%, var(--lv-warning-bg) 50%, #FEF3F1 100%); border-color: #F1BDB7; }
+body[data-page="app"] .mhero.lv-5 .mhero-en { color: #2E6E55; } body[data-page="app"] .mhero.lv-4 .mhero-en { color: var(--lv-rise-tx); }
+body[data-page="app"] .mhero.lv-3 .mhero-en { color: var(--lv-slight-tx); } body[data-page="app"] .mhero.lv-2 .mhero-en { color: var(--lv-caution-tx); } body[data-page="app"] .mhero.lv-1 .mhero-en { color: var(--lv-warning-tx); }
+body[data-page="app"] .mhero.lv-5 .mhero-score { border-color: var(--lv-good); } body[data-page="app"] .mhero.lv-5 .mhero-score b { color: var(--lv-good-tx); }
+body[data-page="app"] .mhero.lv-4 .mhero-score { border-color: var(--lv-rise); } body[data-page="app"] .mhero.lv-4 .mhero-score b { color: var(--lv-rise-tx); }
+body[data-page="app"] .mhero.lv-3 .mhero-score { border-color: var(--lv-slight); } body[data-page="app"] .mhero.lv-3 .mhero-score b { color: var(--lv-slight-tx); }
+body[data-page="app"] .mhero.lv-2 .mhero-score { border-color: var(--lv-caution); } body[data-page="app"] .mhero.lv-2 .mhero-score b { color: var(--lv-caution-tx); }
+body[data-page="app"] .mhero.lv-1 .mhero-score { border-color: var(--lv-warning); } body[data-page="app"] .mhero.lv-1 .mhero-score b { color: var(--lv-warning-tx); }
 /* バッジは白い文字で4.5:1以上になる濃さにする */
 body[data-page="app"] .mhero.lv-5 .mhero-badge { background: #1F8A66; } body[data-page="app"] .mhero.lv-4 .mhero-badge { background: #2B6DB8; }
-body[data-page="app"] .mhero.lv-3 .mhero-badge { background: #E0A32E; color: #3A2600; } body[data-page="app"] .mhero.lv-2 .mhero-badge { background: #B8501A; } body[data-page="app"] .mhero.lv-1 .mhero-badge { background: #C93E33; }
+body[data-page="app"] .mhero.lv-3 .mhero-badge { background: var(--lv-slight); color: #3A2600; } body[data-page="app"] .mhero.lv-2 .mhero-badge { background: #B8501A; } body[data-page="app"] .mhero.lv-1 .mhero-badge { background: #C93E33; }
 
 /* ---- 記録・分析・設定の画面: ホームと同じトーンに ---- */
 body[data-page="app"] .app-head { display: none; }                   /* 大きな見出しと人物は、どの画面でも出さない */
@@ -158,3 +154,15 @@ body[data-page="app"] .notes li { color: var(--ap-muted); }
 
 /* チャートを体調そらもようカード内(理由文の下)に収める */
 body[data-page="app"] .mhero > .chart-card { margin: 14px 0 0; background: rgba(255,255,255,.72); border-color: rgba(31,58,87,.12); box-shadow: none; }
+
+/* ---- ダークモード: 淡い背景のカードを暗い色に(文字は --color-ink 系で明るくなるため) ---- */
+@media (prefers-color-scheme: dark) {
+  body[data-page="app"] .mhero, body[data-page="app"] .mhero.lv-1, body[data-page="app"] .mhero.lv-2, body[data-page="app"] .mhero.lv-3, body[data-page="app"] .mhero.lv-4, body[data-page="app"] .mhero.lv-5 { background: var(--color-card); border-color: var(--color-border); }
+  body[data-page="app"] .mhero.lv-1 { border-left: 4px solid var(--lv-warning); } body[data-page="app"] .mhero.lv-2 { border-left: 4px solid var(--lv-caution); }
+  body[data-page="app"] .mhero.lv-3 { border-left: 4px solid var(--lv-slight); } body[data-page="app"] .mhero.lv-4 { border-left: 4px solid var(--lv-rise); } body[data-page="app"] .mhero.lv-5 { border-left: 4px solid var(--lv-good); }
+  body[data-page="app"] .mhero .mhero-en, body[data-page="app"] .mhero .mhero-label, body[data-page="app"] .mhero .mhero-cmt { color: var(--color-ink); }
+  body[data-page="app"] .mhero-score { background: var(--color-bg); }
+  body[data-page="app"] .mhero > .chart-card, body[data-page="app"] .care-box { background: var(--color-bg); border-color: var(--color-border); }
+  body[data-page="app"] .mhero-score b { color: var(--color-ink); }
+  body[data-page="app"] .card { background: var(--color-card); }
+}

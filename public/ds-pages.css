@@ -4,11 +4,11 @@
 body.ds {
   --bg: var(--surface-100); --card: var(--surface-200); --fg: var(--ink); --muted: var(--ink-muted); --line: var(--border);
   --accent: var(--brand-black); --accent-fg: var(--on-brand); --blush: var(--surface-200); --teal: var(--brand-black); --teal-2: var(--ink-muted);
-  --serif: var(--font-sans); --sans: var(--font-sans);
+  --serif: var(--font-heading); --sans: var(--font-ui);
   background: var(--surface-100); color: var(--ink);
   font: var(--fw-body) var(--fs-body)/var(--lh-body) var(--font-sans);
 }
-.ds h1, .ds h2, .ds h3 { font-family: var(--font-sans); font-weight: 700; letter-spacing: 0; }
+.ds h1, .ds h2, .ds h3 { font-family: var(--font-heading); font-weight: 700; letter-spacing: 0; }
 .ds a { color: var(--ink); text-underline-offset: 3px; }
 .ds :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .ds .muted { color: var(--ink-muted); }

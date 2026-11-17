@@ -115,6 +115,7 @@ ${chrome ? DS_FONTS : TOP_FONTS}
 <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
+<link rel="stylesheet" href="/tokens.css">
 ${chrome ? '<link rel="stylesheet" href="/ds.css">\n<link rel="stylesheet" href="/header.css">\n' : ''}<link rel="stylesheet" href="/site.css">
 ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
 <link rel="stylesheet" href="/brand.css">
