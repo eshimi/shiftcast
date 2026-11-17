@@ -150,7 +150,7 @@ function renderMain(w) {
       const out = h('div', { class: 'tmrw-out' });
       [...card.childNodes].forEach((n) => { if (!(n.classList && (n.classList.contains('tmrw-range') || n.classList.contains('news-mood')))) out.append(n); });
       const wrap = (el) => { const d = document.createElement('div'); d.className = m.className + ' mood-flat'; d.append(el); return d; };
-      card.replaceChildren(wrap(body), wrap(stairs), out);
+      card.replaceChildren(wrap(stairs), wrap(body), out);
       card.classList.add('tmrw-stack');
     }
   }

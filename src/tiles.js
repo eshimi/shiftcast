@@ -57,7 +57,7 @@ export function moodBlockHtml(w) {
   ${moodStairs(m.level)}
   <div class="mood-body">
     <p class="mood-en">今日の体調そらもよう<small>（気候から見た目安）</small></p>
-    <p class="mood-t"><span class="lvno" aria-hidden="true">${m.level}<small>/5</small></span><b>${esc(m.label)}</b><span class="lvtxt">5段階の ${m.level}（5=快調・1=要注意）</span></p>
+    <p class="mood-cap"><b>${esc(m.label)}</b></p>
     <p class="mood-m">${esc(m.desc)}</p>
     <p class="mood-s">スコア <b>${m.score}</b> / 100<small>（高いほど快調）</small>${m.worst ? `　<small>気圧が最も動く時間帯 ${hm(m.worst.at)}</small>` : ''}</p>
     <div class="fx-chips">${chips}</div>

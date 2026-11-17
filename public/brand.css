@@ -264,3 +264,14 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .tmrw-stack .care-list b { display: inline; font-size: 14px; }
 .tmrw-stack .care-more { margin: 10px 0 2px; }
 .tmrw-stack .care-note { display: none; }
+
+/* 階段とコメントを1つにまとめる: いまの段のラベルを大きく、その下に一言 */
+.st.on .stl { font-size: 13px; font-weight: 700; padding: 5px 8px; line-height: 1.3; }
+.mood .mood-body { padding-top: 6px; }
+.mood-m { font-size: 15px; font-weight: 700; line-height: 1.7; color: var(--ap-navy, #1F3A57); }
+.tmrw-stack .stairs { margin: 0 0 6px; }
+@media (min-width: 760px) { .st.on .stl { font-size: 15px; } }
+
+.st.on .stl { font-size: 11px; padding: 3px 6px; }
+.mood-cap { margin: 2px 0 4px; font-size: 24px; line-height: 1.3; color: var(--ap-navy, #1F3A57); } .mood-cap b { font-weight: 700; }
+.mood .mood-en { margin-top: 10px; }
