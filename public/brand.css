@@ -295,3 +295,7 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .mp:hover circle, .mp:focus-visible circle { opacity: 1; stroke: #1F3A57; stroke-width: .12; }
 .mp:focus-visible { outline: none; }
 .dmap figcaption { text-align: center; min-height: 1.6em; margin-top: 4px; }
+
+.map-link { margin: 6px 2px 0; font-size: 13px; text-align: right; } .map-link a { color: var(--ap-blue, #2B7FD4); font-weight: 700; text-decoration: none; }
+.sx-btn2 { margin-top: 8px; }
+.sx-more a + a { margin-left: 4px; }

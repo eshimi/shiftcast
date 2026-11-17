@@ -75,6 +75,7 @@ const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="ウェルミー" wid
 const NAV = [
   ['/', 'トップ', 'top'],
   ['/weather', '週間天気', 'weather'],
+  ['/today', '全国の地図', 'today'],
   ['/columns', 'コラム', 'columns'],
 ];
 
@@ -204,7 +205,7 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
 
 export function topPage() {
-  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a><a href="/app/#log" data-quicklog>体調を記録する</a>`;
+  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/today">全国の地図</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a><a href="/app/#log" data-quicklog>体調を記録する</a>`;
   const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
@@ -247,6 +248,7 @@ export function topPage() {
         <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
         <div id="todayNews" class="news news-sm" aria-live="polite" hidden></div>
         <p class="sx-btn"><a class="btn dark block" href="/app/">気圧グラフを見る</a></p>
+        <p class="sx-btn sx-btn2"><a class="btn block" href="/today">全国の地図を見る</a></p>
       </div>
     </section>
 
@@ -275,7 +277,7 @@ export function topPage() {
         <div id="weekStrip" class="strip" aria-live="polite"><p class="muted">読み込み中…</p></div>
         ${LEVELS}
         <p class="sx-btn"><a class="btn dark block" href="/weather">Weekly All</a></p>
-        <p class="sx-more"><a href="/pressure">都道府県別の気圧予報を見る →</a></p>
+        <p class="sx-more"><a href="/today">全国の地図で見る →</a>　<a href="/pressure">都道府県別の気圧予報 →</a></p>
       </div>
     </section>
 
@@ -334,6 +336,7 @@ export function weatherPage() {
 <div class="page-head has-ppl"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('runner', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${areaBar}
+<p class="map-link"><a href="/today">全国の地図で見る →</a></p>
 
 <div id="today" class="card today" aria-live="polite"><p class="muted">読み込み中…</p></div>
 
