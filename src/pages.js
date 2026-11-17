@@ -221,17 +221,12 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
 
 export function topPage() {
-  // ヘッダーと同じ分類(NAV_GROUPS)。種類(1段目)を押すと、そのページ(2段目)が開く。JSなしでは種類が最初のページへのリンクになる
-  const nav = `<div class="tn-groups">${NAV_GROUPS.map((g, i) => `<a href="${g.items[0][2]}" class="tn-g" data-g="${i}">${g.name}</a>`).join('')}<a href="/app/#log" data-quicklog class="tn-rec">体調を記録する</a></div>
-<div class="tn-subs">${NAV_GROUPS.map((g, i) => `<div class="tn-sub" data-g="${i}" hidden>${g.items.map(([, l, h]) => `<a href="${h}">${l}</a>`).join('')}</div>`).join('')}</div>
-<script>(function(){var n=document.currentScript.parentNode;n.querySelectorAll('.tn-g').forEach(function(a){a.addEventListener('click',function(e){var g=a.dataset.g,sub=n.querySelector('.tn-sub[data-g="'+g+'"]');if(!sub||sub.querySelectorAll('a').length<2)return;e.preventDefault();var open=!sub.hidden;n.querySelectorAll('.tn-sub').forEach(function(x){x.hidden=true});n.querySelectorAll('.tn-g').forEach(function(x){x.classList.remove('on')});if(!open){sub.hidden=false;a.classList.add('on');}});});})();</script>`;
   const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
       <a class="side-logo" href="/" aria-label="ウェルミー トップへ"><img src="/logo-h-white.webp" alt="ウェルミー" width="199" height="70"><small class="logo-sub">今日を知って、心地よく暮らす。</small></a>
-      <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">

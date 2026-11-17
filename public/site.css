@@ -147,7 +147,7 @@ body.lp { background: var(--bg); }
   body.lp { height: 100vh; overflow: hidden; background: linear-gradient(180deg, rgba(var(--ov), calc(var(--o1) + .1)), rgba(var(--ov), calc(var(--o3) - .06))), var(--hero-img) var(--hero-pos) / cover fixed; background-color: #3a5a78; }
   .stage { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 6vw; align-items: start; max-width: 1180px; height: 100vh; margin: 0 auto; padding: 28px 28px 0; overflow: hidden; }
   .side { display: block; color: #fff; align-self: center; max-height: calc(100vh - 28px); }
-  .side-top { display: flex; flex-wrap: wrap; gap: 6vw; align-items: flex-start; margin-bottom: 28px; }
+  .side-top { display: flex; gap: 6vw; align-items: flex-start; margin-bottom: 28px; }
   .side-logo { display: flex; flex-direction: column; gap: 10px; color: #fff; text-decoration: none; text-shadow: 0 2px 16px rgba(10, 30, 50, .45); }
   .side-logo img { border-radius: 18px; }
   .brand-ln { display: flex; flex-direction: column; line-height: 1.15; font-family: var(--serif); }
