@@ -163,7 +163,8 @@ const FACTOR_TILE = { past: 'pressure', pressure: 'pressure', temp: 'temp', rain
 const MIN_PAINED = 3; // 地域の体調は、不調を記録した人がこの人数以上のときだけ出す
 function renderMoodHero(m, st) {
   const el = $('#moodHero');
-  if (!m) { el.hidden = true; return; }
+  const cc = document.querySelector('.chart-card'); // 気圧の推移・予報は、そらもようの枠の中(要因の下)に入れる
+  if (!m) { el.hidden = true; if (cc && cc.parentNode === el) $('#chartSlot').append(cc); return; }
   el.hidden = false;
   el.className = `mhero lv-${m.level}`;
   const chips = m.factors && m.factors.length
@@ -181,6 +182,7 @@ function renderMoodHero(m, st) {
         h('p', { class: 'mhero-label' }, m.label))),
     h('p', { class: 'mhero-cmt' }, m.desc),
     chips,
+    cc,
     m.care ? (() => { const d = h('div', { class: 'care-box' }); d.innerHTML = `<p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p><ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b></li>`).join('')}</ol><p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p><p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>`; return d; })() : null,
     region].filter(Boolean));
 }

@@ -200,3 +200,5 @@ body[data-page="app"] .jma-strip .muted { margin-top: 6px; font-size: 11px; }
 body[data-page="app"] #addPast { margin-left: auto; margin-right: 8px; }
 body[data-page="app"] .astrip-r { white-space: nowrap; }
 body[data-page="app"] .mhero .care-list li { padding-bottom: 0; }
+body[data-page="app"] .mhero > .chart-card { margin: 14px 0 0; background: rgba(255,255,255,.72); border-color: rgba(31,58,87,.12); box-shadow: none; }
+@media (prefers-color-scheme: dark) { body[data-page="app"] .mhero > .chart-card { background: var(--color-bg); border-color: var(--color-border); } }
