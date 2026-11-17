@@ -102,6 +102,8 @@ function renderToday(w) {
     el.classList.add('has-fx');
     const fx = h('div', { class: 'fx-wrap' });
     fx.innerHTML = (w.moodHtml || '') + w.tilesHtml;
+    const mr = fx.querySelector('.mood-r'), mc = miniChart(w);
+    if (mr && mc) mr.after(mc); // 週間天気・都道府県ページ: 今日の過ごし方の上に気圧グラフ
     el.append(fx);
   }
 }
@@ -205,6 +207,37 @@ function pastLine(w) {
 }
 
 // 今日（これから24時間）の主役カード
+// 気圧の推移・予報の小さなグラフ(SVG)。実況=実線、予報=点線、色の帯=気圧の動きへの注意レベル
+function miniChart(w) {
+  const pts = (w.hourly48 || []).filter((p) => p.pressure != null);
+  if (pts.length < 4) return null;
+  const W = 340, H = 156, L = 34, R = 8, T = 24, B = 24;
+  const t0 = pts[0].ts, t1 = pts[pts.length - 1].ts;
+  let lo = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 2), hi = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 2);
+  if (hi - lo < 8) hi = lo + 8;
+  const x = (t) => L + ((t - t0) / (t1 - t0)) * (W - L - R), y = (v) => T + ((hi - v) / (hi - lo)) * (H - T - B);
+  const bands = pts.map((p, i) => (i && p.level && p.level !== 'none' ? `<rect x="${x(pts[i - 1].ts).toFixed(1)}" y="${T}" width="${(x(p.ts) - x(pts[i - 1].ts)).toFixed(1)}" height="${H - T - B}" fill="var(--lv-${p.level})" opacity=".24"/>` : '')).join('');
+  const pa = pts.filter((p) => p.ts <= w.now), fu = pts.filter((p) => p.ts >= w.now);
+  const line = (a) => a.map((p, i) => `${i ? 'L' : 'M'}${x(p.ts).toFixed(1)} ${y(p.pressure).toFixed(1)}`).join('');
+  const step = hi - lo > 20 ? 10 : hi - lo > 10 ? 5 : 2;
+  let grid = '';
+  for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) grid += `<line x1="${L}" x2="${W - R}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" stroke="var(--color-border)"/><text x="${L - 4}" y="${(y(v) + 3).toFixed(1)}" text-anchor="end">${v}</text>`;
+  let xt = '';
+  for (let t = Math.ceil(t0 / (6 * HOUR_MS)) * 6 * HOUR_MS; t <= t1; t += 6 * HOUR_MS) { const d = new Date(t); xt += `<text x="${x(t).toFixed(1)}" y="${H - 8}" text-anchor="middle">${d.getHours() === 0 ? `${d.getMonth() + 1}/${d.getDate()}` : d.getHours() + '時'}</text>`; }
+  const nx = x(w.now), cur = pa.length ? pa[pa.length - 1] : null;
+  const box = document.createElement('div'); box.className = 'mood-chart';
+  box.innerHTML = `<p class="mc-h"><b>気圧の推移・予報</b><small>hPa</small></p>
+<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="気圧の推移と予報のグラフ" class="mc-svg">${bands}${grid}${xt}
+<path d="${line(pa)}" fill="none" stroke="var(--color-ink)" stroke-width="2.4" stroke-linejoin="round"/>
+<path d="${line(fu)}" fill="none" stroke="var(--color-primary)" stroke-width="2.4" stroke-dasharray="5 4" stroke-linejoin="round"/>
+<line x1="${nx.toFixed(1)}" x2="${nx.toFixed(1)}" y1="${T - 6}" y2="${H - B}" stroke="var(--color-primary)" stroke-dasharray="3 3"/>
+<rect x="${(nx - 13).toFixed(1)}" y="${T - 22}" width="26" height="16" rx="8" fill="var(--color-primary)"/><text x="${nx.toFixed(1)}" y="${T - 10.5}" text-anchor="middle" fill="#fff" style="font-weight:700">今</text>
+${cur ? `<circle cx="${nx.toFixed(1)}" cy="${y(cur.pressure).toFixed(1)}" r="4.5" fill="var(--color-primary)"/>` : ''}</svg>
+<p class="mc-n">実線＝実況　点線＝予報　色の帯＝気圧の動きに注意</p>`;
+  return box;
+}
+const HOUR_MS = 3600e3;
+
 function renderTodayBig(w) {
   const el = $('#tmrwCard');
   if (!el) return;
