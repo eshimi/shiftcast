@@ -166,7 +166,7 @@ const logOut = (r) => ({ id: r.id, ts: r.ts, pain: r.pain, tags: JSON.parse(r.ta
 
 function parseLog(b) {
   const pain = Number(b?.pain);
-  if (!Number.isInteger(pain) || pain < 1 || pain > 5) return { error: 'bad_pain' };
+  if (!Number.isInteger(pain) || pain < 0 || pain > 5) return { error: 'bad_pain' };
   const ts = b.ts === undefined ? Date.now() : Number(b.ts);
   if (!Number.isFinite(ts) || ts > Date.now() + 5 * 60e3 || ts < Date.now() - 400 * 24 * HOUR) return { error: 'bad_ts' };
   const strs = (a, max) => (Array.isArray(a) ? [...new Set(a.map((x) => String(x).trim().slice(0, 40)).filter(Boolean))].slice(0, max) : []);

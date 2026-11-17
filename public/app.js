@@ -2,16 +2,17 @@
 const $ = (s) => document.querySelector(s);
 const LABEL = { none: '安定', rise: '上昇注意', slight: 'やや注意', caution: '注意', warning: '警戒' };
 const COLOR = new Proxy({}, { get: (_, k) => (getComputedStyle(document.documentElement).getPropertyValue(`--lv-${k}`).trim() || '#999') });
-const FACES = ['🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読み込めない場合の代用
-const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level - 1]));
-const FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
+const FACES = ['😊', '🙂', '😕', '😣', '😖', '😫']; // 0=痛みなし // faces.js(手描き風の顔)が読み込めない場合の代用
+const faceEl = (level, size) => (window.FACE ? window.FACE.el(level, size) : document.createTextNode(FACES[level]));
+const FACE_LABEL = ['痛みなし', '軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
 const DEFAULT_TAGS = ['頭痛', 'だるさ', 'めまい', '肩こり', '吐き気', '関節痛', '眠気', '睡眠の質が悪い'];
 const HOUR = 3600e3;
-const FONT = getComputedStyle(document.body).fontFamily; // グラフ内の文字も、ページと同じフォント(明朝体)にそろえる
+const FONT = getComputedStyle(document.body).fontFamily; // グラフ内の文字も、ページと同じフォントにそろえる
+const tok = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 const S = {
   uid: null, me: null, areas: [], areaName: {}, cur: null /* 現在地の都道府県 */, view: 'dash',
-  sel: null, pain: 0, tags: new Set(), meds: new Set(), editId: null, chart: null, fc: null, logs: [],
+  sel: null, pain: null, tags: new Set(), meds: new Set(), editId: null, chart: null, fc: null, logs: [],
 };
 
 // ---------- util ----------
@@ -79,6 +80,7 @@ function renderAll() {
 
 // ---------- タブ ----------
 // 画面はURLの # と連動する（/app/#log など）。ブラウザの戻る/進む、トップページや通知からの直リンクも同じ経路で切り替わる。
+const mountChart = (host) => { const cc = document.querySelector('.chart-card'); if (cc && host && cc.parentNode !== host) host.append(cc); };
 const VIEWS = ['dash', 'log', 'insight', 'settings'];
 function show(v, { push = true } = {}) {
   if (!VIEWS.includes(v)) v = 'dash';
@@ -87,6 +89,7 @@ function show(v, { push = true } = {}) {
   document.querySelectorAll('.view').forEach((e) => (e.hidden = e.id !== 'view-' + v));
   document.querySelectorAll('.tabs button').forEach((b) => { b.classList.toggle('on', b.dataset.v === v); if (b.dataset.v === v) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (push && location.hash !== '#' + v) { try { history.pushState(null, '', '#' + v); } catch { /* 無視 */ } }
+  mountChart(v === 'insight' ? $('#insightChartHost') : $('#chartSlot'));
   if (v === 'dash') loadDash();
   if (v === 'log') loadLogs();
   if (v === 'insight') loadInsight();
@@ -143,24 +146,33 @@ async function loadDash() {
       api('/week?area=' + code).catch(() => null), // 体調そらもよう(表示のみ)
     ]);
     if (code !== S.sel) return; // 切替競合
-    // 上から: 今日の体調そらもよう(主役) → 気圧アラート帯 → 気圧グラフ → いまの天気(2×2)
-    renderMoodHero(wk?.mood);
+    // 上から: 明日カード → (通知カード) → 今日ブロック(そらもよう+過ごし方) → 今日の記録 → 気圧グラフ → いまの天気 → 気象庁予報
+    S.fc = fc; S.stats = st;
+    renderSummary(fc); renderNotifyCard(); renderMoodHero(wk?.mood, st); renderTodayLog(logs);
     const fx = $('#fxCard');
     if (wk?.tilesHtml) { fx.innerHTML = wk.tilesHtml; fx.hidden = false; } else fx.hidden = true;
-    S.fc = fc; renderSummary(fc); drawChart(fc, logs); renderJma(fc.jma); renderStats(st);
+    drawChart(fc, logs); renderJma(fc.jma);
     $('#fetched').textContent = fc.fetchedAt ? `${fmtDT(fc.fetchedAt)} 更新` : '';
     $('#demoBadge').hidden = !fc.demo && !S.cfg.demo;
   } catch (e) { toast('気象データを取得できませんでした'); }
 }
 
-// 今日の体調そらもよう(主役カード): スコアの円・5段階中◯・ラベル・一文コメント
-function renderMoodHero(m) {
+// 今日ブロック(主役カード): スコア → 要因(チップ。タップで「いまの天気」の該当カードへ) → 対策(今日の過ごし方) → 地域の体調(一行)
+const FACTOR_NAME = { past: '過去の低下', pressure: '気圧', temp: '気温差', rain: '降水', hum: '湿度' };
+const FACTOR_TILE = { past: 'pressure', pressure: 'pressure', temp: 'temp', rain: 'rain', hum: 'hum' };
+const MIN_PAINED = 3; // 地域の体調は、不調を記録した人がこの人数以上のときだけ出す
+function renderMoodHero(m, st) {
   const el = $('#moodHero');
-  const cc = document.querySelector('.chart-card');
-  if (!m) { el.hidden = true; if (cc && cc.parentNode === el) el.after(cc); return; }
+  if (!m) { el.hidden = true; return; }
   el.hidden = false;
   el.className = `mhero lv-${m.level}`;
-  el.replaceChildren(
+  const chips = m.factors && m.factors.length
+    ? h('div', { class: 'mhero-why' }, h('span', { class: 'mhero-why-l' }, '重なっている要因（タップで詳細）'),
+      h('div', { class: 'fchips' }, m.factors.map((k) => h('button', { class: 'fchip', type: 'button', onclick: () => jumpToTile(FACTOR_TILE[k]) }, FACTOR_NAME[k] || k))))
+    : null;
+  const region = st && !st.hidden && st.pained >= MIN_PAINED
+    ? h('p', { class: 'mhero-region' }, `地域の体調：${S.areaName[S.sel]}で、直近${st.windowH}時間に ${st.percent}% の人が不調を記録しています`) : null;
+  el.replaceChildren(...[
     h('p', { class: 'mhero-en' }, '今日の体調そらもよう'),
     h('div', { class: 'mhero-main' },
       h('div', { class: 'mhero-score', role: 'img', 'aria-label': `スコア ${m.score} / 100` }, h('b', {}, String(m.score)), h('small', {}, '/ 100')),
@@ -168,35 +180,101 @@ function renderMoodHero(m) {
         h('span', { class: 'mhero-badge' }, `5段階中 ${m.level}`),
         h('p', { class: 'mhero-label' }, m.label))),
     h('p', { class: 'mhero-cmt' }, m.desc),
-    m.factors && m.factors.length ? h('p', { class: 'mhero-why' }, m.reason) : null,
-    cc,
-    m.care ? (() => { const d = h('div', { class: 'care-box' }); d.innerHTML = `<p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p><ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol><p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p><p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>`; return d; })() : null);
+    chips,
+    m.care ? (() => { const d = h('div', { class: 'care-box' }); d.innerHTML = `<p class="care-h"><b>今日の過ごし方</b><small>体調が崩れやすい日の備え</small></p><ol class="care-list">${m.care.tips.map((x) => `<li><b>${esc(x.t)}</b></li>`).join('')}</ol><p class="care-more"><a class="btn sm primary" href="/care">今日の対策をくわしく見る</a></p><p class="care-note">一般的なセルフケアの情報で、診断や治療の代わりではありません。</p>`; return d; })() : null,
+    region].filter(Boolean));
+}
+function jumpToTile(icon) {
+  const t = document.querySelector(`#fxCard .fx-${icon}`);
+  if (!t) return;
+  t.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  t.classList.add('fx-flash'); setTimeout(() => t.classList.remove('fx-flash'), 1800);
 }
 
+// 明日カード: 明日(あす0時〜24時)の気圧のレベル・ピーク時刻・最大低下率・現在の気圧
+const TOD = (hr) => (hr < 5 ? '未明' : hr < 10 ? '朝' : hr < 14 ? '昼ごろ' : hr < 18 ? '午後' : '夜');
+const TMRW_CMT = {
+  warning: (t) => `${t}から気圧が大きく下がります。早めに備えましょう`,
+  caution: (t) => `${t}にかけて気圧が下がります。無理のない予定で`,
+  slight: (t) => `${t}に気圧がやや下がります。念のため注意を`,
+  rise: (t) => `${t}に気圧が上がります。変化に注意`,
+  none: () => '気圧の大きな変動はなさそうです',
+};
 function renderSummary(fc) {
   const now = fc.now;
-  const next = fc.points.filter((p) => p.ts > now && p.ts <= now + 24 * HOUR && p.level !== 'none');
+  const d0 = new Date(now); d0.setHours(24, 0, 0, 0); const t0 = d0.getTime(), t1 = t0 + 24 * HOUR;
+  const day = fc.points.filter((p) => p.ts >= t0 && p.ts < t1 && p.level !== 'none');
   const sev = { warning: 4, caution: 3, slight: 2, rise: 1 };
-  const worst = next.sort((a, b) => sev[b.level] - sev[a.level] || a.rate - b.rate)[0];
+  const worst = day.sort((a, b) => sev[b.level] - sev[a.level] || a.rate - b.rate)[0];
   const lv = worst?.level || 'none';
   const el = $('#summary'); el.className = `card summary astrip lv-${lv}`;
   const last = [...fc.points].reverse().find((p) => p.ts <= now) || fc.points[0];
-  const ARROW = {
-    up: '<path d="M12 19V6M12 6l-5 5M12 6l5 5"/>',
-    down: '<path d="M12 5v13M12 18l-5-5M12 18l5-5"/>',
-    ok: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
-  };
-  const kind = lv === 'rise' ? 'up' : lv === 'none' ? 'ok' : 'down';
-  const ico = h('span', { class: 'astrip-ico', 'aria-hidden': 'true' });
-  ico.innerHTML = `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">${ARROW[kind]}</svg>`;
+  const ico = h('span', { class: 'astrip-ico', 'aria-hidden': 'true' }); ico.append(window.FACE ? window.FACE.level(lv, 30) : '');
+  const md = `${new Date(t0).getMonth() + 1}/${new Date(t0).getDate()}`;
   el.replaceChildren(
     ico,
     h('div', { class: 'astrip-txt' },
-      h('div', { class: 'astrip-h' }, h('span', { class: 'astrip-s' }, '今後24時間'), h('b', {}, worst ? `気圧は${LABEL[worst.level]}` : '気圧は安定')),
+      h('div', { class: 'astrip-h' }, h('span', { class: 'astrip-s' }, `明日 ${md}`), h('b', {}, worst ? `気圧は${LABEL[worst.level]}` : '気圧は安定')),
+      h('div', { class: 'astrip-c' }, TMRW_CMT[lv](worst ? TOD(new Date(worst.ts).getHours()) : '')),
       h('div', { class: 'astrip-d' },
-        worst ? [`${fmtDT(worst.ts)}ごろ `, h('b', { class: 'astrip-r' }, `${worst.rate > 0 ? '+' : ''}${worst.rate.toFixed(1)} hPa/h`)] : '大きな変動は見込まれていません',
-        last?.pressure != null ? `・現在 約${Math.round(last.pressure)} hPa` : '')),
+        worst ? [`ピーク ${fmtDT(worst.ts)}ごろ`, ' ・ 最大低下 ', h('b', { class: 'astrip-r' }, `${worst.rate > 0 ? '+' : ''}${worst.rate.toFixed(1)} hPa/h`)] : '',
+        last?.pressure != null ? `${worst ? ' ・ ' : ''}現在 約${Math.round(last.pressure)} hPa` : '')),
   );
+}
+
+// 通知カード(未設定の端末だけ。明日カードの直下)。許可ダイアログの前に、届く内容を1画面で説明する
+function renderNotifyCard() {
+  const el = $('#notifyCard');
+  const on = S.me.notify && S.me.hasPush;
+  if (on || !S.cfg.firebase || !S.cfg.vapidKey) { el.hidden = true; return; } // 設定済み、またはサーバー側の通知設定が未完了のときは出さない
+  el.hidden = false;
+  el.replaceChildren(
+    h('p', { class: 'ncard-h' }, '明日が注意以上の日は、前の晩20時にお知らせします'),
+    h('div', { class: 'ncard-sample', 'aria-hidden': 'true' }, h('b', {}, 'ウェルミー'), h('span', {}, '明日は気圧が大きく下がる見込みです（警戒）。早めの備えを'), h('small', {}, '20:00')),
+    h('div', { class: 'ncard-act' },
+      h('button', { class: 'btn primary', type: 'button', onclick: () => showPushIntro(el) }, '受け取る'),
+      h('a', { class: 'link', href: '#settings' }, '通知の設定')));
+}
+function showPushIntro(el) {
+  el.replaceChildren(
+    h('p', { class: 'ncard-h' }, '通知の許可について'),
+    h('ul', { class: 'ncard-ul' }, h('li', {}, '次に表示されるブラウザの画面で「許可」を選ぶと、通知が届くようになります。'),
+      h('li', {}, '届くのは「明日が注意以上の日」の前の晩だけ。毎日は鳴りません。'), h('li', {}, '時刻やレベルは、設定タブでいつでも変えられます。')),
+    h('div', { class: 'ncard-act' },
+      h('button', { class: 'btn primary', type: 'button', onclick: async () => { try { await enablePush(); toast('通知をオンにしました'); } catch (err) { toast(err.message); } renderSettings(); renderNotifyCard(); } }, '許可画面へ進む'),
+      h('button', { class: 'link', type: 'button', onclick: renderNotifyCard }, 'やめる')));
+}
+
+// 今日の記録ミニ: 未記録→顔をタップして、その場で記録 / 記録済み→サマリーと編集リンク
+const isToday = (ts) => new Date(ts).toDateString() === new Date().toDateString();
+function renderTodayLog(logs) {
+  const el = $('#todayLog'); const today = (logs || []).filter((l) => isToday(l.ts));
+  if (!today.length) {
+    el.replaceChildren(
+      h('div', { class: 'card-h' }, h('b', {}, '今日の体調を記録'), h('a', { class: 'link', href: '#log' }, 'くわしく記録 ›')),
+      h('p', { class: 'muted' }, 'いまの体調に近い顔をタップするだけで記録できます'),
+      painButtons((i) => quickLog(i)));
+    return;
+  }
+  const worst = today.reduce((a, l) => (l.pain > a.pain ? l : a), today[0]);
+  const tags = [...new Set(today.flatMap((l) => l.tags))];
+  el.replaceChildren(
+    h('div', { class: 'card-h' }, h('b', {}, '今日の記録'), h('a', { class: 'link', href: '#log' }, '記録を追加・編集 ›')),
+    h('div', { class: 'tlog-sum' }, faceEl(worst.pain, 40),
+      h('div', {}, h('b', {}, `${FACE_LABEL[worst.pain]}（${today.length}件）`),
+        h('div', { class: 'muted' }, `${fmtDT(worst.ts).split(' ')[1]} に記録${tags.length ? '・' + tags.slice(0, 4).join('/') : ''}`))));
+}
+async function quickLog(pain) {
+  try { await saveLog({ ts: Date.now(), pain, tags: [], meds: [], note: '' }); toast('記録しました'); loadDash(); } catch { toast('保存できませんでした'); }
+}
+// 記録の保存(記録タブのフォームと、今日の記録ミニで共通)
+async function saveLog(body, editId) {
+  return editId ? api('/logs/' + editId, { method: 'PUT', body }) : api('/logs', { method: 'POST', body });
+}
+function painButtons(onPick, selected) {
+  const box = h('div', { class: 'pain', role: 'radiogroup', 'aria-label': '痛みの度合い' });
+  FACE_LABEL.forEach((lb, i) => box.append(h('button', { type: 'button', class: selected === i ? 'on' : '', role: 'radio', 'aria-checked': selected === i, 'aria-label': lb, onclick: () => onPick(i) }, faceEl(i, 36), h('small', {}, lb))));
+  return box;
 }
 
 // 背景色の帯・天気アイコン・気温・痛みアイコンを描画するプラグイン
@@ -229,11 +307,11 @@ const overlay = {
     // 現在時刻: 青い縦線と「今」のラベル、現在の気圧の点
     const nx = x.getPixelForValue(chart.$now), ny = (() => { const v = pressureAt(pts, chart.$now); return v == null ? null : y.getPixelForValue(v); })();
     ctx.save();
-    ctx.fillStyle = 'rgba(43, 127, 212, .06)'; ctx.fillRect(nx, a.top, a.right - nx, a.bottom - a.top);   // これから(予報)の側をうっすら色づけ
-    ctx.strokeStyle = '#2B7FD4'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(nx, a.top - 14); ctx.lineTo(nx, a.bottom); ctx.stroke(); ctx.setLineDash([]);
-    ctx.fillStyle = '#2B7FD4'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(nx - 13, a.top - 32, 26, 17, 8) : ctx.rect(nx - 13, a.top - 32, 26, 17); ctx.fill();
+    ctx.fillStyle = tok('--color-primary') + '10'; ctx.fillRect(nx, a.top, a.right - nx, a.bottom - a.top);   // これから(予報)の側をうっすら色づけ
+    ctx.strokeStyle = tok('--color-primary'); ctx.lineWidth = 1.4; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(nx, a.top - 14); ctx.lineTo(nx, a.bottom); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = tok('--color-primary'); ctx.beginPath(); ctx.roundRect ? ctx.roundRect(nx - 13, a.top - 32, 26, 17, 8) : ctx.rect(nx - 13, a.top - 32, 26, 17); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = `700 11px ${FONT}`; ctx.textAlign = 'center'; ctx.fillText('今', nx, a.top - 19.5);
-    if (ny != null) { ctx.fillStyle = 'rgba(43, 127, 212, .16)'; ctx.beginPath(); ctx.arc(nx, ny, 9, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#2B7FD4'; ctx.beginPath(); ctx.arc(nx, ny, 4.5, 0, Math.PI * 2); ctx.fill(); }
+    if (ny != null) { ctx.fillStyle = tok('--color-primary') + '2a'; ctx.beginPath(); ctx.arc(nx, ny, 9, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = tok('--color-primary'); ctx.beginPath(); ctx.arc(nx, ny, 4.5, 0, Math.PI * 2); ctx.fill(); }
     ctx.restore();
     // 過去の痛み記録アイコン
     ctx.font = `22px ${FONT}`;
@@ -241,7 +319,7 @@ const overlay = {
       const py = pressureAt(pts, l.ts);
       if (py == null) return;
       if (window.FACE) window.FACE.draw(ctx, l.pain, x.getPixelForValue(l.ts), y.getPixelForValue(py), 28);
-      else ctx.fillText(FACES[l.pain - 1], x.getPixelForValue(l.ts), y.getPixelForValue(py) + 8);
+      else ctx.fillText(FACES[l.pain], x.getPixelForValue(l.ts), y.getPixelForValue(py) + 8);
     });
     ctx.restore();
   },
@@ -267,10 +345,10 @@ function drawChart(fc, logs) {
   const min = Math.floor(Math.min(...pts.map((p) => p.pressure)) - 3), max = Math.ceil(Math.max(...pts.map((p) => p.pressure)) + 9);
   const data = {
     datasets: [
-      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: '#1F3A57', borderWidth: 2.5, pointRadius: (c) => (c.raw && c.raw.x > fc.now ? 0 : 2), pointBackgroundColor: '#1F3A57', tension: 0.3,
+      { label: '気圧予報/推移', data: pts.map((p) => ({ x: p.ts, y: p.pressure })), borderColor: tok('--color-ink'), borderWidth: 2.5, pointRadius: (c) => (c.raw && c.raw.x > fc.now ? 0 : 2), pointBackgroundColor: tok('--color-ink'), tension: 0.3,
         // 実況(いままで)=実線(ネイビー) / 予報(これから)=点線(青)
-        segment: { borderColor: (c) => (c.p0.parsed.x >= fc.now ? '#2B7FD4' : '#1F3A57'), borderDash: (c) => (c.p0.parsed.x >= fc.now ? [6, 5] : undefined) } },
-      { label: 'アメダス実況', data: fc.observed.map((o) => ({ x: o.ts, y: o.pressure })), borderColor: '#1F3A57', borderWidth: 2, pointRadius: 0, hidden: !fc.observed.length }, // 実況は実線
+        segment: { borderColor: (c) => (c.p0.parsed.x >= fc.now ? tok('--color-primary') : tok('--color-ink')), borderDash: (c) => (c.p0.parsed.x >= fc.now ? [6, 5] : undefined) } },
+      { label: 'アメダス実況', data: fc.observed.map((o) => ({ x: o.ts, y: o.pressure })), borderColor: tok('--color-ink'), borderWidth: 2, pointRadius: 0, hidden: !fc.observed.length }, // 実況は実線
     ],
   };
   const opts = {
@@ -308,27 +386,14 @@ function renderJma(j) {
   el.hidden = false;
   const dow = '日月火水木金土';
   el.replaceChildren(
-    h('b', {}, '気象庁の天気予報'),
-    ...j.days.slice(0, 3).map((d) => { const [y, m, dd] = d.date.split('-').map(Number); const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay(); return h('div', { class: 'jma-day' }, h('b', {}, `${m}/${dd}(${dow[wd]})`), h('span', {}, jmaText(d.weather)), h('span', { class: 'pop' }, d.pop != null ? `☂${d.pop}%` : '')); }),
-    h('div', { class: 'muted' }, `${j.office || '気象庁'} 発表（降水確率は日ごとの最大値）`),
-  );
-}
-
-function renderStats(st) {
-  const el = $('#stats'); const name = S.areaName[S.sel];
-  el.replaceChildren(
-    h('b', {}, '地域の体調（匿名集計）'),
-    st.hidden
-      ? h('p', { class: 'muted' }, `${name}は集計に必要な利用者数に達していないため表示できません（プライバシー保護のため）。`)
-      : h('p', { class: 'big' }, `現在、${name}の ${st.percent}% が不調を記録しています`),
-    h('div', { class: 'muted' }, `過去${st.windowH}時間以内に「痛み」を記録した、アクティブユーザーの割合`),
-  );
+    h('div', { class: 'jma-row' }, ...j.days.slice(0, 3).map((d) => { const [y, m, dd] = d.date.split('-').map(Number); const wd = new Date(Date.UTC(y, m - 1, dd)).getUTCDay();
+      return h('div', { class: 'jma-cell' }, h('b', {}, `${m}/${dd}(${dow[wd]})`), h('span', {}, jmaText(d.weather)), h('span', { class: 'pop' }, d.pop != null ? `☂${d.pop}%` : '')); })),
+    h('div', { class: 'muted' }, `気象庁予報（${j.office || '気象庁'}・降水確率は日ごとの最大値）`));
 }
 
 // ---------- 記録 ----------
 function renderPain() {
-  const box = $('#pain'); box.replaceChildren();
-  FACES.forEach((f, i) => box.append(h('button', { class: S.pain === i + 1 ? 'on' : '', role: 'radio', 'aria-checked': S.pain === i + 1, 'aria-label': FACE_LABEL[i], onclick: () => { S.pain = i + 1; renderPain(); } }, faceEl(i + 1, 40), h('small', {}, FACE_LABEL[i]))));
+  const box = $('#pain'); box.replaceChildren(...painButtons((i) => { S.pain = i; renderPain(); }, S.pain).children);
 }
 function renderTags() {
   const box = $('#tags'); box.replaceChildren();
@@ -371,19 +436,18 @@ $('#medQ').addEventListener('input', (e) => {
 });
 
 $('#save').addEventListener('click', async () => {
-  if (!S.pain) return toast('痛みの度合いを選んでください');
+  if (S.pain == null) return toast('痛みの度合いを選んでください');
   const ts = new Date($('#when').value).getTime();
   if (!Number.isFinite(ts)) return toast('日時を確認してください');
   const body = { ts, pain: S.pain, tags: [...S.tags], meds: [...S.meds], note: $('#note').value };
   try {
-    if (S.editId) await api('/logs/' + S.editId, { method: 'PUT', body });
-    else await api('/logs', { method: 'POST', body });
+    await saveLog(body, S.editId);
     toast('記録しました'); resetForm(); loadLogs();
   } catch (e) { toast(e.message === 'bad_ts' ? '日時が範囲外です' : '保存できませんでした'); }
 });
 $('#cancelEdit').addEventListener('click', resetForm);
 function resetForm() {
-  S.editId = null; S.pain = 0; S.tags.clear(); S.meds.clear();
+  S.editId = null; S.pain = null; S.tags.clear(); S.meds.clear();
   $('#note').value = ''; $('#when').value = toLocalInput(Date.now());
   $('#formTitle').textContent = '体調を記録'; $('#save').textContent = '記録する'; $('#cancelEdit').hidden = true;
   renderPain(); renderTags(); renderMyMeds(); renderSelMeds();
@@ -434,16 +498,27 @@ async function loadCal() {
   for (let d = 1; d <= days; d++) {
     const date = new Date(from.getFullYear(), from.getMonth(), d), ls = by.get(dayKey(date));
     const worst = ls ? Math.max(...ls.map((l) => l.pain)) : 0;
-    const cell = h('button', { class: 'cal-d' + (ls ? ' has' : '') + (S.calDay === d ? ' sel' : ''), disabled: !ls, 'aria-label': `${d}日` + (ls ? ` 最大の痛み ${worst}` : ' 記録なし'),
-      onclick: () => { S.calDay = d; loadCal(); } }, h('span', {}, String(d)), worst ? faceEl(worst, 22) : null);
+    const future = date > new Date();
+    const cell = h('button', { class: 'cal-d' + (ls ? ' has' : '') + (S.calDay === d ? ' sel' : ''), disabled: future, 'aria-label': `${d}日` + (ls ? ` 最大の痛み ${worst}` : future ? '' : ' 記録なし（タップで追加）'),
+      onclick: () => { if (ls) { S.calDay = d; loadCal(); } else openLogForm(date); } }, h('span', {}, String(d)), ls ? faceEl(worst, 22) : null);
     grid.append(cell);
   }
   const dl = $('#calDay'); dl.replaceChildren();
   const sel = S.calDay && by.get(dayKey(new Date(from.getFullYear(), from.getMonth(), S.calDay)));
-  if (sel) { dl.append(h('li', { class: 'cal-h' }, `${from.getMonth() + 1}月${S.calDay}日の記録`)); sel.forEach((l) => dl.append(logRow(l))); }
-  else dl.append(h('li', {}, h('span', { class: 'muted' }, ls0(by) ? '日付をタップすると、その日の記録を表示します' : 'この月の記録はありません')));
+  if (sel) { dl.append(h('li', { class: 'cal-h' }, `${from.getMonth() + 1}月${S.calDay}日の記録`)); sel.forEach((l) => dl.append(logRow(l)));
+    dl.append(h('li', {}, h('button', { class: 'link', onclick: () => openLogForm(new Date(from.getFullYear(), from.getMonth(), S.calDay)) }, 'この日に記録を追加'))); }
+  else dl.append(h('li', {}, h('span', { class: 'muted' }, ls0(by) ? '日付をタップすると、その日の記録を表示（記録のない日は追加）します' : 'この月の記録はありません')));
 }
 const ls0 = (by) => by.size > 0;
+// 記録フォームを開く(過去の日付の追加用)。「くわしく記録する」を展開し、日時欄にフォーカス
+function openLogForm(date) {
+  resetForm();
+  if (date) { const d = new Date(date); if (!isToday(d)) d.setHours(12, 0, 0, 0); else d.setTime(Date.now()); $('#when').value = toLocalInput(d.getTime()); }
+  const more = $('#logMore'); if (more) more.open = true;
+  $('#formTitle').textContent = '過去の記録を追加';
+  $('#when').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('#when').focus({ preventScroll: true });
+}
+$('#addPast').addEventListener('click', () => openLogForm(null));
 function editLog(l) {
   S.editId = l.id; S.pain = l.pain; S.tags = new Set(l.tags); S.meds = new Set(l.meds);
   $('#note').value = l.note; $('#when').value = toLocalInput(l.ts);
@@ -465,6 +540,15 @@ async function loadInsight() {
       $('#insightProgText').textContent = `傾向が見えるまで あと${left}件分（気圧と照合できた「痛み3以上」の記録 ${r.analyzed || 0} / ${r.needed}件）`;
       $('#insightProgFill').style.width = `${Math.round(((r.analyzed || 0) / r.needed) * 100)}%`;
     }
+  }
+  // 重ね合わせプレビュー: 記録が1件以上あれば、気圧グラフ(気圧タブと同じ部品)に自分の記録を打点
+  const ic = $('#insightChartCard');
+  ic.hidden = !r.totalLogs;
+  if (r.totalLogs) {
+    try {
+      const [fc, logs] = await Promise.all([api('/forecast?area=' + S.sel), api(`/logs?from=${Date.now() - 7 * 24 * HOUR}`)]);
+      if (S.view === 'insight') drawChart(fc, logs);
+    } catch { /* グラフが出せなくても傾向は表示する */ }
   }
   $('#insightText').textContent = r.text;
   const d = r.detail;
@@ -527,10 +611,21 @@ $('#notifyHour')?.addEventListener('change', async (e) => {
   try { S.me = await api('/me', { method: 'PUT', body: { notify_hour: v } }); toast(`通知時刻を${v}時に変更しました`); } catch { toast('変更できませんでした'); }
   renderSettings();
 });
+$('#exportCsv').addEventListener('click', async () => {
+  try {
+    const logs = await api('/logs?from=1&to=' + (Date.now() + HOUR));
+    const q = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const rows = [['id', 'ts', 'datetime', 'pain', 'tags', 'meds', 'note', 'area'], ...[...logs].reverse().map((l) => [l.id, l.ts, new Date(l.ts).toISOString(), l.pain, l.tags.join('|'), l.meds.join('|'), l.note, l.area])];
+    const blob = new Blob(['\ufeff' + rows.map((r) => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: `welmy-logs-${new Date().toISOString().slice(0, 10)}.csv` });
+    document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(`${logs.length}件の記録をダウンロードしました`);
+  } catch { toast('ダウンロードできませんでした'); }
+});
 $('#wipe').addEventListener('click', async () => {
   if (!confirm('記録・設定をすべて削除します。元に戻せません。よろしいですか？')) return;
   await api('/me', { method: 'DELETE' }).catch(() => {});
-  store.del('uid'); S.tags.clear(); S.meds.clear(); S.pain = 0; await boot(true); toast('削除しました');
+  store.del('uid'); S.tags.clear(); S.meds.clear(); S.pain = null; await boot(true); toast('削除しました');
 });
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});

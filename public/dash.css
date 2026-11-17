@@ -166,3 +166,37 @@ body[data-page="app"] .mhero > .chart-card { margin: 14px 0 0; background: rgba(
   body[data-page="app"] .mhero-score b { color: var(--color-ink); }
   body[data-page="app"] .card { background: var(--color-card); }
 }
+
+/* ---- /app 再編(明日カード・通知カード・今日ブロック・今日の記録・気象庁ストリップ) ---- */
+body[data-page="app"] .astrip-ico svg { stroke: #fff !important; } body[data-page="app"] .astrip-ico svg path { fill: none !important; }
+body[data-page="app"] .astrip-s { font-weight: 700; }
+body[data-page="app"] .astrip-c { margin-top: 4px; font-size: 13px; line-height: 1.55; color: var(--color-ink); }
+body[data-page="app"] .ncard { margin: 10px 0 0; padding: 14px 16px; border-radius: 16px; }
+body[data-page="app"] .ncard-h { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: var(--color-ink); }
+body[data-page="app"] .ncard-sample { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; padding: 10px 12px; border-radius: 12px; background: var(--color-mist); border: 1px solid var(--color-border); font-size: 12px; }
+body[data-page="app"] .ncard-sample b { font-size: 12px; } body[data-page="app"] .ncard-sample span { grid-column: 1; color: var(--color-ink); } body[data-page="app"] .ncard-sample small { grid-row: 1; grid-column: 2; color: var(--color-ink-muted); }
+body[data-page="app"] .ncard-act { display: flex; align-items: center; gap: 14px; margin-top: 10px; }
+body[data-page="app"] .ncard-ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
+body[data-page="app"] .mhero-why { margin: 12px 0 0; }
+body[data-page="app"] .mhero-why-l { display: block; font-size: 12px; color: var(--color-ink-muted); }
+body[data-page="app"] .fchips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+body[data-page="app"] .fchip { border: 1px solid var(--color-border); background: var(--color-card); color: var(--color-ink); border-radius: 999px; padding: 6px 12px; min-height: 32px; font: 600 13px var(--font-ui); cursor: pointer; }
+body[data-page="app"] .fchip:hover { border-color: var(--color-primary); color: var(--color-primary-deep); }
+body[data-page="app"] .mhero-region { margin: 12px 0 0; font-size: 12px; color: var(--color-ink-muted); }
+body[data-page="app"] .fx-flash { outline: 3px solid var(--color-primary); outline-offset: 2px; transition: outline-color .3s; }
+body[data-page="app"] .tlog { margin: 12px 0 0; padding: 14px 16px; border-radius: 16px; }
+body[data-page="app"] .tlog .card-h { margin-bottom: 4px; }
+body[data-page="app"] .tlog .pain { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; }
+body[data-page="app"] .tlog .pain button, #pain.pain button { padding: 8px 0 6px; font-size: 10px; min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+body[data-page="app"] .tlog .pain button small, #pain.pain button small { font-size: 10px; line-height: 1.2; }
+#pain.pain { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+body[data-page="app"] .tlog-sum { display: flex; align-items: center; gap: 12px; }
+body[data-page="app"] #chartSlot .chart-card, body[data-page="app"] #insightChartHost .chart-card { margin: 12px 0 0; }
+body[data-page="app"] #insightChartHost .chart-card { margin: 0; border: 0; padding: 0; box-shadow: none; background: transparent; }
+body[data-page="app"] .jma-strip { margin: 8px 0 0; padding: 10px 12px; border-radius: 14px; background: var(--color-card); border: 1px solid var(--color-border); }
+body[data-page="app"] .jma-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+body[data-page="app"] .jma-cell { display: flex; flex-direction: column; gap: 2px; font-size: 12px; text-align: center; } body[data-page="app"] .jma-cell b { font-size: 12px; }
+body[data-page="app"] .jma-strip .muted { margin-top: 6px; font-size: 11px; }
+body[data-page="app"] #addPast { margin-left: auto; margin-right: 8px; }
+body[data-page="app"] .astrip-r { white-space: nowrap; }
+body[data-page="app"] .mhero .care-list li { padding-bottom: 0; }

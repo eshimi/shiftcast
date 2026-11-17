@@ -27,5 +27,5 @@ export async function runStatsBatch(env, now = Date.now()) {
 export async function getAreaStats(env, areaCode) {
   const r = await get(env.DB, 'SELECT * FROM area_stats WHERE area_code=?', areaCode);
   if (!r || r.active < minK(env)) return { hidden: true, windowH: WINDOW_H };
-  return { hidden: false, windowH: r.window_h, percent: Math.round((r.pained / r.active) * 100), updatedAt: r.updated_at };
+  return { hidden: false, windowH: r.window_h, percent: Math.round((r.pained / r.active) * 100), pained: r.pained, updatedAt: r.updated_at };
 }

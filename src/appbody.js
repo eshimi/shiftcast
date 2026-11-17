@@ -5,7 +5,11 @@ export const APP_BODY = `  <!-- ダッシュボード -->
       <div id="areaChips" class="chips seg-toggle" role="tablist" aria-label="エリア"></div>
       <span id="fetched" class="upd"></span>
     </div>
+    <div id="summary" class="card summary astrip"></div>
+    <div id="notifyCard" class="card ncard" hidden></div>
     <section id="moodHero" class="mhero" aria-label="今日の体調そらもよう" hidden></section>
+    <section id="todayLog" class="card tlog" aria-label="今日の記録"></section>
+    <div id="chartSlot">
     <section class="card chart-card" aria-label="気圧の推移・予報">
       <div class="card-h"><h2 class="sec-t">気圧の推移・予報</h2><span class="unit">hPa</span></div>
       <div class="chart-box"><div id="yAxis" class="yaxis"></div><div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div></div>
@@ -14,11 +18,10 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <span class="muted">点線＝予報</span>
       </div>
     </section>
-    <div id="summary" class="card summary astrip"></div>
+    </div>
     <h2 class="sec-h">いまの天気</h2>
     <div id="fxCard" class="fx-wrap-app" hidden></div>
-    <div id="jma" class="card" hidden></div>
-    <div id="stats" class="card"></div>
+    <div id="jma" class="jma-strip" hidden></div>
     <p class="disclaimer">本データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。<a href="/terms.html">利用規約</a></p>
   </section>
 
@@ -34,7 +37,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <label class="lbl">症状</label>
         <div id="tags" class="chips multiline"></div>
         <div class="row"><input id="newTag" placeholder="独自タグを追加" maxlength="20"><button id="addTag" class="btn sm">追加</button></div>
-        <label class="lbl">服薬</label>
+        <label class="lbl">服薬（マイ薬リストはタップで追加）</label>
         <div id="myMeds" class="chips multiline"></div>
         <div class="row"><input id="medQ" placeholder="医薬品名で検索" autocomplete="off"></div>
         <div id="medSug" class="sug"></div>
@@ -47,7 +50,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
       <button id="save" class="btn primary block">記録する</button>
     </div>
     <div class="card">
-      <div class="card-h"><b>記録</b>
+      <div class="card-h"><b>記録</b><button id="addPast" class="btn sm" type="button">過去の記録を追加</button>
         <div id="logMode" class="seg" role="tablist"><button data-m="list" class="on">リスト</button><button data-m="cal">カレンダー</button></div></div>
       <ul id="logList" class="list"></ul>
       <div id="calBox" hidden>
@@ -64,6 +67,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
     <div class="card"><div class="card-h"><b>あなたの傾向</b></div>
       <div id="insightProg" class="iprog" hidden><p id="insightProgText"></p><div class="iprog-bar" aria-hidden="true"><i id="insightProgFill"></i></div></div>
       <p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
+    <div id="insightChartCard" class="card" hidden><div class="card-h"><b>気圧と、あなたの記録</b></div><p class="muted">気圧グラフに、記録した体調の顔を重ねています。記録が5件ほど集まると、上の「傾向」が出ます。</p><div id="insightChartHost"></div></div>
     <p class="disclaimer">簡易的な統計であり、医学的な診断ではありません。気になる症状は医療機関にご相談ください。</p>
   </section>
 
@@ -71,14 +75,8 @@ export const APP_BODY = `  <!-- ダッシュボード -->
   <section id="view-settings" class="view" hidden>
     <h1 class="view-t">設定</h1>
     <div class="card">
-      <div class="card-h"><b>エリア</b></div>
-      <p class="muted">1つ目が主エリアです（通知・地域統計に使用）。位置情報は都道府県単位に丸め、GPS座標は保存しません。</p>
-      <ul id="areaList" class="list"></ul>
-      <div class="row"><select id="areaSel"></select><button id="addArea" class="btn sm">追加</button></div>
-    </div>
-    <div class="card">
       <div class="card-h"><b>プッシュ通知</b></div>
-      <p class="muted">毎晩、翌日に選んだレベル以上の気圧低下が予測されるときだけ通知します。</p>
+      <p class="muted">通知の対象は、下の「エリア」の主エリアです。毎晩、翌日に選んだレベル以上の気圧低下が予測されるときだけ通知します。</p>
       <label class="switch"><input type="checkbox" id="notifyChk"> 気圧低下アラートを受け取る</label>
       <div id="pushState" class="muted"></div>
       <label class="lbl" for="notifyMin">通知するレベル</label>
@@ -88,6 +86,12 @@ export const APP_BODY = `  <!-- ダッシュボード -->
       </select>
       <label class="lbl" for="notifyHour">通知する時刻（前の晩）</label>
       <select id="notifyHour">${[17, 18, 19, 20, 21, 22, 23].map((hh) => `<option value="${hh}">${hh}:00ごろ</option>`).join('')}</select>
+    </div>
+    <div class="card">
+      <div class="card-h"><b>エリア</b></div>
+      <p class="muted">ここで選ぶ1つ目が「通知の対象になる主エリア」です（地域統計にも使います）。気圧タブ上部のエリア選択は、画面に出す「表示エリア」です。位置情報は都道府県単位に丸め、GPS座標は保存しません。</p>
+      <ul id="areaList" class="list"></ul>
+      <div class="row"><select id="areaSel"></select><button id="addArea" class="btn sm">追加</button></div>
     </div>
     <div class="card">
       <div class="card-h"><b>マイ薬リスト</b></div>
@@ -102,6 +106,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <li>地域の「不調割合」は都道府県単位の匿名集計で、人数が少ない地域は表示しません。</li>
       </ul>
       <p><a href="/terms.html">利用規約・プライバシーの詳細</a></p>
+      <button id="exportCsv" class="btn block" type="button">記録をCSVでダウンロード</button>
       <button id="wipe" class="btn danger block">自分のデータをすべて削除</button>
     </div>
   </section>`;

@@ -7,10 +7,12 @@
 (function () {
   var OUT = 'M32 5C46 3.5 59 15.5 59 31C60.5 47 47.5 59.5 31 59C15.5 60 4 47.5 5 32C4.5 16.5 17 6 32 5Z';
   var OUT2 = 'M33 7.5C47 6.5 57 18 57 33C56 46.5 45 57 30 56.5C16 57 7 45 7.5 31C8.5 18 19 7.5 33 7.5Z';
-  var FILL = ['rgba(110,190,255,.22)', 'rgba(150,205,255,.26)', 'rgba(255,214,110,.34)', 'rgba(255,165,95,.34)', 'rgba(255,105,105,.34)'];
-  var LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
+  var FILL = ['rgba(110,200,165,.30)', 'rgba(110,190,255,.22)', 'rgba(150,205,255,.26)', 'rgba(255,214,110,.34)', 'rgba(255,165,95,.34)', 'rgba(255,105,105,.34)'];
+  var LABEL = ['痛みなし', '軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
   // 目・口・汗・涙。[パス, 線の太さの倍率]
   var FACES = [
+    // 0 痛みなし: 目を細めて、おだやかに笑う
+    [['M18 29q5-5.5 10 0', 1], ['M36 29q5-5.5 10 0', 1], ['M18.5 38Q32 56 45.5 38Z', 1]],
     // 1 軽い: にこっと笑う
     [['M22 24v6.5', 1], ['M42 24v6.5', 1], ['M19.5 38.5Q32 53 44.5 38.5', 1]],
     // 2 ややいたい: 眉が少し下がり、口は平ら
@@ -40,7 +42,7 @@
   var DEFAULT_STROKE = '#1d5fa6';
 
   function el(level, size) {
-    var i = Math.min(5, Math.max(1, level | 0)) - 1;
+    var i = Math.min(5, Math.max(0, level | 0));
     var svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', '0 0 64 64'); svg.setAttribute('width', size || 36); svg.setAttribute('height', size || 36);
     svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', LABEL[i]); svg.setAttribute('class', 'face');
@@ -74,7 +76,7 @@
   var cache = {};
   var path = function (d) { return cache[d] || (cache[d] = new Path2D(d)); };
   function draw(ctx, level, cx, cy, size) {
-    var i = Math.min(5, Math.max(1, level | 0)) - 1;
+    var i = Math.min(5, Math.max(0, level | 0));
     var stroke = (getComputedStyle(document.documentElement).getPropertyValue('--face-stroke') || '').trim() || DEFAULT_STROKE;
     ctx.save();
     ctx.translate(cx - size / 2, cy - size / 2); ctx.scale(size / 64, size / 64);
