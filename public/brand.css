@@ -279,3 +279,11 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .care-page .crumb { margin: 10px 0 4px; font-size: 12px; color: var(--ap-muted, #5B6B7C); } .care-page .crumb a { text-decoration: underline; text-underline-offset: 3px; }
 .care-back { margin: 0 0 10px; font-size: 14px; } .care-back a { text-decoration: none; color: var(--ap-blue, #2B7FD4); font-weight: 700; }
 .care-bottom { margin: 18px 0 8px; }
+
+/* 47都道府県のタイル地図 */
+.tmap { display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 3px; margin: 14px 0 8px; }
+.tm { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; text-align: center; border-radius: 6px; font-size: clamp(8px, 2.5vw, 12px); font-weight: 700; line-height: 1.1; text-decoration: none; color: #fff; background: #B8C4D0; min-width: 0; overflow: hidden; }
+.tm:hover, .tm:focus-visible { outline: 2px solid var(--ap-navy, #1F3A57); outline-offset: 1px; }
+.tm-5 { background: #2FA785; } .tm-4 { background: #3B82D6; } .tm-3 { background: #E0A32E; color: #3A2600; } .tm-2 { background: #E07B39; color: #3A1600; } .tm-1 { background: #DC5245; } .tm-0 { background: #B8C4D0; color: #26323F; }
+.tmap-legend { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; } .tmap-legend li { display: inline-flex; align-items: center; gap: 5px; } .tmap-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.tm { letter-spacing: -.04em; padding: 0 1px; } .tm[href$="/hokkaido"] { font-size: clamp(7px, 2.1vw, 10px); }

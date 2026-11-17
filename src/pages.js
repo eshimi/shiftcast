@@ -6,6 +6,7 @@ import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
 import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
+import { repCodeOf } from './today.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -504,6 +505,28 @@ ${APP_TABS}`;
 
 /* ---------- 今日の気圧まとめ(/today) ---------- */
 
+
+// 47都道府県のタイル地図(日本地図の形に、同じ大きさの四角を並べる)。[slug, 列, 行]
+const TILE_GRID = [
+  ['hokkaido', 12, 0], ['aomori', 11, 2], ['akita', 10, 3], ['iwate', 11, 3], ['yamagata', 10, 4], ['miyagi', 11, 4],
+  ['ishikawa', 7, 5], ['toyama', 8, 5], ['niigata', 9, 5], ['fukushima', 10, 5],
+  ['shimane', 2, 6], ['tottori', 3, 6], ['fukui', 6, 6], ['gifu', 7, 6], ['nagano', 8, 6], ['gunma', 9, 6], ['tochigi', 10, 6], ['ibaraki', 11, 6],
+  ['yamaguchi', 1, 7], ['hiroshima', 2, 7], ['okayama', 3, 7], ['hyogo', 4, 7], ['kyoto', 5, 7], ['shiga', 6, 7], ['aichi', 7, 7], ['yamanashi', 8, 7], ['saitama', 9, 7], ['tokyo', 10, 7], ['chiba', 11, 7],
+  ['saga', 0, 8], ['fukuoka', 1, 8], ['oita', 2, 8], ['ehime', 3, 8], ['kagawa', 4, 8], ['osaka', 5, 8], ['nara', 6, 8], ['mie', 7, 8], ['shizuoka', 8, 8], ['kanagawa', 9, 8],
+  ['nagasaki', 0, 9], ['kumamoto', 1, 9], ['miyazaki', 2, 9], ['kochi', 3, 9], ['tokushima', 4, 9], ['wakayama', 5, 9],
+  ['kagoshima', 1, 10], ['okinawa', 2, 12],
+];
+const SHORT = (n) => (n === '北海道' ? '北海道' : n.replace(/[都府県]$/, ''));
+function tileMapHtml(rows) {
+  const rep = Object.fromEntries(rows.map((r) => [r.code, r]));
+  return `<div class="tmap" role="list" aria-label="47都道府県の今日の体調そらもよう(地方の代表都市の見通し)">${TILE_GRID.map(([slug, x, y]) => {
+    const pref = PREFS.find((q) => q.slug === slug);
+    const r = rep[repCodeOf(pref.code)];
+    const lv = r && r.mood ? r.mood.level : 0;
+    return `<a role="listitem" class="tm tm-${lv}" href="/pressure/${slug}" style="grid-column:${x + 1};grid-row:${y + 1}" aria-label="${esc(pref.name)}（${esc(r && r.mood ? r.mood.label : '準備中')}）">${esc(SHORT(pref.name))}</a>`;
+  }).join('')}</div>`;
+}
+
 export function todayPage(sum) {
   const d = new Date(sum.now + 9 * 3600e3);
   const date = `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${'日月火水木金土'[d.getUTCDay()]}）`;
@@ -524,6 +547,11 @@ export function todayPage(sum) {
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>今日の気圧と天気痛の目安｜${esc(date)}</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('jogger', { k: 0.5 })}</div></div>
 <div class="wrap">
+<section class="sec"><h2 class="pg-h">全国の地図</h2>
+<p class="muted small">各県の色は、その県が属する地方の代表都市(北海道=札幌、東北=仙台、関東=東京、中部=名古屋、近畿=大阪、中国=広島、四国=松山、九州=福岡、沖縄=那覇)の、今日の体調そらもようです。県を押すと、その県の気圧予報が開きます。</p>
+${tileMapHtml(sum.rows)}
+<ul class="tmap-legend" aria-label="色の意味"><li><i class="tm-5"></i>気候が快調</li><li><i class="tm-4"></i>おおむね良好</li><li><i class="tm-3"></i>やや不安定</li><li><i class="tm-2"></i>影響しそう</li><li><i class="tm-1"></i>体調不良に注意</li></ul>
+</section>
 <section class="sec"><h2 class="pg-h">全国のようす</h2>
 ${lines.map((l) => `<p>${esc(l)}</p>`).join('\n')}
 <div class="tbl-wrap"><table class="tbl"><thead><tr><th>地方（代表都市）</th><th>現在の気圧</th><th>今後24時間</th><th>変化が大きい時間帯</th></tr></thead><tbody>
