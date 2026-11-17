@@ -249,7 +249,6 @@ export function topPage() {
 
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
-      <nav class="m-nav" aria-label="メインメニュー">${nav}</nav>
       <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（ウェルミー：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
         <img src="/logo-v-white.webp" alt="ウェルミー" width="241" height="190">
