@@ -230,7 +230,7 @@ export function topPage() {
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
-      <a class="side-logo" href="/" aria-label="ウェルミー トップへ"><img src="/logo-h-white.webp" alt="ウェルミー" width="199" height="70"><small class="logo-sub">Feel Better, Every Day.</small></a>
+      <a class="side-logo" href="/" aria-label="ウェルミー トップへ"><img src="/logo-h-white.webp" alt="ウェルミー" width="199" height="70"><small class="logo-sub">今日を知って、心地よく暮らす。</small></a>
       <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
