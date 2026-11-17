@@ -85,7 +85,7 @@ const navHtml = (page) => {
   const id = page === 'column' ? 'columns' : page;
   const cur = NAV_GROUPS.find((g) => g.items.some((i) => i[0] === id));
   const row1 = NAV_GROUPS.map((g) => `<a href="${g.items[0][2]}"${g === cur ? ' aria-current="true" class="on"' : ''}>${g.name}</a>`).join('');
-  const sub = cur && cur.items.length > 1 ? `\n  <nav class="wrap nav nav-sub" aria-label="${cur.name}のページ">${cur.items.map(([i, l, h]) => `<a href="${h}"${i === id ? ' aria-current="page"' : ''}>${l}</a>`).join('')}</nav>` : '';
+  const sub = cur && cur.items.length > 1 ? `\n  <div class="nav-sub-bg"><nav class="wrap nav nav-sub" aria-label="${cur.name}のページ">${cur.items.map(([i, l, h]) => `<a href="${h}"${i === id ? ' aria-current="page"' : ''}>${l}</a>`).join('')}</nav></div>` : '';
   return `<nav class="wrap nav nav-groups" aria-label="メインメニュー">${row1}</nav>${sub}`;
 };
 
@@ -191,13 +191,21 @@ export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通�
 
 // モバイルの下部固定ナビ（ホーム／週間／記録／コラム）。現在地のタブをハイライトし、safe-areaに対応。
 // 「記録」はワンタップ記録モーダル（public/actions.js）を開き、JSが使えないときは /app/#log へ遷移する。
+const BNAV_ICON = {
+  home: '<path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/>',
+  '気圧を見る': '<path d="M3.5 19.5c3-.3 4-6 6.5-6.5s3.5 3.5 6 1.5 3-8.5 4.5-9"/><path d="M3.5 4.5v15.2h17"/>',
+  '体調を整える': '<path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/>',
+  '記録・分析': '<path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8"/>',
+  '読む・知る': '<path d="M12 6c-2-1.6-4.5-2-7-2v14c2.5 0 5 .4 7 2 2-1.6 4.5-2 7-2V4c-2.5 0-5 .4-7 2z"/><path d="M12 6v14"/>',
+};
+// 下部タブ: ホーム + ヘッダーと同じ4つの種類(NAV_GROUPS)。現在のページの種類を強調する
 const bnav = (page) => {
-  const cur = (ids) => (ids.includes(page) ? ' aria-current="page"' : '');
+  const id = page === 'column' ? 'columns' : page;
+  const cur = NAV_GROUPS.find((g) => g.items.some((i) => i[0] === id));
+  const tab = (href, label, icon, on) => `<a href="${href}"${on ? ' aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>${label}</a>`;
   return `<nav class="bnav" aria-label="メインメニュー">
-  <a href="/"${cur(['top', 'care'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>ホーム</a>
-  <a href="/weather"${cur(['weather', 'pressure', 'today'])}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 11h16M8 3.5V7M16 3.5V7"/></svg>週間</a>
-  <a href="/app/#log"${cur(['app'])} data-quicklog><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8"/></svg>記録</a>
-  <a href="/columns"${cur(['columns', 'column'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.6-4.5-2-7-2v14c2.5 0 5 .4 7 2 2-1.6 4.5-2 7-2V4c-2.5 0-5 .4-7 2z"/><path d="M12 6v14"/></svg>コラム</a>
+  ${tab('/', 'ホーム', BNAV_ICON.home, page === 'top')}
+  ${NAV_GROUPS.map((g) => tab(g.items[0][2], g.name, BNAV_ICON[g.name], g === cur)).join('\n  ')}
 </nav>`;
 };
 const secHead = (en, ja, id) => `<div class="sec-h"><p class="en">${en}</p><h2 id="${id}">${ja}</h2></div>`;
@@ -213,7 +221,10 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
 
 export function topPage() {
-  const nav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/today">全国の地図</a><a href="/columns">コラム</a><a href="/app/">気圧・記録</a><a href="/app/#log" data-quicklog>体調を記録する</a>`;
+  // ヘッダーと同じ分類(NAV_GROUPS)。種類(1段目)を押すと、そのページ(2段目)が開く。JSなしでは種類が最初のページへのリンクになる
+  const nav = `<div class="tn-groups">${NAV_GROUPS.map((g, i) => `<a href="${g.items[0][2]}" class="tn-g" data-g="${i}">${g.name}</a>`).join('')}<a href="/app/#log" data-quicklog class="tn-rec">体調を記録する</a></div>
+<div class="tn-subs">${NAV_GROUPS.map((g, i) => `<div class="tn-sub" data-g="${i}" hidden>${g.items.map(([, l, h]) => `<a href="${h}">${l}</a>`).join('')}</div>`).join('')}</div>
+<script>(function(){var n=document.currentScript.parentNode;n.querySelectorAll('.tn-g').forEach(function(a){a.addEventListener('click',function(e){var g=a.dataset.g,sub=n.querySelector('.tn-sub[data-g="'+g+'"]');if(!sub||sub.querySelectorAll('a').length<2)return;e.preventDefault();var open=!sub.hidden;n.querySelectorAll('.tn-sub').forEach(function(x){x.hidden=true});n.querySelectorAll('.tn-g').forEach(function(x){x.classList.remove('on')});if(!open){sub.hidden=false;a.classList.add('on');}});});})();</script>`;
   const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">

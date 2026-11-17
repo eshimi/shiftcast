@@ -65,6 +65,7 @@ body.lp { background: var(--bg); }
   background-size: 100% 100%, cover; background-position: 0 0, var(--hero-pos); background-repeat: no-repeat; }
 .m-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: calc(16px + env(safe-area-inset-top)) 18px 0; font-family: var(--serif); font-size: 13px; letter-spacing: .06em; }
 .m-nav a { color: #fff; text-decoration: none; text-shadow: 0 1px 10px rgba(10, 30, 50, .5); }
+.m-nav .tn-groups { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; } .m-nav .tn-subs { flex: 0 0 100%; } .m-nav .tn-sub { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 6px; padding: 6px 12px; border-radius: 10px; background: rgba(10, 30, 50, .38); } .m-nav .tn-g.on { border-bottom: 1px solid #fff; }
 .m-nav a[data-quicklog] { padding: 4px 12px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 4px; text-shadow: none; }
 .m-title { position: absolute; z-index: 2; right: 24px; top: 118px; margin: 0; font-size: 28px; line-height: 1.95; letter-spacing: .32em; font-weight: 600; writing-mode: vertical-rl; text-shadow: 0 2px 18px rgba(10, 30, 50, .55); }
 .m-brand { position: absolute; z-index: 2; left: 0; right: 0; bottom: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: var(--serif); text-shadow: 0 2px 16px rgba(10, 30, 50, .5); }
