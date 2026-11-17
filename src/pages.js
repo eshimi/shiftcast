@@ -214,6 +214,7 @@ export function topPage() {
   <aside class="side" aria-label="サイト紹介">
     <div class="side-top">
       <a class="side-logo" href="/" aria-label="ウェルミー トップへ"><img src="/logo-h-white.webp" alt="ウェルミー" width="199" height="70"><small class="logo-sub">Feel Better, Every Day.</small></a>
+      <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
       <p class="side-title" aria-hidden="true">気圧の変化を、<br>先回りで知る。</p>
     </div>
     <div class="side-copy">
@@ -221,11 +222,9 @@ export function topPage() {
       <p>気圧の低下を、前の晩にお知らせする機能を準備中です。</p>
       <p>体調を記録するほど、あなたの<br>「不調になりやすい条件」が見えてきます。</p>
     </div>
-    <nav class="side-nav" aria-label="メインメニュー">${nav}</nav>
     <ol class="side-index" aria-label="このページの内容">
       <li><a href="#today" data-sec="today">Today<small>今日・明日の気圧</small></a></li>
       <li><a href="#exp" data-sec="exp">Experience<small>体験</small></a></li>
-      <li><a href="#features" data-sec="features">Three Features<small>三つの機能</small></a></li>
       <li><a href="#weekly" data-sec="weekly">Weekly<small>今週の天気</small></a></li>
       <li><a href="#column" data-sec="column">Column<small>コラム</small></a></li>
     </ol>
@@ -233,7 +232,7 @@ export function topPage() {
 
   <div class="phone" id="phone">
     <section class="m-hero" aria-labelledby="hero-title">
-      <nav class="m-nav" aria-label="メインメニュー"><a href="/weather">週間天気</a><a href="/columns">コラム</a><a class="m-app" href="/app/">気圧・記録へ</a></nav>
+      <nav class="m-nav" aria-label="メインメニュー">${nav}</nav>
       <h1 id="hero-title" class="m-title">気圧の変化を、<br>先回りで知る。<span class="sr-only">（ウェルミー：天気痛・気象病の気圧予報と頭痛の記録ノート）</span></h1>
       <div class="m-brand">
         <img src="/logo-v-white.webp" alt="ウェルミー" width="241" height="190">
@@ -261,16 +260,6 @@ export function topPage() {
       </div>
     </section>
 
-    <section class="sx teal" id="features" aria-labelledby="t-three">
-      <div class="sx-in">
-        ${secHead2('Three Features', '三つの機能', 't-three')}
-        <ul class="mini-feat">
-          <li><a href="/weather"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="3.2"/><path d="M8 2v1.6M2 8h1.6M3.8 3.8l1.1 1.1M12.2 3.8l-1.1 1.1"/><path d="M7 20a4 4 0 010-8 5.5 5.5 0 0110.4-1.2A4.6 4.6 0 0117 20z"/></svg><b>週間天気</b><span>7日間の天気と気圧</span></a></li>
-          <li><a href="/app/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 19.5c3-.3 4-6 6.5-6.5s3.5 3.5 6 1.5 3-8.5 4.5-9"/><path d="M3.5 4.5v15.2h17"/></svg><b>気圧・記録</b><span>気圧と体調を重ねて見る</span></a></li>
-          <li><a href="/columns"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C7 4 10 4.4 12 6c2-1.6 5-2 8-.5V19c-3-1.5-6-1.1-8 .5-2-1.6-5-2-8-.5z"/><path d="M12 6v13.5"/></svg><b>コラム</b><span>天気痛・気象病の対策</span></a></li>
-        </ul>
-      </div>
-    </section>
 
     <section class="sx cream" id="weekly" aria-labelledby="t-week">
       <div class="sx-in">

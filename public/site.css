@@ -63,10 +63,10 @@ body.lp { background: var(--bg); }
 .m-hero { position: relative; overflow: hidden; height: 100vh; height: 100svh; min-height: 560px; color: #fff; background-color: #3a5a78;
   background-image: linear-gradient(180deg, rgba(var(--ov), var(--o1)) 0%, rgba(var(--ov), var(--o2)) 36%, rgba(var(--ov), var(--o3)) 100%), var(--hero-img);
   background-size: 100% 100%, cover; background-position: 0 0, var(--hero-pos); background-repeat: no-repeat; }
-.m-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 18px; padding: calc(16px + env(safe-area-inset-top)) 18px 0; font-family: var(--serif); font-size: 14px; letter-spacing: .1em; }
+.m-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: calc(16px + env(safe-area-inset-top)) 18px 0; font-family: var(--serif); font-size: 13px; letter-spacing: .06em; }
 .m-nav a { color: #fff; text-decoration: none; text-shadow: 0 1px 10px rgba(10, 30, 50, .5); }
-.m-nav .m-app { margin-left: auto; padding: 6px 14px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 4px; text-shadow: none; }
-.m-title { position: absolute; z-index: 2; right: 24px; top: 92px; margin: 0; font-size: 28px; line-height: 1.95; letter-spacing: .32em; font-weight: 600; writing-mode: vertical-rl; text-shadow: 0 2px 18px rgba(10, 30, 50, .55); }
+.m-nav a[data-quicklog] { padding: 4px 12px; border: 1px solid rgba(255, 255, 255, .75); border-radius: 4px; text-shadow: none; }
+.m-title { position: absolute; z-index: 2; right: 24px; top: 118px; margin: 0; font-size: 28px; line-height: 1.95; letter-spacing: .32em; font-weight: 600; writing-mode: vertical-rl; text-shadow: 0 2px 18px rgba(10, 30, 50, .55); }
 .m-brand { position: absolute; z-index: 2; left: 0; right: 0; bottom: 70px; display: flex; flex-direction: column; align-items: center; text-align: center; font-family: var(--serif); text-shadow: 0 2px 16px rgba(10, 30, 50, .5); }
 .m-brand img { border-radius: 14px; margin-bottom: 10px; }
 .m-word { font-size: 46px; font-weight: 700; letter-spacing: .1em; line-height: 1.1; }
@@ -146,7 +146,7 @@ body.lp { background: var(--bg); }
   body.lp { height: 100vh; overflow: hidden; background: linear-gradient(180deg, rgba(var(--ov), calc(var(--o1) + .1)), rgba(var(--ov), calc(var(--o3) - .06))), var(--hero-img) var(--hero-pos) / cover fixed; background-color: #3a5a78; }
   .stage { display: grid; grid-template-columns: minmax(0, 1fr) 420px; gap: 6vw; align-items: start; max-width: 1180px; height: 100vh; margin: 0 auto; padding: 28px 28px 0; overflow: hidden; }
   .side { display: block; color: #fff; align-self: center; max-height: calc(100vh - 28px); }
-  .side-top { display: flex; gap: 6vw; align-items: flex-start; margin-bottom: 28px; }
+  .side-top { display: flex; flex-wrap: wrap; gap: 6vw; align-items: flex-start; margin-bottom: 28px; }
   .side-logo { display: flex; flex-direction: column; gap: 10px; color: #fff; text-decoration: none; text-shadow: 0 2px 16px rgba(10, 30, 50, .45); }
   .side-logo img { border-radius: 18px; }
   .brand-ln { display: flex; flex-direction: column; line-height: 1.15; font-family: var(--serif); }
@@ -155,7 +155,7 @@ body.lp { background: var(--bg); }
   .side-title { margin: 0; font-family: var(--serif); font-size: 34px; font-weight: 600; line-height: 1.9; letter-spacing: .32em; writing-mode: vertical-rl; text-shadow: 0 2px 20px rgba(10, 30, 50, .5); height: 300px; }
   .side-copy { font-family: var(--serif); font-size: 16px; line-height: 2; letter-spacing: .08em; text-shadow: 0 1px 14px rgba(10, 30, 50, .5); }
   .side-copy p { margin: 0 0 10px; }
-  .side-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 22px; font-family: var(--serif); letter-spacing: .08em; }
+  .side-nav { order: -1; flex: 0 0 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin: 0 0 6px; font-family: var(--serif); letter-spacing: .08em; }
   .side-nav a:not(.btn) { color: #fff; text-decoration: none; font-weight: 600; font-size: 16px; border-bottom: 1px solid transparent; }
   .side-nav a:not(.btn):hover { border-bottom-color: #fff; }
   .side-nav .btn.dark { background: var(--teal); border-color: var(--teal); color: #fff; }
