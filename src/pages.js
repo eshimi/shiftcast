@@ -148,7 +148,7 @@ ${chrome ? `<footer class="site-f">
 ${chrome && page !== 'app' ? bnav(page) : ''}
 ${chrome ? STREET_SCRIPT : ''}
 ${scripts}
-${chrome ? '<script src="/actions.js" defer></script>' : ''}
+${chrome ? '<script src="/faces.js"></script>\n<script src="/actions.js" defer></script>' : ''}
 </body>
 </html>`;
 }
@@ -327,7 +327,7 @@ export function topPage() {
     chrome: false,
     bodyClass: 'lp',
     extraHead: `<link rel="stylesheet" href="/hero/hero.css">\n${HERO_PICKER}`,
-    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>\n<script src="/actions.js" defer></script>',
+    scripts: '<script src="/wx.js"></script>\n<script src="/site.js" defer></script>\n<script src="/hero/hero.js" defer></script>\n<script src="/faces.js"></script>\n<script src="/actions.js" defer></script>',
   });
 }
 

@@ -125,8 +125,8 @@
   }
 
   /* ---------- ワンタップ体調記録 ---------- */
-  var FACES = ['🙂', '😕', '😣', '😖', '😫'];
-  var FACE_LABEL = ['軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
+  var FACES = ['😊', '🙂', '😕', '😣', '😖', '😫']; // faces.js(手描き風の顔)が読めないときの代用
+  var FACE_LABEL = ['痛みなし', '軽い', 'やや痛い', '痛い', 'かなり痛い', '耐えがたい'];
   function quickSave(pain, box) {
     var body = box.querySelector('.wmodal-body');
     body.replaceChildren(el('p', { class: 'muted' }, ['記録しています…']));
@@ -158,7 +158,7 @@
       el('div', { class: 'wmodal-body' }, [
         el('p', { class: 'muted small' }, ['いまの痛み・不調の度合いをタップすると、その場で記録できます（日時と気圧は自動で記録されます）。']),
         el('div', { class: 'wql-faces', role: 'group', 'aria-label': '痛みの度合い' }, FACES.map(function (f, i) {
-          return el('button', { type: 'button', class: 'wql-face', onclick: function () { quickSave(i + 1, box); } }, [el('span', { 'aria-hidden': 'true' }, [f]), el('small', {}, [FACE_LABEL[i]])]);
+          return el('button', { type: 'button', class: 'wql-face', onclick: function () { quickSave(i, box); } }, [el('span', { 'aria-hidden': 'true' }, [window.FACE ? window.FACE.el(i, 40) : f]), el('small', {}, [FACE_LABEL[i]])]);
         })),
         el('p', { class: 'wmodal-btns' }, [el('a', { class: 'btn block', href: '/app/#log' }, ['症状・服薬もくわしく記録する'])]),
       ]),
