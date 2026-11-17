@@ -6,6 +6,7 @@ import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
 import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
+import { miniChartHtml } from './minichart.js';
 import { repCodeOf } from './today.js';
 import { MAP_COLS, MAP_ROWS, MAP_DOTS } from './japanmap.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
@@ -433,7 +434,7 @@ export function pressurePage(pref, w) {
     <div>今後24時間：<span class="pill lv-${n.level}">${esc(n.label)}</span></div>
     <p>${esc(lead)}${esc(detail)}</p>
   </div>
-  <div class="fx-wrap">${moodBlockHtml(w)}${factorTilesHtml(w)}</div>
+  <div class="fx-wrap">${moodBlockHtml(w).replace(/(<p class="mood-r">[\s\S]*?<\/p>)/, (m) => m + miniChartHtml(w))}${factorTilesHtml(w)}</div>
 </div>
 <section class="sec" aria-labelledby="p-days"><h2 id="p-days" class="pg-h">${esc(name)}の7日間の天気と気圧</h2>
   <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>
