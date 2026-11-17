@@ -6,7 +6,6 @@ export const APP_BODY = `  <!-- ダッシュボード -->
       <span id="fetched" class="upd"></span>
     </div>
     <section id="moodHero" class="mhero" aria-label="今日の体調そらもよう" hidden></section>
-    <div id="summary" class="card summary astrip"></div>
     <section class="card chart-card" aria-label="気圧の推移・予報">
       <div class="card-h"><h2 class="sec-t">気圧の推移・予報</h2><span class="unit">hPa</span></div>
       <div class="chart-box"><div id="yAxis" class="yaxis"></div><div id="chartScroll" class="chart-scroll"><div id="chartWrap"><canvas id="chart"></canvas></div></div></div>
@@ -15,6 +14,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
         <span class="muted">点線＝予報</span>
       </div>
     </section>
+    <div id="summary" class="card summary astrip"></div>
     <h2 class="sec-h">いまの天気</h2>
     <div id="fxCard" class="fx-wrap-app" hidden></div>
     <div id="jma" class="card" hidden></div>
