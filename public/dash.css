@@ -155,3 +155,6 @@ body[data-page="app"] .iprog-bar { background: #DCE7F2; border-radius: 999px; } 
 /* 設定 */
 body[data-page="app"] .switch { color: var(--ap-text); }
 body[data-page="app"] .notes li { color: var(--ap-muted); }
+
+/* チャートを体調そらもようカード内(理由文の下)に収める */
+body[data-page="app"] .mhero > .chart-card { margin: 14px 0 0; background: rgba(255,255,255,.72); border-color: rgba(31,58,87,.12); box-shadow: none; }
