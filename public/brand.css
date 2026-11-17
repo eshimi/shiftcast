@@ -319,6 +319,6 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .bnav a { font-size: 10px; letter-spacing: 0; white-space: nowrap; }
 
 /* ヘッダーの幅・左右の位置を全ページでそろえる: ロゴ・ナビの1つ目の文字を同じ左端に、「体調を記録する」を右端に */
-.site-h .wrap { max-width: 1080px; }
+.site-h .wrap { max-width: 760px; } /* 本文・フッターの .wrap と同じ幅 */
 .site-h .nav a:first-child { margin-left: calc(-1 * var(--space-3)); }
 .site-h .h-in .h-rec { margin-left: auto; }
