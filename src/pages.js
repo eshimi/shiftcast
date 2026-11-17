@@ -183,7 +183,7 @@ export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通�
 const bnav = (page) => {
   const cur = (ids) => (ids.includes(page) ? ' aria-current="page"' : '');
   return `<nav class="bnav" aria-label="メインメニュー">
-  <a href="/"${cur(['top'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>ホーム</a>
+  <a href="/"${cur(['top', 'care'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5L12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>ホーム</a>
   <a href="/weather"${cur(['weather', 'pressure', 'today'])}><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M4 11h16M8 3.5V7M16 3.5V7"/></svg>週間</a>
   <a href="/app/#log"${cur(['app'])} data-quicklog><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20l.8-4L17.2 4.6a1.8 1.8 0 012.6 2.5L8.4 18.7z"/><path d="M14.5 7.5l2.8 2.8"/></svg>記録</a>
   <a href="/columns"${cur(['columns', 'column'])}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6c-2-1.6-4.5-2-7-2v14c2.5 0 5 .4 7 2 2-1.6 4.5-2 7-2V4c-2.5 0-5 .4-7 2z"/><path d="M12 6v14"/></svg>コラム</a>
@@ -611,6 +611,8 @@ export function carePage() {
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S CARE</p><h1>今日の過ごし方・体調を整える対策</h1><p>気圧・気温差・降水・湿度で体調が崩れやすい日の、セルフケアのまとめです。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap care-page">
+<nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <span aria-current="page">今日の過ごし方</span></nav>
+<p class="care-back"><a href="/">← トップに戻る</a></p>
 <section id="careToday" class="card care-today" hidden aria-live="polite"></section>
 <section class="sec"><h2 class="pg-h">要因別の対策</h2>
 <p class="muted small">体調そらもようの判定に効いた要因は、「今日の要因」と表示されます。</p>
@@ -622,6 +624,7 @@ ${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="
 <section class="sec"><h2 class="pg-h">つらいときは</h2>
 <ul class="plain">${CARE_HELP.map((x) => `<li><a href="${x.href}">${esc(x.t)}</a></li>`).join('')}</ul>
 <p class="row"><a class="btn primary" href="/app/#log">いまの体調を記録する</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+<p class="care-bottom"><a class="btn block" href="/">← トップへ戻る</a></p>
 </section>
 <p class="disclaimer">ここに載せている内容は、一般的に知られているセルフケアの情報で、医師の監修は受けていません。診断や治療の代わりにはなりません。持病がある方、薬を使っている方は、医師・薬剤師にご相談ください。症状が強い・続くときや、「経験したことのない激しい頭痛」「ろれつが回らない」「手足に力が入らない」などがあるときは、すぐに医療機関を受診してください。</p>
 </div>`;
@@ -631,6 +634,7 @@ ${Object.entries(CARE_FACTORS).map(([k, f]) => `<article class="care-f" data-f="
     keywords: ['天気痛 対策', '気象病 対策', '気圧 頭痛', 'セルフケア'],
     page: 'care',
     path: '/care',
+    jsonld: [{ '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['今日の過ごし方', '/care']].map(([name, pth], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE_URL + pth })) }],
     body,
     wide: true,
     scripts: '<script src="/care.js" defer></script>',
