@@ -255,3 +255,8 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .care-why { margin: 0 0 8px; font-size: 13px; color: var(--ap-muted, #5B6B7C); }
 .care-f ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; } .care-f li b { display: block; font-size: 14px; } .care-f li span { font-size: 12.5px; color: var(--ap-muted, #5B6B7C); line-height: 1.6; }
 .care-times { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } .care-times article { padding: 12px 14px; border: 1px solid var(--ap-line, #E3EBF2); border-radius: 14px; background: #fff; } .care-times h3 { margin: 0 0 6px; font-size: 15px; } .care-times ul { margin: 0; padding-left: 1.1em; font-size: 13px; line-height: 1.7; }
+
+/* トップの「今日の過ごし方」カード(.care-list): 各項目を1行で見せる。
+   説明文(span)は /care ページに残るので情報は失われない。長いタイトルは末尾を省略。 */
+.care-list li span { display: none; }
+.care-list li b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
