@@ -287,3 +287,11 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .tm-5 { background: #2FA785; } .tm-4 { background: #3B82D6; } .tm-3 { background: #E0A32E; color: #3A2600; } .tm-2 { background: #E07B39; color: #3A1600; } .tm-1 { background: #DC5245; } .tm-0 { background: #B8C4D0; color: #26323F; }
 .tmap-legend { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; } .tmap-legend li { display: inline-flex; align-items: center; gap: 5px; } .tmap-legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .tm { letter-spacing: -.04em; padding: 0 1px; } .tm[href$="/hokkaido"] { font-size: clamp(7px, 2.1vw, 10px); }
+
+/* ドット(点描)の日本地図 */
+.dmap { margin: 14px auto 8px; max-width: 520px; } .dmap svg { display: block; width: 100%; height: auto; }
+.mp circle { fill: #B8C4D0; } .mp.tm-5 circle { fill: #2FA785; } .mp.tm-4 circle { fill: #3B82D6; } .mp.tm-3 circle { fill: #E0A32E; } .mp.tm-2 circle { fill: #E07B39; } .mp.tm-1 circle { fill: #DC5245; }
+.mp.alt circle { opacity: .72; }
+.mp:hover circle, .mp:focus-visible circle { opacity: 1; stroke: #1F3A57; stroke-width: .12; }
+.mp:focus-visible { outline: none; }
+.dmap figcaption { text-align: center; min-height: 1.6em; margin-top: 4px; }
