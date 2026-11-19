@@ -259,7 +259,6 @@ export function topPage() {
         ${areaBar}
         <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
         <div id="todayNews" class="news news-sm" aria-live="polite" hidden></div>
-        <p class="sx-btn"><a class="btn dark block" href="/app/">気圧グラフを見る</a></p>
         <p class="sx-btn sx-btn2"><a class="btn block" href="/today">全国の地図を見る</a></p>
       </div>
     </section>

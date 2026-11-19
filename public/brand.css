@@ -322,3 +322,5 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .site-h .wrap { max-width: 760px; } /* 本文・フッターの .wrap と同じ幅 */
 .site-h .nav a:first-child { margin-left: calc(-1 * var(--space-3)); }
 .site-h .h-in .h-rec { margin-left: auto; }
+
+.mc-btn { margin: 8px 0 14px; }

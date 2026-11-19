@@ -149,6 +149,9 @@ function renderMain(w) {
     const m = tmp.querySelector('.mood'), stairs = m && m.querySelector('.stairs'), body = m && m.querySelector('.mood-body');
     if (stairs && body) {
       body.querySelector('.mood-guide')?.remove(); // 「5段階の見かた」は /app/ で
+      // 今日の過ごし方の上に、気圧グラフと「気圧グラフを見る」ボタン(その下に過ごし方、さらに下に今日の24時間の見通し)
+      const care = body.querySelector('.care-box');
+      if (care && w.chartHtml) care.insertAdjacentHTML('beforebegin', w.chartHtml + '<p class="mc-btn"><a class="btn dark block" href="/app/">気圧グラフを見る</a></p>');
       const out = h('div', { class: 'tmrw-out' });
       [...card.childNodes].forEach((n) => { if (!(n.classList && (n.classList.contains('tmrw-range') || n.classList.contains('news-mood')))) out.append(n); });
       const wrap = (el) => { const d = document.createElement('div'); d.className = m.className + ' mood-flat'; d.append(el); return d; };
