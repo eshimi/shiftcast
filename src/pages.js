@@ -93,7 +93,9 @@ const navHtml = (page) => {
 };
 
 // フォント: 全ページ明朝体(Shippori Mincho B1)。デザインシステム側のゴシック体指定は design/overrides.json で上書き
-const TOP_FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap">';
+const FONT_URL = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;500;600;700&family=Jost:wght@400;500;600&display=swap';
+// Webフォントは描画をブロックしない(media=print → 読み込み後に all)。JSなしでは通常の読み込み
+const TOP_FONTS = `<link rel="stylesheet" href="${FONT_URL}" media="print" onload="this.media='all'">\n<noscript><link rel="stylesheet" href="${FONT_URL}"></noscript>`;
 const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
 const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
@@ -335,18 +337,21 @@ export function topPage() {
 
 /* ---------- 週間天気 ---------- */
 
-export function weatherPage() {
+export function weatherPage(w) {
+  const wn = w?.next24, wc = w?.current, wname = w?.area?.name || '';
+  const ssrToday = w && wc ? `<div class="t-body"><div class="muted small">${esc(wname)}・現在の海面気圧</div><div class="big">${Math.round(wc.pressure)}<small> hPa</small></div><div>今後24時間：<span class="pill lv-${wn.level}">${esc(wn.label)}</span></div><p class="muted small">最新の値は読み込み後に表示されます。</p></div>` : '<p class="muted">読み込み中…</p>';
+  const ssrDays = w?.days?.length ? w.days.map(dayRowHtml).join('') : '<p class="muted">読み込み中…</p>';
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">WEEKLY FORECAST</p><h1>週間天気</h1><p>気象庁の週間予報に、気圧の変化（4段階）を重ねて表示します。崩れそうな日の前に準備しましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('runner', { k: 0.5 })}</div></div>
 <div class="wrap">
 ${areaBar}
 <p class="map-link"><a href="/today">全国の地図で見る →</a></p>
 
-<div id="today" class="card today" aria-live="polite"><p class="muted">読み込み中…</p></div>
+<div id="today" class="card today" aria-live="polite">${ssrToday}</div>
 
 <section class="sec" aria-labelledby="w-days">
   ${secHead('7 Days', '7日間の予報', 'w-days')}
-  <div id="days" class="days" aria-live="polite"><p class="muted">読み込み中…</p></div>
+  <div id="days" class="days" aria-live="polite">${ssrDays}</div>
   ${LEVELS}
   <p class="share-row"><button type="button" id="shareWeekend" class="btn block" hidden>この週末の見通しを共有する</button></p>
   <details class="crit"><summary>表示の見かた・判定基準</summary>

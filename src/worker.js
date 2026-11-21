@@ -235,13 +235,19 @@ app.get('/robots.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'
 app.get('/llms.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsTxt()); });
 app.get('/llms-full.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsFullTxt()); });
 app.get('/sitemap.xml', (c) => {
-  const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ['/care', null], ['/today', null], ['/check', null], ['/guide', COLUMN_UPDATED], ...SYMPTOMS.map((x) => [`/symptoms/${x.slug}`, COLUMN_UPDATED]), ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
+  const day = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); // 毎日更新されるページはJSTの今日
+  const urls = [['/', day], ['/about', null], ['/weather', day], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', day], ['/glossary', COLUMN_UPDATED], ['/care', day], ['/today', day], ['/check', null], ['/guide', COLUMN_UPDATED], ...SYMPTOMS.map((x) => [`/symptoms/${x.slug}`, COLUMN_UPDATED]), ...PREFS.map((p) => [`/pressure/${p.slug}`, day]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, m]) => `<url><loc>${SITE_URL}${u}</loc>${m ? `<lastmod>${m}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
   c.header('Cache-Control', 'public, max-age=3600');
   return c.body(xml, 200, { 'content-type': 'application/xml; charset=utf-8' });
 });
 app.get('/', (c) => html(c, topPage()));
-app.get('/weather', (c) => html(c, weatherPage()));
+app.get('/weather', async (c) => {
+  let w = null; // クローラー向けに、東京の最新値を初期HTMLに入れる(ブラウザでは読み込み後に選択地域の表示に置き換わる)
+  try { w = await buildWeek(c.env, '13'); } catch (e) { console.error('[weather ssr]', e); }
+  c.header('Cache-Control', 'public, max-age=300');
+  return c.html(weatherPage(w));
+});
 app.get('/pressure', (c) => html(c, pressureIndexPage()));
 app.get('/pressure/:slug', async (c) => {
   const pref = prefBySlug(c.req.param('slug'));
