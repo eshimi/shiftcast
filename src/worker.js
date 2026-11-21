@@ -14,8 +14,10 @@ import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
 import { todaySummary } from './today.js';
 import { miniChartHtml } from './minichart.js';
+import { SYMPTOMS } from './symptoms.js';
 import { robotsTxt, llmsTxt, llmsFullTxt } from './seo.js';
 import { factorTilesHtml, moodBlockHtml, moodMiniHtml } from './tiles.js';
+import { guidePage, symptomPage } from './pages.js';
 import { carePage, checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
@@ -233,7 +235,7 @@ app.get('/robots.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'
 app.get('/llms.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsTxt()); });
 app.get('/llms-full.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsFullTxt()); });
 app.get('/sitemap.xml', (c) => {
-  const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ['/care', null], ['/today', null], ['/check', null], ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
+  const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ['/care', null], ['/today', null], ['/check', null], ['/guide', COLUMN_UPDATED], ...SYMPTOMS.map((x) => [`/symptoms/${x.slug}`, COLUMN_UPDATED]), ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, m]) => `<url><loc>${SITE_URL}${u}</loc>${m ? `<lastmod>${m}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;
   c.header('Cache-Control', 'public, max-age=3600');
   return c.body(xml, 200, { 'content-type': 'application/xml; charset=utf-8' });
@@ -260,6 +262,8 @@ app.get('/today', async (c) => {
 app.get('/check', (c) => html(c, checkPage()));
 app.get('/care', (c) => html(c, carePage()));
 app.get('/glossary', (c) => html(c, glossaryPage()));
+app.get('/guide', (c) => html(c, guidePage()));
+app.get('/symptoms/:slug', (c) => { const h = symptomPage(c.req.param('slug')); return h ? html(c, h) : html(c, notFoundPage(), 404); });
 app.get('/about', (c) => html(c, aboutPage()));
 app.get('/columns', (c) => html(c, columnsPage()));
 app.get('/columns/:slug', (c) => {

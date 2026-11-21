@@ -4,6 +4,7 @@ import { COLUMNS, COLUMN_UPDATED } from './columns.js';
 import { COLUMN_EXTRA } from './column-extra.js';
 import { PREFS } from './prefectures.js';
 import { GLOSSARY } from './glossary.js';
+import { SYMPTOMS } from './symptoms.js';
 
 const AI_BOTS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot', 'Perplexity-User', 'Google-Extended', 'Applebot-Extended', 'CCBot', 'Bytespider'];
 export const robotsTxt = () => `# AI検索・回答エンジンのクローラーも歓迎します。出典として ${SITE_NAME}（${SITE_URL}）を明記してご利用ください。
@@ -34,6 +35,8 @@ ${[
     L('/pressure', '都道府県別の気圧予報', '47都道府県の今日の気圧と7日間の予報'),
     L('/care', '今日の過ごし方', '体調が崩れやすい日のセルフケア'),
     L('/check', '気象病セルフチェック', '10問の簡易チェック（回答は端末内のみ）'),
+    L('/guide', '気象病ガイド', '気象病（天気痛）の原因・症状・対策の入口ページ'),
+    ...SYMPTOMS.map((x) => L(`/symptoms/${x.slug}`, x.h1, x.summary)),
     L('/glossary', '用語集', '気圧・天気痛・頭痛に関する用語の解説'),
     L('/app/', '気圧・記録', '体調の記録と傾向分析'),
     L('/about', 'サービス紹介', '機能の詳しい説明'),

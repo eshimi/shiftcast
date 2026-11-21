@@ -8,6 +8,8 @@ import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
 import { miniChartHtml } from './minichart.js';
 import { COLUMN_EXTRA } from './column-extra.js';
+import { REGION_NOTES, PREF_NOTES } from './pref-notes.js';
+import { SYMPTOMS, symptomBySlug } from './symptoms.js';
 import { repCodeOf } from './today.js';
 import { MAP_COLS, MAP_ROWS, MAP_DOTS } from './japanmap.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
@@ -80,10 +82,10 @@ const NAV_GROUPS = [
   { name: '気圧を見る', items: [['weather', '週間天気', '/weather'], ['today', '全国の地図', '/today'], ['pressure', '都道府県別の気圧予報', '/pressure']] },
   { name: '体調を整える', items: [['care', '今日の過ごし方', '/care'], ['check', '気象病セルフチェック', '/check']] },
   { name: '記録・分析', items: [['app', '気圧・記録', '/app/']] },
-  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
+  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['guide', '気象病ガイド', '/guide'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
 ];
 const navHtml = (page) => {
-  const id = page === 'column' ? 'columns' : page;
+  const id = page === 'column' ? 'columns' : page === 'symptom' ? 'guide' : page;
   const cur = NAV_GROUPS.find((g) => g.items.some((i) => i[0] === id));
   const row1 = NAV_GROUPS.map((g) => `<a href="${g.items[0][2]}"${g === cur ? ' aria-current="true" class="on"' : ''}>${g.name}</a>`).join('');
   const sub = cur && cur.items.length > 1 ? `\n  <div class="nav-sub-bg"><nav class="wrap nav nav-sub" aria-label="${cur.name}のページ">${cur.items.map(([i, l, h]) => `<a href="${h}"${i === id ? ' aria-current="page"' : ''}>${l}</a>`).join('')}</nav></div>` : '';
@@ -148,7 +150,7 @@ ${chrome ? `<footer class="site-f">
   <div class="wrap">
     <p class="f-logo"><img src="/logo-h.webp" alt="ウェルミー" width="115" height="40"></p>
     <p>本サービスの気圧データは海面気圧の変動傾向を示す目安であり、絶対値の保証や医学的な診断を提供するものではありません。</p>
-    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/care">今日の過ごし方</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
+    <p><a href="/terms.html">利用規約・プライバシー</a> ・ <a href="/about">サービス紹介</a> ・ <a href="/guide">気象病ガイド</a> ・ <a href="/columns">コラム</a> ・ <a href="/weather">週間天気</a> ・ <a href="/today">今日の気圧</a> ・ <a href="/pressure">都道府県別の気圧</a> ・ <a href="/check">気象病セルフチェック</a> ・ <a href="/care">今日の過ごし方</a> ・ <a href="/glossary">用語集</a> ・ <a href="/app/">気圧・記録</a></p>
     <p class="muted">天気: 気象庁 / OpenWeatherMap　© ${SITE}</p>
   </div>
 </footer>` : ''}
@@ -201,7 +203,7 @@ const BNAV_ICON = {
 };
 // 下部タブ: ホーム + ヘッダーと同じ4つの種類(NAV_GROUPS)。現在のページの種類を強調する
 const bnav = (page) => {
-  const id = page === 'column' ? 'columns' : page;
+  const id = page === 'column' ? 'columns' : page === 'symptom' ? 'guide' : page;
   const cur = NAV_GROUPS.find((g) => g.items.some((i) => i[0] === id));
   const tab = (href, label, icon, on) => `<a href="${href}"${on ? ' aria-current="page"' : ''}><svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>${label}</a>`;
   return `<nav class="bnav" aria-label="メインメニュー">
@@ -222,7 +224,7 @@ const columnCard = (c, i) => `<a class="col-card" href="/columns/${esc(c.slug)}"
 const TOP_COLUMNS = ['what-is-kishobyo', 'day-before', 'kiatsu-zutsu'].map((sl) => findColumn(sl)).filter(Boolean);
 
 export function topPage() {
-  const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
+  const footNav = `<a href="/">トップ</a><a href="/weather">週間天気</a><a href="/columns">コラム</a><a href="/guide">気象病ガイド</a><a href="/about">サービス紹介</a><a href="/app/">気圧・記録</a>`;
   const body = `
 <div class="stage">
   <aside class="side" aria-label="サイト紹介">
@@ -446,6 +448,11 @@ export function pressurePage(pref, w) {
   ${LEVELS}
   <p>${esc(weekNote)}</p>
   <p class="muted small">気圧は海面気圧の変化の目安です（気象庁・OpenWeatherMap）。気温の「気温差」は、前日の同じ時刻との差が5℃以上、または今後24時間の最高と最低の差が9℃以上で「あり」、8℃以上／12℃以上で「大」とする暫定の表示です。降水は直近24時間または今後24時間の合計が1mm以上で「雨あり」、10mm以上で「まとまった雨」、30mm以上で「雨が多め」、湿度は75%以上で「高め」、85%以上で「かなり高め」としています。いずれも医学的な基準ではありません（表示のみで、通知には使っていません）。</p>
+</section>
+<section class="sec" aria-labelledby="p-feat"><h2 id="p-feat" class="pg-h">${esc(name)}の気圧・天気の特徴</h2>
+  <p>${esc(PREF_NOTES[pref.code] || '')}</p>
+  <p>${esc(regionOf(pref.code))}地方の傾向：${esc(REGION_NOTES[regionOf(pref.code)] || '')}</p>
+  <p class="muted small">気象の一般的な特徴をまとめたもので、実際の気圧の動きは、日々の予報（このページ上部）でご確認ください。気圧の変化の感じ方には個人差があります。</p>
 </section>
 <section class="sec"><h2 class="pg-h">${esc(name)}で天気痛・気象病に備えるには</h2>
   <ul class="plain">
@@ -866,6 +873,7 @@ ${REGIONS.map(([r, codes]) => `<p class="pref-r"><b>${esc(r)}</b>${codes.map((cd
   <b>気圧の変化を先回りでチェック</b>
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
   <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">気圧・記録へ</a></p>
+  <p class="muted small">症状から探す：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}　／　<a href="/guide">気象病ガイド</a></p>
 </div>
 ${notifyCta()}
 <nav class="pager" aria-label="前後のコラム">
@@ -891,3 +899,80 @@ export const notFoundPage = () =>
     page: 'none',
     body: '<h1 class="pg-h">ページが見つかりません</h1><p><a class="btn primary" href="/">トップへ戻る</a></p>',
   });
+
+
+/* ---------- 気象病ガイド(柱ページ)・症状別ページ ---------- */
+const colLink = (slug) => { const c = findColumn(slug); return c ? `<li><a href="/columns/${esc(c.slug)}">${esc(c.title)}</a></li>` : ''; };
+const faqLd = (list) => ({ '@type': 'FAQPage', mainEntity: list.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) });
+const faqHtml = (list) => `<section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">よくある質問</h2>${list.map(([q, a]) => `<details class="faq-i"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</section>`;
+const crumbLd = (items) => ({ '@type': 'BreadcrumbList', itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE_URL + path })) });
+
+const GUIDE_FAQ = [
+  ['気象病（天気痛）とは何ですか？', '天気、特に気圧の変化に伴って、頭痛・めまい・だるさ・関節や古傷の痛みなどが出る不調の総称です。医学的に確立した診断名ではなく、研究が進められている分野です。'],
+  ['なぜ気圧で体調が変わるのですか？', '内耳が気圧の変化を感じ取り、自律神経の働きに影響する、という考え方が有力です。感じ方には大きな個人差があります。'],
+  ['気象病への備えで一番大切なことは？', '気圧の予報で「いつ変化するか」を知り、前日から睡眠・水分・予定の余裕を整えることです。記録をつけて自分の傾向を知ることも役立ちます。'],
+  ['どんなときに受診すべきですか？', '突然の激しい頭痛、手足のしびれ、ろれつが回らないなどは急いで受診を。頻繁に起こる、生活に支障がある、薬が手放せないときも相談の目安です。'],
+];
+
+export function guidePage() {
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GUIDE</p><h1>気象病ガイド｜天気痛・気圧頭痛の原因・症状・対策</h1><p>気象病（天気痛）の基本から、症状別の対処、備え方、受診の目安までをまとめた入口ページです。</p></div></div>
+<div class="wrap article-wrap">
+<nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › 気象病ガイド</nav>
+<div class="keypoints" role="note"><p class="kp-h">このページの要点</p><ul>
+<li>気象病（天気痛）は、気圧など天気の変化で頭痛・めまい・だるさ・関節痛などが出る不調の総称です。</li>
+<li>内耳が気圧の変化を感じ取り、自律神経に影響するという考え方が有力ですが、研究途上です。</li>
+<li>備えの基本は「気圧の予報を知る → 前日から整える → 記録して傾向を知る」の3つです。</li></ul></div>
+<section class="sec"><h2 class="pg-h">気象病（天気痛）とは</h2>
+<p>「低気圧が近づくと頭が痛くなる」「雨の前に古傷がうずく」。こうした、天気の変化に伴う不調の総称が気象病です。そのうち、痛みとして現れるものを天気痛と呼びます。同じ気圧の変化でも、平気な人と強く出る人がいて、個人差が大きいのが特徴です。</p>
+<p><a href="/columns/what-is-kishobyo">気象病（天気痛）とは？ 気圧の変化で頭痛やだるさが起こる仕組み</a></p></section>
+<section class="sec"><h2 class="pg-h">症状別に知る</h2>
+<ul class="plain">${SYMPTOMS.map((x) => `<li><a href="/symptoms/${x.slug}"><b>${esc(x.name)}</b></a>：${esc(x.summary)}</li>`).join('')}</ul></section>
+<section class="sec"><h2 class="pg-h">気圧が動くのはどんなとき</h2>
+<p>気圧は、低気圧の通過、前線、台風、季節による高気圧と低気圧の入れ替わりで動きます。ウェルミーでは、1時間あたりの気圧の変化量で「上昇注意」「やや注意」「注意」「警戒」の4段階に分けて示します。</p>
+<ul class="plain">${['pressure-pattern', 'tenkitsu-season', 'typhoon-headache'].map(colLink).join('')}<li><a href="/weather">今週の天気と気圧を見る</a>・<a href="/pressure">都道府県別の気圧予報</a>・<a href="/today">全国の地図</a></li></ul></section>
+<section class="sec"><h2 class="pg-h">備えとセルフケア</h2>
+<ul class="plain">${['day-before', 'when-it-hurts', 'daily-habits', 'ear-stretch', 'neck-shoulder-stretch'].map(colLink).join('')}<li><a href="/care">今日の過ごし方</a></li></ul></section>
+<section class="sec"><h2 class="pg-h">記録して、自分の傾向を知る</h2>
+<p>頭痛などの体調を気圧と合わせて記録すると、不調が出やすい条件が見えてきます。受診のときにも役立ちます。</p>
+<ul class="plain">${['headache-diary', 'how-to-use-app'].map(colLink).join('')}<li><a href="/check">気象病セルフチェック（10問）</a>・<a href="/app/">気圧・記録</a></li></ul></section>
+<section class="sec"><h2 class="pg-h">薬・受診について</h2>
+<ul class="plain">${['otc-medicine', 'which-department', 'when-to-see-doctor', 'how-long'].map(colLink).join('')}</ul></section>
+${faqHtml(GUIDE_FAQ)}
+<div class="refs"><p class="muted small"><b>執筆・編集</b>：${esc(SITE)}編集部（医師の監修を受けたものではありません）　<b>最終更新</b>：${COLUMN_UPDATED}<br><b>参考情報</b>：気象庁、日本頭痛学会「頭痛の診療ガイドライン」など、公開資料をもとに一般に知られている内容をまとめています。診断・治療の代わりにはなりません。</p></div>
+</div>`;
+  return layout({
+    title: '気象病ガイド｜天気痛・気圧頭痛の原因・症状・対策まとめ',
+    description: '気象病（天気痛・気圧頭痛）の原因、症状別（頭痛・めまい・だるさ・肩こり・関節痛）の対処、気圧が下がる日の備え、受診の目安を、まとめて解説する入口ページです。',
+    keywords: ['気象病', '天気痛', '気圧 頭痛', '低気圧 頭痛', '原因', '対策'], page: 'guide', path: '/guide',
+    jsonld: [{ '@type': 'MedicalWebPage', name: '気象病ガイド', url: SITE_URL + '/guide', inLanguage: 'ja', about: { '@type': 'MedicalCondition', name: '気象病（天気痛）' }, dateModified: COLUMN_UPDATED, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }, faqLd(GUIDE_FAQ), crumbLd([['トップ', '/'], ['気象病ガイド', '/guide']])],
+    body,
+  });
+}
+
+export function symptomPage(slug) {
+  const x = symptomBySlug(slug);
+  if (!x) return null;
+  const list = (a) => `<ul>${a.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`;
+  const faq = [...x.faq, ['どんなときは受診しますか？', x.doctor.join(' ')]];
+  const body = `
+<div class="page-head has-ppl"><div class="wrap"><p class="en">SYMPTOM</p><h1>${esc(x.h1)}</h1><p>${esc(x.summary)}</p></div></div>
+<div class="wrap article-wrap">
+<nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <a href="/guide">気象病ガイド</a> › ${esc(x.name)}</nav>
+<div class="keypoints" role="note"><p class="kp-h">このページの要点</p><ul><li>${esc(x.about)}</li><li>気圧の予報で変化の時期を知り、前日から備えることが基本です。</li><li>強い症状や、いつもと違う症状は、医療機関に相談してください。</li></ul></div>
+<section class="sec"><h2 class="pg-h">なぜ起こると考えられているか</h2>${list(x.causes)}<p class="muted small">研究途上の分野で、感じ方には大きな個人差があります。</p></section>
+<section class="sec"><h2 class="pg-h">自分でできる対処・備え</h2>${list(x.care)}<p class="row"><a class="btn primary" href="/care">今日の過ごし方</a><a class="btn" href="/weather">今週の気圧を見る</a></p></section>
+<section class="sec"><h2 class="pg-h">受診を考える目安</h2>${list(x.doctor)}<p class="muted small">迷うときは、医療機関や相談窓口にご相談ください。</p></section>
+<section class="sec"><h2 class="pg-h">くわしく読む</h2><ul class="plain">${x.cols.map(colLink).join('')}</ul></section>
+${faqHtml(faq)}
+<section class="sec"><h2 class="pg-h">ほかの症状</h2><ul class="chips-l">${SYMPTOMS.filter((y) => y !== x).map((y) => `<li><a href="/symptoms/${y.slug}">${esc(y.name)}</a></li>`).join('')}<li><a href="/guide">気象病ガイド</a></li></ul></section>
+<div class="refs"><p class="muted small"><b>執筆・編集</b>：${esc(SITE)}編集部（医師の監修を受けたものではありません）　<b>最終更新</b>：${COLUMN_UPDATED}<br>一般的な情報で、診断・治療の代わりにはなりません。</p></div>
+</div>`;
+  return layout({
+    title: `${x.h1}｜原因・対処・受診の目安`,
+    description: x.summary,
+    keywords: ['気象病', '天気痛', x.name, '気圧'], page: 'symptom', path: `/symptoms/${x.slug}`,
+    jsonld: [{ '@type': 'MedicalWebPage', name: x.h1, url: `${SITE_URL}/symptoms/${x.slug}`, inLanguage: 'ja', about: { '@type': 'MedicalSymptom', name: x.name }, dateModified: COLUMN_UPDATED, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }, faqLd(faq), crumbLd([['トップ', '/'], ['気象病ガイド', '/guide'], [x.name, `/symptoms/${x.slug}`]])],
+    body,
+  });
+}
