@@ -232,6 +232,7 @@ const html = (c, body, status = 200) => {
   return c.html(body, status);
 };
 app.get('/robots.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(robotsTxt()); });
+app.get('/googlecd2a54027fa073ec.html', (c) => c.text('google-site-verification: googlecd2a54027fa073ec.html', 200, { 'content-type': 'text/html; charset=utf-8' })); // Search Console 所有権確認(.htmlのリダイレクトを避けるためWorkerで直接返す)
 app.get('/llms.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsTxt()); });
 app.get('/llms-full.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsFullTxt()); });
 app.get('/sitemap.xml', (c) => {
