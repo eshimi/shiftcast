@@ -1,6 +1,7 @@
 // アプリシェルのキャッシュ + FCM(Web Push)の受信
-const CACHE = 'kiatsu-shell-v128';
-const SHELL = ['/app/', '/tokens.css', '/style.css', '/ds.css', '/header.css', '/brand.css', '/dash.css', '/app.js', '/wx.js', '/faces.js', '/manifest.json', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/vendor/chart.js'];
+const CACHE = 'kiatsu-shell-v130';
+const API_OK = ['/api/week', '/api/forecast', '/api/area-stats', '/api/me', '/api/logs', '/api/areas', '/api/config', '/api/insights', '/api/today']; // オフラインでも前回の値を出すAPI(GETのみ)
+const SHELL = ['/app/', '/tokens.css', '/style.css', '/ds.css', '/header.css', '/brand.css', '/dash.css', '/app.js', '/wx.js', '/faces.js', '/manifest.json', '/offline', '/pwa.js', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/vendor/chart.js'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -12,16 +13,23 @@ self.addEventListener('activate', (e) => {
 });
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-  if (e.request.method !== 'GET' || url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
-  // network-first（更新を優先し、オフライン時のみキャッシュ）
+  if (e.request.method !== 'GET' || url.origin !== location.origin) return;
+  if (url.pathname.startsWith('/api/') && !API_OK.some((p) => url.pathname === p)) return;
+  // network-first（更新を優先し、オフライン時のみ前回のキャッシュ）。ページは取得できなければ offline.html
+  // 時刻がクエリに入るAPI(/api/logs)は、クエリなしの1件だけを保存して、オフライン時の代わりに使う
+  const key = url.pathname === '/api/logs' ? new Request(url.origin + url.pathname) : e.request;
   e.respondWith(
     fetch(e.request)
       .then((r) => {
-        const copy = r.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy));
+        if (r.ok) { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); }
         return r;
       })
-      .catch(() => caches.match(e.request)),
+      .catch(async () => {
+        const hit = await caches.match(key);
+        if (hit) return hit;
+        if (e.request.mode === 'navigate') return (await caches.match('/offline')) || Response.error();
+        return Response.error();
+      }),
   );
 });
 

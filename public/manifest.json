@@ -27,5 +27,58 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "id": "/app/",
+  "categories": [
+    "health",
+    "weather",
+    "lifestyle"
+  ],
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "体調を記録する",
+      "short_name": "記録する",
+      "url": "/app/#log",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "今日の気圧を見る",
+      "short_name": "今日の気圧",
+      "url": "/app/#dash",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "今日の過ごし方",
+      "short_name": "過ごし方",
+      "url": "/care",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "週間天気",
+      "short_name": "週間天気",
+      "url": "/weather",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

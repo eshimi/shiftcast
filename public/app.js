@@ -630,5 +630,14 @@ $('#wipe').addEventListener('click', async () => {
   store.del('uid'); S.tags.clear(); S.meds.clear(); S.pain = null; await boot(true); toast('削除しました');
 });
 
+// オフライン表示: 前回取得した内容を出していることを伝える
+function offlineBar() {
+  let bar = document.getElementById('offlineBar');
+  if (navigator.onLine) { bar?.remove(); return; }
+  if (!bar) { bar = h('div', { id: 'offlineBar', role: 'status' }, 'オフラインです。前回の内容を表示しています（記録の保存はオンラインで）。'); document.body.prepend(bar); }
+}
+window.addEventListener('online', () => { offlineBar(); if (S.view === 'dash') loadDash(); });
+window.addEventListener('offline', offlineBar);
+offlineBar();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 boot().catch((e) => { console.error(e); toast('起動に失敗しました'); });

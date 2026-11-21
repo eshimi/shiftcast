@@ -133,6 +133,10 @@ ${chrome ? DS_FONTS : TOP_FONTS}
 <link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ウェルミー">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="/tokens.css">
 ${chrome ? '<link rel="stylesheet" href="/ds.css">\n<link rel="stylesheet" href="/header.css">\n' : ''}<link rel="stylesheet" href="/site.css">
 ${chrome ? '<link rel="stylesheet" href="/ds-pages.css">\n' : ''}${extraHead}
@@ -161,6 +165,7 @@ ${chrome ? `<footer class="site-f">
 </footer>` : ''}
 ${chrome && page !== 'app' ? bnav(page) : ''}
 ${chrome ? STREET_SCRIPT : ''}
+<script src="/pwa.js" defer></script>
 ${scripts}
 ${chrome ? '<script src="/faces.js"></script>\n<script src="/actions.js" defer></script>' : ''}
 </body>

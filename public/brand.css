@@ -331,3 +331,9 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .faq { margin: 28px 0 8px; } .faq h2 { font-size: 18px; margin: 0 0 8px; }
 .faq-i { border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-card); margin: 8px 0; padding: 0 14px; } .faq-i summary { cursor: pointer; padding: 12px 0; font-weight: 700; font-size: 15px; } .faq-i p { margin: 0 0 12px; font-size: 14px; line-height: 1.8; }
 .refs { margin-top: 18px; padding-top: 12px; border-top: 1px dashed var(--color-border); }
+
+/* ホーム画面追加の案内(pwa.js) */
+#pwaHint { position: fixed; left: 12px; right: 12px; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 60; display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 16px; background: var(--color-card); border: 1px solid var(--color-border); box-shadow: 0 8px 28px rgba(15, 40, 70, .22); max-width: 520px; margin: 0 auto; }
+#pwaHint img { border-radius: 10px; flex: none; } #pwaHint .pwa-t { flex: 1; font-size: 12px; line-height: 1.5; color: var(--color-ink-muted); } #pwaHint .pwa-t b { display: block; font-size: 14px; color: var(--color-ink); }
+#pwaHint button { border: 0; font: inherit; cursor: pointer; } #pwaHint .pwa-add { background: var(--color-primary); color: #fff; font-weight: 700; padding: 8px 16px; border-radius: 999px; } #pwaHint .pwa-x { background: none; color: var(--color-ink-muted); font-size: 20px; padding: 4px 8px; }
+#offlineBar { position: sticky; top: 0; z-index: 30; background: var(--lv-slight-bg); color: var(--lv-slight-tx); text-align: center; font-size: 12px; padding: 6px 12px; border-bottom: 1px solid var(--lv-slight); }
