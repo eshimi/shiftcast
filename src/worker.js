@@ -14,6 +14,7 @@ import { COLUMNS, COLUMN_UPDATED, columnList } from './columns.js';
 import { prefBySlug, PREFS } from './prefectures.js';
 import { todaySummary } from './today.js';
 import { miniChartHtml } from './minichart.js';
+import { robotsTxt, llmsTxt, llmsFullTxt } from './seo.js';
 import { factorTilesHtml, moodBlockHtml, moodMiniHtml } from './tiles.js';
 import { carePage, checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
@@ -228,10 +229,9 @@ const html = (c, body, status = 200) => {
   c.header('Cache-Control', 'public, max-age=300');
   return c.html(body, status);
 };
-app.get('/robots.txt', (c) => {
-  c.header('Cache-Control', 'public, max-age=3600');
-  return c.text(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
-});
+app.get('/robots.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(robotsTxt()); });
+app.get('/llms.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsTxt()); });
+app.get('/llms-full.txt', (c) => { c.header('Cache-Control', 'public, max-age=3600'); return c.text(llmsFullTxt()); });
 app.get('/sitemap.xml', (c) => {
   const urls = [['/', null], ['/about', null], ['/weather', null], ['/columns', COLUMN_UPDATED], ['/app/', null], ['/pressure', null], ['/glossary', null], ['/care', null], ['/today', null], ['/check', null], ...PREFS.map((p) => [`/pressure/${p.slug}`, null]), ...COLUMNS.map((x) => [`/columns/${x.slug}`, COLUMN_UPDATED])];
   const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(([u, m]) => `<url><loc>${SITE_URL}${u}</loc>${m ? `<lastmod>${m}</lastmod>` : ''}</url>`).join('\n')}\n</urlset>\n`;

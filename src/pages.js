@@ -7,6 +7,7 @@ import { GLOSSARY } from './glossary.js';
 import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
 import { miniChartHtml } from './minichart.js';
+import { COLUMN_EXTRA } from './column-extra.js';
 import { repCodeOf } from './today.js';
 import { MAP_COLS, MAP_ROWS, MAP_DOTS } from './japanmap.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
@@ -361,11 +362,16 @@ ${notifyCta()}
 <p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    title: '週間天気と気圧予報｜天気痛・気象病の頭痛に備える',
+    title: '週間天気と気圧予報｜今日・明日の気圧と天気痛・気象病の頭痛に備える',
     description: '1週間の天気・気温・降水確率と、気圧が下がる日の目安を都道府県別に確認できます。天気痛・気象病・気圧による頭痛に備えて、崩れる日の前に準備できます。',
     keywords: COLUMN_KEYWORDS,
     page: 'weather',
     path: '/weather',
+    jsonld: [
+      { '@type': 'WebPage', name: '週間天気と気圧予報', url: SITE_URL + '/weather', inLanguage: 'ja', about: ['気圧', '天気痛', '気象病'], isPartOf: { '@type': 'WebSite', name: SITE, url: SITE_URL } },
+      { '@type': 'Dataset', name: '都道府県別の週間天気と気圧予報', description: '全国の天気・気温・降水確率と、気圧の変化(4段階)を10分ごとに更新。', url: SITE_URL + '/weather', inLanguage: 'ja', isAccessibleForFree: true, license: `${SITE_URL}/terms.html`, creator: { '@type': 'Organization', name: SITE, url: SITE_URL }, temporalCoverage: 'P7D', variableMeasured: ['海面気圧(hPa)', '気温', '降水確率'], measurementTechnique: '気象庁・OpenWeatherMap' },
+      { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['週間天気', '/weather']].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) },
+    ],
     body,
     wide: true,
     scripts: '<script src="/wx.js"></script>\n<script src="/faces.js"></script>\n<script src="/site.js" defer></script>',
@@ -457,12 +463,21 @@ ${notifyCta()}
 <p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。症状が強い・続くときは医療機関に相談してください。</p>
 </div>`;
   return layout({
-    title: `${name}の気圧予報｜今日の気圧と天気痛・頭痛の目安`,
+    title: `${name}の気圧予報｜今日・明日の気圧と天気痛・頭痛の目安`,
     description: `${name}の今日の気圧と7日間の天気・気圧の変化を掲載。天気痛・気象病・気圧による頭痛に備えて、気圧が下がる日の前に準備できます。${cur ? `現在は約${Math.round(cur.pressure)}hPa、今後24時間は「${n.label}」。` : ''}`,
     keywords: [`${name} 気圧`, `${name} 天気痛`, `${name} 気象病`, '気圧 頭痛'],
     page: 'pressure',
     path: `/pressure/${pref.slug}`,
-    jsonld: [{ '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['都道府県別の気圧', '/pressure'], [`${name}の気圧予報`, `/pressure/${pref.slug}`]].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) }],
+    jsonld: [
+      { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['都道府県別の気圧', '/pressure'], [`${name}の気圧予報`, `/pressure/${pref.slug}`]].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) },
+      { '@type': 'WebPage', name: `${name}の気圧予報`, url: `${SITE_URL}/pressure/${pref.slug}`, inLanguage: 'ja', about: ['気圧', '天気痛', '気象病'], isPartOf: { '@type': 'WebSite', name: SITE, url: SITE_URL }, ...(w?.fetchedAt ? { dateModified: new Date(w.fetchedAt).toISOString() } : {}) },
+      { '@type': 'Dataset', name: `${name}の気圧予報（海面気圧・7日間）`, description: `${name}の海面気圧(hPa)の実況と予報、1時間あたりの変化量による4段階のレベル。`, url: `${SITE_URL}/pressure/${pref.slug}`, inLanguage: 'ja', isAccessibleForFree: true, license: `${SITE_URL}/terms.html`, creator: { '@type': 'Organization', name: SITE, url: SITE_URL }, spatialCoverage: name, temporalCoverage: 'P7D', variableMeasured: '海面気圧(hPa)', measurementTechnique: '気象庁アメダス観測・OpenWeatherMap予報' },
+      { '@type': 'FAQPage', mainEntity: [
+        [`${name}の今日の気圧は？`, lead + detail],
+        [`${name}で気圧が下がると頭痛が出やすいですか？`, '気圧の低下で頭痛やだるさが出る人がいます（天気痛・気象病）。感じ方には個人差があります。気圧が下がる前日は睡眠と予定の余裕を。'],
+        ['気圧のレベルはどう決めていますか？', '1時間あたりの気圧の変化量で、上昇注意・やや注意・注意・警戒の4段階に分けています（気象庁・OpenWeatherMapのデータ）。'],
+      ].map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+    ],
     body,
     wide: true,
   });
@@ -582,6 +597,11 @@ ${LEVELS}
     keywords: ['今日の気圧', '天気痛', '気象病', '気圧 頭痛'],
     page: 'today',
     path: '/today',
+    jsonld: [
+      { '@type': 'WebPage', name: '全国の地図｜今日の気圧と天気痛の目安', url: SITE_URL + '/today', inLanguage: 'ja', about: ['気圧', '天気痛', '気象病'], isPartOf: { '@type': 'WebSite', name: SITE, url: SITE_URL }, dateModified: new Date().toISOString() },
+      { '@type': 'Dataset', name: '全国の今日の気圧と今後24時間の変化', description: '全国の主要地域の現在の気圧と、今後24時間の気圧の変化レベル。', url: SITE_URL + '/today', inLanguage: 'ja', isAccessibleForFree: true, license: `${SITE_URL}/terms.html`, creator: { '@type': 'Organization', name: SITE, url: SITE_URL }, temporalCoverage: 'P1D', spatialCoverage: '日本', variableMeasured: '海面気圧(hPa)' },
+      { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['全国の地図', '/today']].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) },
+    ],
     body,
     wide: true,
   });
@@ -820,6 +840,7 @@ export function columnPage(slug) {
   const i = COLUMNS.indexOf(c);
   const prev = COLUMNS[i - 1];
   const next = COLUMNS[i + 1];
+  const ex = COLUMN_EXTRA[c.slug];
   const kw = new Set(c.keywords || []);
   const related = COLUMNS.filter((x) => x !== c)
     .map((x, n) => ({ x, n, sc: (x.keywords || []).filter((k) => kw.has(k)).length }))
@@ -832,7 +853,10 @@ export function columnPage(slug) {
   <h1>${esc(c.title)}</h1>
   <p class="muted small">約${c.readMin}分 ・ 更新 ${COLUMN_UPDATED}</p>
   <p class="lead">${esc(c.summary)}</p>
+  ${ex ? `<div class="keypoints" role="note"><p class="kp-h">この記事の要点</p><ul>${ex.points.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
   ${(() => { const seen = new Set(); return c.blocks.map((b) => (b.h ? renderBlock(b) : linkGlossary(renderBlock(b), seen))).join('\n  '); })()}
+  ${ex ? `<section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">よくある質問</h2>${ex.faq.map(([q, a]) => `<details class="faq-i"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</section>` : ''}
+  <div class="refs"><p class="muted small"><b>執筆・編集</b>：${esc(SITE)}編集部（医師の監修を受けたものではありません）　<b>最終更新</b>：${COLUMN_UPDATED}<br><b>参考情報</b>：気象庁「天気予報・気圧等の観測データ」、日本頭痛学会「頭痛の診療ガイドライン」、各種公開資料をもとに、一般に知られている内容をまとめています。</p></div>
 </article>
 ${related.length ? `<section class="related" aria-labelledby="rel-h"><h2 id="rel-h">あわせて読みたい</h2><ul>${related.map((r) => `<li><a href="/columns/${esc(r.slug)}">${esc(r.title)}</a><span class="muted small">${esc(r.summary)}</span></li>`).join('')}</ul></section>` : ''}
 <details class="pref-d"><summary>お住まいの地域の気圧予報を見る（全国47都道府県）</summary>
@@ -852,7 +876,8 @@ ${notifyCta()}
   return layout({
     title: c.title, description: c.summary, keywords: c.keywords || COLUMN_KEYWORDS, page: 'column', path: `/columns/${c.slug}`,
     jsonld: [
-      { '@type': 'Article', headline: c.title, description: c.summary, inLanguage: 'ja', dateModified: COLUMN_UPDATED, mainEntityOfPage: `${SITE_URL}/columns/${c.slug}`, image: `${SITE_URL}${OG_IMAGE}`, keywords: (c.keywords || COLUMN_KEYWORDS).join(','), author: { '@type': 'Organization', name: SITE }, publisher: { '@type': 'Organization', name: SITE } },
+      { '@type': 'Article', headline: c.title, description: c.summary, inLanguage: 'ja', dateModified: COLUMN_UPDATED, mainEntityOfPage: `${SITE_URL}/columns/${c.slug}`, image: `${SITE_URL}${OG_IMAGE}`, keywords: (c.keywords || COLUMN_KEYWORDS).join(','), author: { '@type': 'Organization', name: `${SITE}編集部`, url: SITE_URL }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL, logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon-512.png` } }, datePublished: COLUMN_UPDATED, isAccessibleForFree: true, about: ['気象病', '天気痛', '気圧', '頭痛'], citation: ['気象庁 天気予報・気圧等の観測データ', '日本頭痛学会 頭痛の診療ガイドライン'] },
+      ...(ex ? [{ '@type': 'FAQPage', mainEntity: ex.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] : []),
       { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['コラム', '/columns'], [c.title, `/columns/${c.slug}`]].map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: SITE_URL + path })) },
     ],
     body,

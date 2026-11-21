@@ -324,3 +324,10 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 .site-h .h-in .h-rec { margin-left: auto; }
 
 .mc-btn { margin: 8px 0 14px; }
+
+/* コラム: 要点・FAQ・出典 */
+.keypoints { margin: 14px 0 18px; padding: 14px 16px; border-radius: 14px; background: var(--color-mist); border-left: 4px solid var(--color-primary); }
+.kp-h { margin: 0 0 6px; font-weight: 700; font-size: 14px; color: var(--color-primary-deep); } .keypoints ul { margin: 0; padding-left: 18px; font-size: 14px; line-height: 1.8; } .keypoints li { margin: 2px 0; }
+.faq { margin: 28px 0 8px; } .faq h2 { font-size: 18px; margin: 0 0 8px; }
+.faq-i { border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-card); margin: 8px 0; padding: 0 14px; } .faq-i summary { cursor: pointer; padding: 12px 0; font-weight: 700; font-size: 15px; } .faq-i p { margin: 0 0 12px; font-size: 14px; line-height: 1.8; }
+.refs { margin-top: 18px; padding-top: 12px; border-top: 1px dashed var(--color-border); }
