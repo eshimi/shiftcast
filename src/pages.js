@@ -98,6 +98,10 @@ const FONT_URL = 'https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wg
 const TOP_FONTS = `<link rel="stylesheet" href="${FONT_URL}" media="print" onload="this.media='all'">\n<noscript><link rel="stylesheet" href="${FONT_URL}"></noscript>`;
 const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design/overrides.json)
 
+// Google Analytics (GA4) — 測定ID: G-JNL4YVJDVG
+const GA_TAG = `<script async src="https://www.googletagmanager.com/gtag/js?id=G-JNL4YVJDVG"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-JNL4YVJDVG');</script>`;
+
 const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
 
 function layout({ title, rawTitle, description, keywords, page, path, jsonld = [], body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
@@ -110,6 +114,7 @@ function layout({ title, rawTitle, description, keywords, page, path, jsonld = [
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F7FBFD">
+${GA_TAG}
 <title>${esc(full)}</title>
 <meta name="description" content="${esc(description)}">
 ${keywords ? `<meta name="keywords" content="${esc(keywords.join(','))}">\n` : ''}
