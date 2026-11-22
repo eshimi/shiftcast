@@ -115,6 +115,8 @@
     ]);
     return box;
   }
+  // 通知の案内は、サーバー側の通知設定(Firebase)が済んでいるときだけ出す(押しても動かないボタンを出さない)
+  if (ctas.length) fetch('/api/config').then(function (r) { return r.json(); }).then(function (c) { if (c.firebase && c.vapidKey) ctas.forEach(function (x) { x.hidden = false; }); }).catch(function () {});
   if (ctas.length) {
     ctas.forEach(function (c) {
       var b = c.querySelector('[data-ncta-btn]');

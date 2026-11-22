@@ -191,7 +191,7 @@ const secHead2 = (en, ja, id) => `<div class="sx-h"><h2 id="${id}">${en}</h2><p 
 
 // 通知登録CTA（再利用コンポーネント）。クライアント処理は public/actions.js（説明モーダルを1枚挟んでから許可リクエスト）。
 // 登録済みの端末ではボタンが「通知はオンです」に切り替わる。
-export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通知の登録">
+export const notifyCta = () => `<section class="ncta" data-ncta aria-label="通知の登録" hidden>
   <p class="ncta-h">明日が危ない日は、前の晩にお知らせ</p>
   <p class="ncta-d">翌日が「注意」以上の気圧低下のときだけ、毎晩20時に通知します。それ以外の日は送りません。</p>
   <div class="ncta-sample" aria-hidden="true">
@@ -403,7 +403,7 @@ export function columnsPage() {
 <p class="disclaimer">コラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>
 </div>`;
   return layout({
-    title: 'コラム｜天気痛・気象病・気圧と頭痛の対策',
+    title: 'コラム｜天気痛・気象病・気圧頭痛の対策',
     description: '天気痛・気象病・気圧による頭痛の仕組み、前日の準備、セルフケア、頭痛ダイアリー、季節ごとの特徴、受診の目安までをまとめたコラム。',
     keywords: COLUMN_KEYWORDS,
     page: 'columns',
@@ -444,6 +444,11 @@ export function pressurePage(pref, w) {
     : `${name}の気圧の予報を準備中です。しばらくしてからもう一度ご覧ください。`;
   const detail = n.level !== 'none' && n.rate != null ? `${jstMD(n.at)}ごろに、1時間あたり${sgn(n.rate)}${Math.abs(n.rate).toFixed(1)}hPaの変化が見込まれます。` : n.level === 'none' && cur ? '大きな気圧の変化は見込まれていません。' : '';
   const weekNote = risky.length ? `1週間のうち、気圧が「注意」以上で下がる見込みの日は${risky.map((d) => `${d.label}（${d.dow}）`).join('、')}です。前日の夜に、早めの休息と睡眠、いつもの薬の確認をしておくと安心です。` : '1週間のうち、気圧が「注意」以上で大きく下がる見込みの日は、いまのところありません（気圧の予報は約5日先まで）。';
+  const prefFaq = [
+    [`${name}の今日の気圧は？`, lead + detail],
+    [`${name}で気圧が下がると頭痛が出やすいですか？`, '気圧の低下で頭痛やだるさが出る人がいます（天気痛・気象病）。感じ方には個人差があります。気圧が下がる前日は睡眠と予定の余裕を。'],
+    ['気圧のレベルはどう決めていますか？', '1時間あたりの気圧の変化量で、上昇注意・やや注意・注意・警戒の4段階に分けています（気象庁・OpenWeatherMapのデータ）。'],
+  ];
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">PRESSURE · ${esc(regionOf(pref.code))}</p><h1>${esc(name)}の気圧予報｜天気痛・気象病の頭痛の目安</h1><p>${esc(name)}の今日の気圧と1週間の見通しで、天気痛・気象病・気圧による頭痛に備えましょう。</p></div><div class="pg-ppl" aria-hidden="true">${person('reading', { k: 0.5 })}</div></div>
 <div class="wrap">
@@ -476,6 +481,7 @@ export function pressurePage(pref, w) {
   </ul>
   <p class="row"><a class="btn primary" href="/app/">頭痛・体調を記録する</a><a class="btn" href="/weather?area=${pref.code}">${esc(name)}の1時間ごとの気圧を見る</a></p>
 </section>
+${faqHtml(prefFaq)}
 <section class="sec"><h2 class="pg-h">近くの都道府県の気圧予報</h2>
   <ul class="chips-l">${near.map((q) => `<li><a href="/pressure/${q.slug}">${esc(q.name)}</a></li>`).join('')}<li><a href="/pressure">すべての都道府県</a></li></ul>
 </section>
@@ -492,11 +498,7 @@ ${notifyCta()}
       { '@type': 'BreadcrumbList', itemListElement: [['トップ', '/'], ['都道府県別の気圧', '/pressure'], [`${name}の気圧予報`, `/pressure/${pref.slug}`]].map(([nm, pth], i) => ({ '@type': 'ListItem', position: i + 1, name: nm, item: SITE_URL + pth })) },
       { '@type': 'WebPage', name: `${name}の気圧予報`, url: `${SITE_URL}/pressure/${pref.slug}`, inLanguage: 'ja', about: ['気圧', '天気痛', '気象病'], isPartOf: { '@type': 'WebSite', name: SITE, url: SITE_URL }, ...(w?.fetchedAt ? { dateModified: new Date(w.fetchedAt).toISOString() } : {}) },
       { '@type': 'Dataset', name: `${name}の気圧予報（海面気圧・7日間）`, description: `${name}の海面気圧(hPa)の実況と予報、1時間あたりの変化量による4段階のレベル。`, url: `${SITE_URL}/pressure/${pref.slug}`, inLanguage: 'ja', isAccessibleForFree: true, license: `${SITE_URL}/terms.html`, creator: { '@type': 'Organization', name: SITE, url: SITE_URL }, spatialCoverage: name, temporalCoverage: 'P7D', variableMeasured: '海面気圧(hPa)', measurementTechnique: '気象庁アメダス観測・OpenWeatherMap予報' },
-      { '@type': 'FAQPage', mainEntity: [
-        [`${name}の今日の気圧は？`, lead + detail],
-        [`${name}で気圧が下がると頭痛が出やすいですか？`, '気圧の低下で頭痛やだるさが出る人がいます（天気痛・気象病）。感じ方には個人差があります。気圧が下がる前日は睡眠と予定の余裕を。'],
-        ['気圧のレベルはどう決めていますか？', '1時間あたりの気圧の変化量で、上昇注意・やや注意・注意・警戒の4段階に分けています（気象庁・OpenWeatherMapのデータ）。'],
-      ].map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+      faqLd(prefFaq),
     ],
     body,
     wide: true,
@@ -612,7 +614,7 @@ ${LEVELS}
 <p class="disclaimer">気圧の予報は目安であり、体調の変化を保証したり、診断・治療を行ったりするものではありません。症状が強い・続くときは医療機関に相談してください。</p>
 </div>`;
   return layout({
-    title: `今日の気圧と天気痛の目安｜${date} 全国の気圧予報`,
+    title: `全国の地図｜今日の気圧と天気痛の目安（${date}）`,
     description: `${date}の全国の気圧と今後24時間の変化。${alert.length ? `${names(alert)}で気圧が「注意」以上で下がる見込みです。` : '全国の代表都市で、大きく下がる見込みはありません。'}天気痛・気象病・気圧頭痛に備えて。`,
     keywords: ['今日の気圧', '天気痛', '気象病', '気圧 頭痛'],
     page: 'today',
@@ -724,7 +726,7 @@ ${GLOSSARY.map(([t, r, d, slug], i) => `<div class="gl-i" id="g${i + 1}"><dt>${e
 <p class="disclaimer">用語の説明は一般的な情報で、診断や治療を目的としたものではありません。</p>
 </div>`;
   return layout({
-    title: '天気痛・気象病の用語集｜気圧・低気圧・前線・片頭痛のやさしい解説',
+    title: '用語集｜天気痛・気象病・気圧・片頭痛のやさしい解説',
     description: '気象病・天気痛・気圧頭痛、海面気圧、低気圧、前線、台風、内耳、自律神経、片頭痛など、気圧と体調に関する用語をやさしく解説する用語集。',
     keywords: ['天気痛', '気象病', '気圧', '頭痛', '用語集'],
     page: 'glossary',
@@ -801,8 +803,8 @@ ${ABOUT_SHOTS.map(([n, no, t, d, li], i) => `<div class="ab-shot${i % 2 ? ' rev'
 <p class="disclaimer">本サービスの気圧データは海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
   return layout({
-    rawTitle: `${SITE_TITLE}とは｜天気痛・気象病の気圧予報と頭痛の記録アプリ`,
-    description: 'ウェルミーは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、前日の通知、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
+    rawTitle: `サービス紹介｜${SITE_TITLE}とは（天気痛・気象病の気圧予報と頭痛の記録アプリ）`,
+    description: 'ウェルミーは、天気痛・気象病・気圧による頭痛に備える無料のWebアプリ。気圧予報、頭痛や体調の記録と分析の機能、使い方、よくある質問を紹介します。',
     keywords: COLUMN_KEYWORDS,
     page: 'about',
     path: '/about',

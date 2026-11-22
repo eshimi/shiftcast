@@ -33,7 +33,7 @@ body, .big, .fx-v, .mhero-score b, .st-n, .num { font-variant-numeric: tabular-n
 .btn.primary, .btn.dark, .ds .btn.primary { background: var(--wl-sage); border-color: var(--wl-sage); color: #fff; }
 .btn.primary:hover, .btn.dark:hover { background: var(--wl-sage-deep); border-color: var(--wl-sage-deep); }
 input, select, textarea, .ds select, .ds input, .ds textarea { border-radius: 12px; }
-.card, .ds .card, .fx, .fx-sum, .mood, .stairs, .ab-card, .ab-verb, .related li, .callout, .col-card, .pager a { border-radius: 16px; }
+.card, .ds .card, .fx, .fx-sum, .mood, .stairs, .ab-card, .ab-verb, .callout, .col-card, .pager a { border-radius: 16px; }
 .mood { overflow: hidden; }
 .seg { border-radius: 999px; overflow: hidden; }
 .chip { border-radius: 999px; }
@@ -337,3 +337,4 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 #pwaHint img { border-radius: 10px; flex: none; } #pwaHint .pwa-t { flex: 1; font-size: 12px; line-height: 1.5; color: var(--color-ink-muted); } #pwaHint .pwa-t b { display: block; font-size: 14px; color: var(--color-ink); }
 #pwaHint button { border: 0; font: inherit; cursor: pointer; } #pwaHint .pwa-add { background: var(--color-primary); color: #fff; font-weight: 700; padding: 8px 16px; border-radius: 999px; } #pwaHint .pwa-x { background: none; color: var(--color-ink-muted); font-size: 20px; padding: 4px 8px; }
 #offlineBar { position: sticky; top: 0; z-index: 30; background: var(--lv-slight-bg); color: var(--lv-slight-tx); text-align: center; font-size: 12px; padding: 6px 12px; border-bottom: 1px solid var(--lv-slight); }
+.ds .related li { border-radius: 0; }
