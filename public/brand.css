@@ -338,3 +338,11 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 #pwaHint button { border: 0; font: inherit; cursor: pointer; } #pwaHint .pwa-add { background: var(--color-primary); color: #fff; font-weight: 700; padding: 8px 16px; border-radius: 999px; } #pwaHint .pwa-x { background: none; color: var(--color-ink-muted); font-size: 20px; padding: 4px 8px; }
 #offlineBar { position: sticky; top: 0; z-index: 30; background: var(--lv-slight-bg); color: var(--lv-slight-tx); text-align: center; font-size: 12px; padding: 6px 12px; border-bottom: 1px solid var(--lv-slight); }
 .ds .related li { border-radius: 0; }
+
+/* ページ上部の見出し帯を低く(ファーストビューを本文に) */
+.page-head { padding: 22px 0 16px; }
+.page-head.has-ppl { padding-bottom: 100px; }
+@media (max-width: 639px) { .page-head h1 { font-size: 24px; line-height: 1.45; } .page-head p { font-size: 14px; } }
+/* 週間天気・都道府県: 上の大きな気圧値は下の「気圧」タイルと重複するので出さない */
+.today.has-fx .t-body .big { display: none; }
+.pref-t td small, table td small { display: block; font-size: 11px; color: var(--color-ink-muted); }

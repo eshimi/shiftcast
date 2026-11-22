@@ -89,7 +89,7 @@ function renderToday(w) {
   el.replaceChildren(
     h('div', { class: 'ico', 'aria-hidden': 'true' }, window.FACE ? window.FACE.level(n.level, 46) : { warning: '🚨', caution: '⚠️', slight: '🟡', rise: '🔼', none: '✅' }[n.level]),
     h('div', { class: 't-body' },
-      h('div', { class: 'muted small' }, `${w.area.name}・現在の海面気圧 `, w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
+      h('div', { class: 'muted small' }, `${w.area.name}・気圧の見通し `, w.demo ? h('span', { class: 'badge' }, 'デモデータ') : null),
       h('div', { class: 'big' }, cur ? `${Math.round(cur.pressure)}` : '–', h('small', {}, ' hPa'),
         d3 != null ? h('small', {}, `　直近3時間 ${sign(d3)}${Math.abs(d3).toFixed(1)}`) : null),
       h('div', {}, '今後24時間：', h('span', { class: `pill lv-${n.level}` }, n.label),

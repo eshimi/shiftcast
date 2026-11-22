@@ -417,6 +417,7 @@ export function columnsPage() {
 /* ---------- 都道府県別の気圧(/pressure) ---------- */
 
 const jstHM = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCHours()}時${String(d.getUTCMinutes()).padStart(2, '0')}分`; };
+const jstDH = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCDate()}日${d.getUTCHours()}時`; }; // 表の短い日時(例: 23日12時)
 const jstMD = (ts) => { const d = new Date(ts + 9 * 3600e3); return `${d.getUTCMonth() + 1}月${d.getUTCDate()}日 ${d.getUTCHours()}時`; };
 const sgn = (n) => (n > 0 ? '+' : n < 0 ? '−' : '±');
 const LV_ORDER = ['none', 'rise', 'slight', 'caution', 'warning'];
@@ -465,7 +466,9 @@ export function pressurePage(pref, w) {
   <div class="days">${(w?.days ?? []).map(dayRowHtml).join('')}</div>
   ${LEVELS}
   <p>${esc(weekNote)}</p>
+  <details class="crit"><summary>表示の見かた・判定基準</summary>
   <p class="muted small">気圧は海面気圧の変化の目安です（気象庁・OpenWeatherMap）。気温の「気温差」は、前日の同じ時刻との差が5℃以上、または今後24時間の最高と最低の差が9℃以上で「あり」、8℃以上／12℃以上で「大」とする暫定の表示です。降水は直近24時間または今後24時間の合計が1mm以上で「雨あり」、10mm以上で「まとまった雨」、30mm以上で「雨が多め」、湿度は75%以上で「高め」、85%以上で「かなり高め」としています。いずれも医学的な基準ではありません（表示のみで、通知には使っていません）。</p>
+  </details>
 </section>
 <section class="sec" aria-labelledby="p-feat"><h2 id="p-feat" class="pg-h">${esc(name)}の気圧・天気の特徴</h2>
   <p>${esc(PREF_NOTES[pref.code] || '')}</p>
@@ -582,7 +585,7 @@ export function todayPage(sum) {
     if (slight.length) lines.push(`「やや注意」の見込みは、${names(slight)}です。`);
     if (rise.length) lines.push(`気圧が上がる変化（上昇注意）の見込みは、${names(rise)}です。`);
   }
-  const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstMD(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
+  const pk = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th>${r.ok ? `<td>${Math.round(r.pressure)}<small> hPa</small></td><td><span class="pill lv-${r.level}">${esc(r.label)}</span></td><td>${r.rate != null && r.level !== 'none' ? `${jstDH(r.at)}<small>${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h</small>` : '—'}</td>` : '<td colspan="3">準備中</td>'}</tr>`;
   const body = `
 <div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S PRESSURE</p><h1>全国の地図｜今日の気圧と天気痛の目安（${esc(date)}）</h1><p>全国の主要都市の今日の気圧と、今後24時間の変化。天気痛・気象病・気圧頭痛への備えにどうぞ。</p></div><div class="pg-ppl" aria-hidden="true">${person('jogger', { k: 0.5 })}</div></div>
 <div class="wrap">
@@ -684,7 +687,6 @@ export function carePage() {
 <div class="page-head has-ppl"><div class="wrap"><p class="en">TODAY'S CARE</p><h1>今日の過ごし方・体調を整える対策</h1><p>気圧・気温差・降水・湿度で体調が崩れやすい日の、セルフケアのまとめです。</p></div><div class="pg-ppl" aria-hidden="true">${person('yoga', { k: 0.5 })}</div></div>
 <div class="wrap care-page">
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <span aria-current="page">今日の過ごし方</span></nav>
-<p class="care-back"><a href="/">← トップに戻る</a></p>
 <section id="careToday" class="card care-today" hidden aria-live="polite"></section>
 <section class="sec"><h2 class="pg-h">要因別の対策</h2>
 <p class="muted small">体調そらもようの判定に効いた要因は、「今日の要因」と表示されます。</p>
@@ -878,24 +880,21 @@ export function columnPage(slug) {
   ${ex ? `<div class="keypoints" role="note"><p class="kp-h">この記事の要点</p><ul>${ex.points.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}
   ${(() => { const seen = new Set(); return c.blocks.map((b) => (b.h ? renderBlock(b) : linkGlossary(renderBlock(b), seen))).join('\n  '); })()}
   ${ex ? `<section class="faq" aria-labelledby="faq-h"><h2 id="faq-h">よくある質問</h2>${ex.faq.map(([q, a]) => `<details class="faq-i"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</section>` : ''}
-  <div class="refs"><p class="muted small"><b>執筆・編集</b>：${esc(SITE)}編集部（医師の監修を受けたものではありません）　<b>最終更新</b>：${COLUMN_UPDATED}<br><b>参考情報</b>：気象庁「天気予報・気圧等の観測データ」、日本頭痛学会「頭痛の診療ガイドライン」、各種公開資料をもとに、一般に知られている内容をまとめています。</p></div>
+  <div class="refs"><p class="muted small"><b>執筆・編集</b>：${esc(SITE)}編集部（医師の監修を受けたものではありません）　<b>最終更新</b>：${COLUMN_UPDATED}<br><b>参考情報</b>：気象庁「天気予報・気圧等の観測データ」、日本頭痛学会「頭痛の診療ガイドライン」、各種公開資料をもとに、一般に知られている内容をまとめています。診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p></div>
 </article>
 ${related.length ? `<section class="related" aria-labelledby="rel-h"><h2 id="rel-h">あわせて読みたい</h2><ul>${related.map((r) => `<li><a href="/columns/${esc(r.slug)}">${esc(r.title)}</a><span class="muted small">${esc(r.summary)}</span></li>`).join('')}</ul></section>` : ''}
-<details class="pref-d"><summary>お住まいの地域の気圧予報を見る（全国47都道府県）</summary>
-${REGIONS.map(([r, codes]) => `<p class="pref-r"><b>${esc(r)}</b>${codes.map((cd) => PREFS.find((q) => q.code === cd)).map((q) => `<a href="/pressure/${q.slug}">${esc(q.name)}</a>`).join('')}</p>`).join('')}
-</details>
 <div class="cta card">
   <b>気圧の変化を先回りでチェック</b>
   <p class="muted">今週の天気と気圧、体調の記録は、こちらから。</p>
   <p class="row"><a class="btn primary" href="/weather">週間天気を見る</a><a class="btn" href="/pressure">都道府県別の気圧</a><a class="btn" href="/app/">気圧・記録へ</a></p>
-  <p class="muted small">症状から探す：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}　／　<a href="/guide">気象病ガイド</a></p>
+  <p class="muted small">お住まいの地域：<a href="/pressure">都道府県別の気圧予報</a>・<a href="/today">全国の地図</a><br>症状から探す：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}　／　<a href="/guide">気象病ガイド</a></p>
 </div>
 ${notifyCta()}
 <nav class="pager" aria-label="前後のコラム">
   ${prev ? `<a href="/columns/${esc(prev.slug)}"><small class="muted">← 前の記事</small><b>${esc(prev.title)}</b></a>` : '<span></span>'}
   ${next ? `<a href="/columns/${esc(next.slug)}" class="r"><small class="muted">次の記事 →</small><b>${esc(next.title)}</b></a>` : '<span></span>'}
 </nav>
-<p class="disclaimer">このコラムは一般的な情報で、診断や治療の代わりにはなりません。症状が強い・続くときは医療機関に相談してください。</p>`;
+`;
   return layout({
     title: c.title, description: c.summary, keywords: c.keywords || COLUMN_KEYWORDS, page: 'column', path: `/columns/${c.slug}`,
     jsonld: [
