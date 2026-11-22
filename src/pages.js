@@ -876,7 +876,7 @@ export function columnPage(slug) {
   // 関連記事: 前後の記事(ページ下で案内済み)を除き、キーワードの重なりが同じなら「この記事の後ろにある記事」から順に選ぶ。
   // 同じ数本に集中せず、全記事に満遍なくリンクが張られるようにする
   const L = COLUMNS.length;
-  const related = COLUMNS.map((x, n) => ({ x, n, sc: (x.keywords || []).filter((k) => kw.has(k)).length, d: (n - i + L) % L }))
+  const related = COLUMNS.map((x, n) => ({ x, n, sc: Math.min(2, (x.keywords || []).filter((k) => kw.has(k)).length), d: (n - i + L) % L }))
     .filter((o) => o.x !== c && o.x !== prev && o.x !== next)
     .sort((a, b) => b.sc - a.sc || a.d - b.d).slice(0, 3).map((o) => o.x);
   const body = `
