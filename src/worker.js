@@ -7,6 +7,7 @@ import { getAreaStats } from './stats.js';
 import { buildInsights, withPressure } from './insights.js';
 import { searchDrugs } from './drugs.js';
 import { scheduled } from './cron.js';
+import { fcmClient } from './notify.js';
 import { loadJmaCached } from './jma.js';
 import { buildWeek } from './week.js';
 import { SITE_URL } from './siteconfig.js';
@@ -131,6 +132,24 @@ app.delete('/api/me', async (c) => {
   const id = c.get('user').id;
   await batch(c.env.DB, ['logs', 'user_tags', 'my_meds', 'user_areas', 'users'].map((t) => [`DELETE FROM ${t} WHERE ${t === 'users' ? 'id' : 'user_id'}=?`, id]));
   return c.body(null, 204);
+});
+
+// テスト通知: 自分の端末トークンに1件だけ即時送信（動作確認用）
+app.post('/api/push/test', async (c) => {
+  const u = c.get('user');
+  if (!u.fcm_token) return bad(c, 'no_token');
+  const send = fcmClient(c.env);
+  if (!send) return bad(c, 'fcm_unconfigured', 500);
+  try {
+    await send(u.fcm_token, { title: 'テスト通知', body: 'ウェルミーの通知テストです。これが届けば設定は完了です。' });
+  } catch (e) {
+    if (e.gone) {
+      await run(c.env.DB, 'UPDATE users SET fcm_token=NULL WHERE id=?', u.id);
+      return bad(c, 'token_gone');
+    }
+    return bad(c, 'send_failed', 502);
+  }
+  return c.json({ ok: true });
 });
 
 // ---------- ダッシュボード ----------

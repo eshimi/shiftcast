@@ -570,6 +570,7 @@ function renderSettings() {
   $('#pushState').textContent = S.me.hasPush ? '通知: この端末で有効' : '通知: この端末では未設定';
   if ($('#notifyMin')) $('#notifyMin').value = S.me.notifyMin || 'caution';
   if ($('#notifyHour')) $('#notifyHour').value = String(S.me.notifyHour ?? 20);
+  if ($('#notifyTest')) $('#notifyTest').hidden = !S.me.hasPush;
   const ml = $('#myMedList'); ml.replaceChildren();
   if (!S.me.myMeds.length) ml.append(h('li', {}, h('span', { class: 'muted' }, '登録なし')));
   S.me.myMeds.forEach((m) => ml.append(h('li', {}, m, h('button', { class: 'link', onclick: async () => { await api('/mymeds?v=' + encodeURIComponent(m), { method: 'DELETE' }); S.me = await api('/me'); S.meds.delete(m); renderSettings(); renderMyMeds(); renderSelMeds(); } }, '削除'))));
@@ -612,6 +613,14 @@ $('#notifyHour')?.addEventListener('change', async (e) => {
   const v = Number(e.target.value); // await中にrenderSettingsで値が書き換わってもトースト文言がずれないよう退避
   try { S.me = await api('/me', { method: 'PUT', body: { notify_hour: v } }); toast(`通知時刻を${v}時に変更しました`); } catch { toast('変更できませんでした'); }
   renderSettings();
+});
+$('#notifyTest')?.addEventListener('click', async (e) => {
+  const btn = e.currentTarget;
+  if (!S.me.hasPush) { toast('先に通知をオンにしてください'); return; }
+  btn.disabled = true;
+  try { await api('/push/test', { method: 'POST' }); toast('テスト通知を送信しました'); }
+  catch (err) { toast(err.message === 'no_token' ? '通知がオフです' : 'テスト送信できませんでした'); }
+  finally { btn.disabled = false; }
 });
 $('#exportCsv').addEventListener('click', async () => {
   try {

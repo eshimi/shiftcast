@@ -25,7 +25,7 @@ async function accessToken(sa) {
   return tokenCache.token;
 }
 
-function fcmClient(env) {
+export function fcmClient(env) {
   if (!env.FIREBASE_SERVICE_ACCOUNT) return null;
   const sa = JSON.parse(env.FIREBASE_SERVICE_ACCOUNT);
   return async (token, data) => {

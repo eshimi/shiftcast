@@ -86,6 +86,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
       </select>
       <label class="lbl" for="notifyHour">通知する時刻（前の晩）</label>
       <select id="notifyHour">${[17, 18, 19, 20, 21, 22, 23].map((hh) => `<option value="${hh}">${hh}:00ごろ</option>`).join('')}</select>
+      <button id="notifyTest" class="btn sm" type="button" hidden>テスト通知を送る</button>
     </div>
     <div class="card">
       <div class="card-h"><b>エリア</b></div>
