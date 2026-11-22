@@ -80,9 +80,9 @@ const LOGO = '<img class="logo-img" src="/logo-h.webp" alt="ウェルミー" wid
 // [id, ラベル, URL]。id は layout の page 名(コラム記事は 'column' も 'columns' として扱う)
 const NAV_GROUPS = [
   { name: '気圧を見る', items: [['weather', '週間天気', '/weather'], ['today', '全国の地図', '/today'], ['pressure', '都道府県別の気圧予報', '/pressure']] },
-  { name: '体調を整える', items: [['care', '今日の過ごし方', '/care'], ['check', '気象病セルフチェック', '/check']] },
+  { name: '体調を整える', items: [['care', '今日の過ごし方', '/care'], ['guide', '気象病ガイド・症状別', '/guide'], ['check', '気象病セルフチェック', '/check']] },
   { name: '記録・分析', items: [['app', '気圧・記録', '/app/']] },
-  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['guide', '気象病ガイド', '/guide'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
+  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
 ];
 const navHtml = (page) => {
   const id = page === 'column' ? 'columns' : page === 'symptom' ? 'guide' : page;
@@ -312,6 +312,7 @@ export function topPage() {
           });
         })();</script>
         <p class="sx-btn"><a class="btn dark block" href="/columns">Column All</a></p>
+        <p class="sx-more"><a href="/guide">気象病ガイド・症状別 →</a>　<a href="/check">気象病セルフチェック →</a></p>
       </div>
     </section>
 
@@ -373,6 +374,9 @@ ${areaBar}
 </section>
 
 <p><a class="btn primary block" href="/app/">気圧グラフと体調の記録を見る</a></p>
+<section class="sec rel-links" aria-labelledby="w-rel"><h2 id="w-rel" class="pg-h">気圧が下がる日に</h2>
+  <ul class="plain"><li><a href="/care">今日の過ごし方（体調が崩れやすい日の対策）</a></li><li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li><li><a href="/symptoms/headache">気圧で起こる頭痛の原因と対処</a>・<a href="/guide">気象病ガイド・症状別</a></li><li><a href="/pressure">都道府県別の気圧予報</a>・<a href="/check">気象病セルフチェック</a></li></ul>
+</section>
 ${notifyCta()}
 <p class="disclaimer">天気予報は気象庁、気圧予報は OpenWeatherMap のデータです。海面気圧の変動傾向を示す目安であり、医学的な診断を提供するものではありません。</p>
 </div>`;
@@ -480,7 +484,9 @@ export function pressurePage(pref, w) {
     <li>気圧が下がる前日の夜は、睡眠と予定に余裕を。<a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li>
     <li>頭痛が出たら、早めに休んでセルフケアを。<a href="/columns/when-it-hurts">気圧で頭痛・不調を感じたら</a></li>
     <li>頭痛と気圧の関係を知りたいときは。<a href="/columns/kiatsu-zutsu">気圧で頭痛が起こるのはなぜ？</a> ・ <a href="/columns/headache-diary">頭痛ダイアリーのつけ方</a></li>
-    <li>仕組みを知りたいときは。<a href="/columns/what-is-kishobyo">気象病（天気痛）とは？</a></li>
+    <li>仕組みを知りたいときは。<a href="/columns/what-is-kishobyo">気象病（天気痛）とは？</a> ・ <a href="/guide">気象病ガイド・症状別</a></li>
+    <li>体調が崩れやすい日は。<a href="/care">今日の過ごし方</a> ・ 症状別：<a href="/symptoms/headache">頭痛</a>・<a href="/symptoms/dizziness">めまい</a>・<a href="/symptoms/fatigue">だるさ</a>・<a href="/symptoms/joint-pain">関節痛</a></li>
+    <li>自分の出やすさを知るには。<a href="/check">気象病セルフチェック（10問）</a> ・ <a href="/today">全国の地図</a></li>
   </ul>
   <p class="row"><a class="btn primary" href="/app/">頭痛・体調を記録する</a><a class="btn" href="/weather?area=${pref.code}">${esc(name)}の1時間ごとの気圧を見る</a></p>
 </section>
@@ -663,6 +669,7 @@ export function checkPage() {
   <p id="chkText"></p>
   <ul id="chkLinks" class="plain"></ul>
   <p class="row"><a class="btn primary" href="/app/#log" data-quicklog>体調の記録をはじめる</a><a class="btn" href="/pressure">お住まいの気圧予報</a></p>
+  <p class="muted small">もっと知る：<a href="/guide">気象病ガイド・症状別</a>・<a href="/symptoms/headache">頭痛</a>・<a href="/symptoms/dizziness">めまい</a>・<a href="/care">今日の過ごし方</a>・<a href="/columns/which-department">何科を受診する？</a></p>
   ${notifyCta()}
 </section>
 <p class="disclaimer">このチェックは、医学的に確立した診断基準ではなく、一般的に知られている傾向をもとにした目安です。回答はこの端末の中だけで処理され、保存・送信されません。気になる症状が強い・続くときは、医療機関に相談してください。</p>
@@ -866,9 +873,12 @@ export function columnPage(slug) {
   const next = COLUMNS[i + 1];
   const ex = COLUMN_EXTRA[c.slug];
   const kw = new Set(c.keywords || []);
-  const related = COLUMNS.filter((x) => x !== c)
-    .map((x, n) => ({ x, n, sc: (x.keywords || []).filter((k) => kw.has(k)).length }))
-    .sort((a, b) => b.sc - a.sc || a.n - b.n).slice(0, 3).map((o) => o.x);
+  // 関連記事: 前後の記事(ページ下で案内済み)を除き、キーワードの重なりが同じなら「この記事の後ろにある記事」から順に選ぶ。
+  // 同じ数本に集中せず、全記事に満遍なくリンクが張られるようにする
+  const L = COLUMNS.length;
+  const related = COLUMNS.map((x, n) => ({ x, n, sc: (x.keywords || []).filter((k) => kw.has(k)).length, d: (n - i + L) % L }))
+    .filter((o) => o.x !== c && o.x !== prev && o.x !== next)
+    .sort((a, b) => b.sc - a.sc || a.d - b.d).slice(0, 3).map((o) => o.x);
   const body = `
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › <a href="/columns">コラム</a></nav>
 <article class="article">
@@ -930,7 +940,7 @@ const GUIDE_FAQ = [
 
 export function guidePage() {
   const body = `
-<div class="page-head has-ppl"><div class="wrap"><p class="en">GUIDE</p><h1>気象病ガイド｜天気痛・気圧頭痛の原因・症状・対策</h1><p>気象病（天気痛）の基本から、症状別の対処、備え方、受診の目安までをまとめた入口ページです。</p></div></div>
+<div class="page-head has-ppl"><div class="wrap"><p class="en">GUIDE</p><h1>気象病ガイド・症状別｜天気痛・気圧頭痛の原因と対策</h1><p>気象病（天気痛）の基本から、症状別の対処、備え方、受診の目安までをまとめた入口ページです。</p></div></div>
 <div class="wrap article-wrap">
 <nav class="crumb" aria-label="パンくず"><a href="/">トップ</a> › 気象病ガイド</nav>
 <div class="keypoints" role="note"><p class="kp-h">このページの要点</p><ul>
@@ -949,7 +959,7 @@ export function guidePage() {
 <ul class="plain">${['day-before', 'when-it-hurts', 'daily-habits', 'ear-stretch', 'neck-shoulder-stretch'].map(colLink).join('')}<li><a href="/care">今日の過ごし方</a></li></ul></section>
 <section class="sec"><h2 class="pg-h">記録して、自分の傾向を知る</h2>
 <p>頭痛などの体調を気圧と合わせて記録すると、不調が出やすい条件が見えてきます。受診のときにも役立ちます。</p>
-<ul class="plain">${['headache-diary', 'how-to-use-app'].map(colLink).join('')}<li><a href="/check">気象病セルフチェック（10問）</a>・<a href="/app/">気圧・記録</a></li></ul></section>
+<ul class="plain">${['headache-diary', 'how-to-use-app'].map(colLink).join('')}<li><a href="/check">気象病セルフチェック（10問）</a>・<a href="/app/">気圧・記録</a>・<a href="/about">ウェルミーのサービス紹介</a></li></ul></section>
 <section class="sec"><h2 class="pg-h">薬・受診について</h2>
 <ul class="plain">${['otc-medicine', 'which-department', 'when-to-see-doctor', 'how-long'].map(colLink).join('')}</ul></section>
 ${faqHtml(GUIDE_FAQ)}
