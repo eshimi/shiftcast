@@ -67,7 +67,7 @@ export const APP_BODY = `  <!-- ダッシュボード -->
     <div class="card"><div class="card-h"><b>あなたの傾向</b></div>
       <div id="insightProg" class="iprog" hidden><p id="insightProgText"></p><div class="iprog-bar" aria-hidden="true"><i id="insightProgFill"></i></div></div>
       <p id="insightText" class="big"></p><div id="insightDetail" class="muted"></div></div>
-    <div id="insightChartCard" class="card" hidden><div class="card-h"><b>気圧と、あなたの記録</b></div><p class="muted">気圧グラフに、記録した体調の顔を重ねています。記録が5件ほど集まると、上の「傾向」が出ます。</p><div id="insightChartHost"></div></div>
+    <div id="insightChartCard" class="card" hidden><div class="card-h"><b>気圧と、あなたの記録</b></div><p id="insightChartNote" class="muted">気圧グラフに、記録した体調の顔を重ねています。</p><div id="insightChartHost"></div></div>
     <p class="disclaimer">簡易的な統計であり、医学的な診断ではありません。気になる症状は医療機関にご相談ください。</p>
   </section>
 

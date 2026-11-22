@@ -546,6 +546,9 @@ async function loadInsight() {
   // 重ね合わせプレビュー: 記録が1件以上あれば、気圧グラフ(気圧タブと同じ部品)に自分の記録を打点
   const ic = $('#insightChartCard');
   ic.hidden = !r.totalLogs;
+  // 説明文: 傾向が出る前は「あと何件で出るか」、出たあとはグラフの説明だけ
+  const left = r.needed ? (r.remaining ?? Math.max(0, r.needed - (r.analyzed || 0))) : 0;
+  $('#insightChartNote').textContent = '気圧グラフに、記録した体調の顔を重ねています（直近7日間）。' + (left ? `「痛み3以上」の記録があと${left}件集まると、上の「傾向」が出ます。` : '');
   if (r.totalLogs) {
     try {
       const [fc, logs] = await Promise.all([api('/forecast?area=' + S.sel), api(`/logs?from=${Date.now() - 7 * 24 * HOUR}`)]);
