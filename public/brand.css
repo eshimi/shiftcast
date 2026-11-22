@@ -346,3 +346,7 @@ body[data-page="weather"] .btn.primary, body[data-page="pressure"] .btn.primary,
 /* 週間天気・都道府県: 上の大きな気圧値は下の「気圧」タイルと重複するので出さない */
 .today.has-fx .t-body .big { display: none; }
 .pref-t td small, table td small { display: block; font-size: 11px; color: var(--color-ink-muted); }
+
+/* コラム一覧: 分類 */
+.col-cats { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; } .col-cats a { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--color-border); background: var(--color-card); color: var(--color-ink); text-decoration: none; font-size: 13px; font-weight: 600; }
+.col-cat { scroll-margin-top: 110px; } .col-cat .pg-h small { display: block; font-size: 12px; font-weight: 400; color: var(--color-ink-muted); letter-spacing: 0; margin-top: 2px; }

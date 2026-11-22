@@ -214,3 +214,10 @@ test('careFor: レベル3以下のときだけ、効いた要因の順に今日�
   assert.equal(m.care.tips.length, 3);
   assert.equal(moodInfo({ pressureLevel: 'none', temp: null, rain: null, hum: null }).care, null);
 });
+
+test('コラム一覧の分類に全記事が1回ずつ入っている', async () => {
+  const { COL_CATS } = await import('../src/pages.js');
+  const { COLUMNS } = await import('../src/columns.js');
+  const all = COL_CATS.flatMap((c) => c[3]);
+  assert.deepEqual([...all].sort(), COLUMNS.map((c) => c.slug).sort());
+});
