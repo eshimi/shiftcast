@@ -202,3 +202,9 @@ body[data-page="app"] .astrip-r { white-space: nowrap; }
 body[data-page="app"] .mhero .care-list li { padding-bottom: 0; }
 body[data-page="app"] .mhero > .chart-card { margin: 14px 0 0; background: rgba(255,255,255,.72); border-color: rgba(31,58,87,.12); box-shadow: none; }
 @media (prefers-color-scheme: dark) { body[data-page="app"] .mhero > .chart-card { background: var(--color-bg); border-color: var(--color-border); } }
+/* 記録リストの見出し: 「過去の記録を追加」とリスト/カレンダー切替が折り返さないように */
+body[data-page="app"] #view-log .card-h { flex-wrap: wrap; row-gap: 8px; }
+body[data-page="app"] #view-log .card-h > b { white-space: nowrap; }
+body[data-page="app"] #view-log .card-h .seg button { white-space: nowrap; }
+body[data-page="app"] #addPast { margin: 0 0 0 auto; white-space: nowrap; font-size: 13px; padding: 6px 12px; min-height: 34px; }
+body[data-page="app"] #view-log #logMode { flex: 0 0 100%; display: flex; } body[data-page="app"] #view-log #logMode button { flex: 1; }
