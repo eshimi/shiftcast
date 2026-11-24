@@ -8,7 +8,7 @@ body.wp-page {
 /* ↑ brand.css の :root(--ink, --accent など)に上書きされないよう、body に定義する */
 body.wp-page { background: var(--paper); color: var(--ink); }
 body.wp-page main { background: var(--paper); }
-.wp { max-width: 1000px; margin: 0 auto; padding: 16px 24px 32px; font: 400 15px/1.85 var(--f-body); color: var(--ink); }
+.wp { max-width: 760px; margin: 0 auto; padding: 16px 16px 32px; /* ヘッダー・フッターの .wrap と同じ幅 */ font: 400 15px/1.85 var(--f-body); color: var(--ink); }
 .wp a { color: var(--ink); text-decoration-color: var(--hair2); }
 .wp-run { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; border-top: 1px solid var(--rule); padding: 5px 0; font: 700 11px var(--f-head); color: var(--ink-sub); letter-spacing: .08em; }
 .wp-run span:last-child { text-align: right; } .wp-run-c { letter-spacing: .3em; }
@@ -89,3 +89,4 @@ body.wp-page main { background: var(--paper); }
 }
 .wp-title { display: flex; align-items: center; justify-content: center; gap: 12px; } .wp-title img { height: 1em; width: auto; }
 @media (max-width: 720px) { .wp-title { gap: 8px; } }
+@media (min-width: 721px) { .wp-title { font-size: 40px; } .wp-head h1 { font-size: 36px; } .wp-top { grid-template-columns: 1.4fr 1fr; gap: 18px; } .wp-main { grid-template-columns: 1.55fr 1fr; gap: 18px; } .wp-stats b { font-size: 30px; } .wp-table td:last-child { font-size: 12px; } }
