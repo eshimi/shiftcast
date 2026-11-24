@@ -4,6 +4,7 @@ import { refreshJma, refreshJmaForecast } from './jma.js';
 import { runAlertBatch } from './notify.js';
 import { runStatsBatch } from './stats.js';
 import { jstHour } from './pressure.js';
+import { runDailyBatch } from './daily.js';
 
 export async function scheduled(controller, env) {
   const now = controller.scheduledTime;
@@ -18,6 +19,7 @@ export async function scheduled(controller, env) {
   if (minute >= 10 && minute < 20) jobs.push(['jma', () => refreshJma(env)]); // 毎時0分観測の公開を待って取得
   // 通知時刻はユーザーごとに選べる(フェーズ3-2)ため毎時の最初の枠で起動し、対象ユーザーの絞り込みは runAlertBatch 側で行う
   if (first) jobs.push(['alert', () => runAlertBatch(env)]);
+  if (minute >= 20 && minute < 30) jobs.push(['daily', () => runDailyBatch(env, now)]); // 朝刊: 6時台の気象データ更新後に確定保存
   for (const [name, fn] of jobs) {
     try {
       await fn();

@@ -90,3 +90,7 @@ body.wp-page main { background: var(--paper); }
 .wp-title { display: flex; align-items: center; justify-content: center; gap: 12px; } .wp-title img { height: 1em; width: auto; }
 @media (max-width: 720px) { .wp-title { gap: 8px; } }
 @media (min-width: 721px) { .wp-title { font-size: 40px; } .wp-head h1 { font-size: 36px; } .wp-top { grid-template-columns: 1.4fr 1fr; gap: 18px; } .wp-main { grid-template-columns: 1.55fr 1fr; gap: 18px; } .wp-stats b { font-size: 30px; } .wp-table td:last-child { font-size: 12px; } }
+
+.wp-ed { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 8px 0 0; padding-bottom: 6px; border-bottom: 1px solid var(--hair); font: 700 13px var(--f-head); }
+.wp-ed a { text-decoration: none; color: var(--accent); }
+@media print { .wp-ed { display: none; } }

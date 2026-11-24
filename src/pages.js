@@ -84,7 +84,7 @@ const NAV_GROUPS = [
   { name: '気圧を見る', items: [['weather', '週間天気', '/weather'], ['today', '全国の地図', '/today'], ['pressure', '都道府県別の気圧予報', '/pressure']] },
   { name: '体調を整える', items: [['care', '今日の過ごし方', '/care'], ['guide', '気象病ガイド・症状別', '/guide'], ['check', '気象病セルフチェック', '/check']] },
   { name: '記録・分析', items: [['app', '気圧・記録', '/app/']] },
-  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
+  { name: '読む・知る', items: [['columns', 'コラム', '/columns'], ['daily', '今日の気象病予報', '/daily'], ['glossary', '用語集', '/glossary'], ['about', 'サービス紹介', '/about']] },
 ];
 const navHtml = (page) => {
   const id = page === 'column' ? 'columns' : page === 'symptom' ? 'guide' : page;
@@ -275,6 +275,7 @@ export function topPage() {
         <div id="tmrwCard" class="card tmrw" aria-live="polite"><p class="muted">読み込み中…</p></div>
         <div id="todayNews" class="news news-sm" aria-live="polite" hidden></div>
         <p class="sx-btn sx-btn2"><a class="btn block" href="/today">全国の地図を見る</a></p>
+        <p class="sx-more"><a href="/daily">今日の気象病予報（朝刊）を読む →</a></p>
       </div>
     </section>
 
@@ -1011,7 +1012,7 @@ ${faqHtml(faq)}
 /* ---------- 今日の気象病予報(デイリー記事・サンプル) ---------- */
 const FACTOR_JA = { past: '過去24時間の気圧低下', pressure: '気圧の変化', temp: '気温差', rain: '雨', hum: '湿度' };
 const TOD_JA = (h) => (h < 5 ? '未明' : h < 10 ? '朝' : h < 14 ? '昼' : h < 18 ? '夕方' : '夜');
-export function dailyPage(sum) {
+export function dailyPage(sum, { date: dkey = null, dates = [], live = false, dated = false } = {}) {
   const d = new Date(sum.now + 9 * 3600e3);
   const date = `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${'日月火水木金土'[d.getUTCDay()]}）`;
   const ymd = d.toISOString().slice(0, 10);
@@ -1087,7 +1088,8 @@ ${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
   <p class="wp-mast-r">${esc(ymdJa)}<br><small>朝刊</small></p>
 </header>
 <p class="wp-band">気圧と体調の“そらもよう”、毎朝おとどけ。</p>
-<p class="wp-sample">これは「今日の気象病予報」のサンプル紙面です。内容は実際の予報データから自動で作成しています。</p>
+${(() => { const k = dkey || ymd; const i = dates.indexOf(k); const older = i >= 0 ? dates[i + 1] : dates.find((x) => x < k); const newer = i > 0 ? dates[i - 1] : null;
+  return `<nav class="wp-ed" aria-label="号の移動">${older ? `<a href="/daily/${older}">← 前の号</a>` : '<span></span>'}<a href="/daily/archive">バックナンバー</a>${newer ? `<a href="/daily/${newer}">次の号 →</a>` : '<span></span>'}</nav>${live ? '<p class="wp-sample">朝6時の確定前のため、現在の予報から作成した速報版です。</p>' : ''}`; })()}
 <section class="wp-top">
   <div class="wp-head">
     <p class="wp-label">本日の大見出し</p>
@@ -1124,9 +1126,24 @@ ${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
     title: `${date}の気象病予報｜${headline}`,
     description: points.join(' '),
     keywords: ['気象病 予報', '今日 気圧 頭痛', '天気痛', ymd],
-    page: 'today', path: '/daily', noindex: true,
+    page: 'daily', path: dated ? `/daily/${dkey}` : '/daily', noindex: DAILY_NOINDEX,
     extraHead: '<link rel="stylesheet" href="/daily.css">',
     jsonld: [{ '@type': 'NewsArticle', headline: `${date}の気象病予報｜${headline}`, datePublished: new Date(sum.now).toISOString(), dateModified: new Date(sum.now).toISOString(), inLanguage: 'ja', author: { '@type': 'Organization', name: `${SITE}編集部` }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }],
     body, wide: true, bodyClass: 'wp-page',
   });
+}
+
+// 独自ドメインへ移るまでは検索結果に出さない(移行後に false にする)
+export const DAILY_NOINDEX = true;
+export function dailyArchivePage(dates) {
+  const byMonth = {};
+  dates.forEach((dd) => { (byMonth[dd.slice(0, 7)] ||= []).push(dd); });
+  const dow = (dd) => '日月火水木金土'[new Date(dd + 'T00:00:00Z').getUTCDay()];
+  const body = `
+<div class="page-head"><div class="wrap"><p class="en">BACK NUMBER</p><h1>今日の気象病予報｜バックナンバー</h1><p>毎朝6時に確定する「気象病予報」の過去の号です。</p></div></div>
+<div class="wrap">
+<p><a class="btn primary" href="/daily">今日の号を読む</a></p>
+${dates.length ? Object.entries(byMonth).map(([m, ds]) => `<section class="sec"><h2 class="pg-h">${Number(m.slice(0, 4))}年${Number(m.slice(5))}月</h2><ul class="chips-l">${ds.map((dd) => `<li><a href="/daily/${dd}">${Number(dd.slice(5, 7))}/${Number(dd.slice(8))}（${dow(dd)}）</a></li>`).join('')}</ul></section>`).join('') : '<p class="muted">まだ保存された号はありません。毎朝6時に、その日の号が追加されます。</p>'}
+</div>`;
+  return layout({ title: '今日の気象病予報｜バックナンバー', description: '毎朝の「気象病予報」の過去の号の一覧です。', page: 'daily', path: '/daily/archive', noindex: DAILY_NOINDEX, body });
 }
