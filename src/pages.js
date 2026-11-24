@@ -1035,24 +1035,58 @@ export function dailyPage(sum) {
     Object.keys(byTod).length ? `気圧が動く時間帯：${Object.entries(byTod).map(([t, a]) => `${t}（${a.map((r) => r.region).join('・')}）`).join('、')}。` : '今後24時間、大きな気圧の変化は見込まれていません。',
   ];
   const tips = f0 && CARE_FACTORS[f0] ? CARE_FACTORS[f0].tips.slice(0, 3) : CARE_GENERAL.slice(0, 3);
-  const card = (r) => `<article class="dl-card tm-b-${r.mood.level}"><header><b>${esc(r.region)}</b><small>${esc(r.name)}</small><span class="dl-score">${r.mood.score}<small>/100</small></span></header>
-  <p class="dl-lv"><span class="lvno sm tm-${r.mood.level}">${r.mood.level}</span>${esc(r.mood.label)}</p>
-  <p class="dl-p">${r.ok ? `気圧 ${Math.round(r.pressure)}hPa・<span class="pill lv-${r.level}">${esc(r.label)}</span>` : '気圧 準備中'}${r.at && r.level !== 'none' ? `<br><small>${jstDH(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h</small>` : ''}</p>
-  ${r.mood.factors.length ? `<p class="dl-f">${r.mood.factors.map((f) => `<span>${esc(FACTOR_JA[f])}</span>`).join('')}</p>` : ''}
-  <a class="dl-more" href="/pressure/${PREFS.find((p) => p.code === r.code)?.slug || ''}">${esc(r.name)}の予報 →</a></article>`;
+  // 新聞(レポート)風の本文。である調で、事実(数値)→要因→時間帯→備えの順に書く
+  const no = Math.max(1, Math.round((Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) - Date.UTC(2026, 10, 1)) / 864e5) + 1);
+  const drops = rows.filter((r) => r.rate != null && r.level !== 'none' && r.rate < 0).sort((x, y) => x.rate - y.rate);
+  const big = drops[0];
+  const lv1 = rows.filter((r) => r.mood.level === 1), lv2 = rows.filter((r) => r.mood.level === 2);
+  const fN = f0 ? rows.filter((r) => r.mood.factors.includes(f0)).length : 0;
+  const paras = !rows.length ? ['全国の気圧データを集計中である。しばらくしてから改めて確認してほしい。'] : [
+    lv1.length || lv2.length
+      ? `${date}は、${lv1.length ? `${lv1.map((r) => r.region).join('、')}で体調そらもようが最も低い「体調不良に注意」となり` : ''}${lv1.length && lv2.length ? '、' : ''}${lv2.length ? `${lv2.map((r) => r.region).join('、')}も「体調に影響しそう」の段階にある` : ''}。全国9地方の平均スコアは${avg}点だった。`
+      : `${date}は、全国的に気候の影響が小さい一日となりそうだ。全国9地方の平均スコアは${avg}点で、「体調に影響しそう」以上の地方はない。`,
+    f0 ? `体調への影響を押し上げている最大の要因は「${FACTOR_JA[f0]}」で、9地方のうち${fN}地方で該当した。${topF[1] ? `次いで「${FACTOR_JA[topF[1]]}」が多い。` : ''}` : '目立った要因は見当たらない。',
+    big ? `気圧の変化が最も大きいのは${short(big)}で、${jstDH(big.at)}ごろに1時間あたり${Math.abs(big.rate).toFixed(1)}hPaの低下が見込まれる。${Object.keys(byTod).length > 1 ? `気圧が動く時間帯は地方によって異なり、${Object.entries(byTod).map(([t, a]) => `${t}は${a.map((r) => r.region).join('・')}`).join('、')}が中心となる。` : ''}` : '今後24時間で、大きな気圧の低下は見込まれていない。',
+    f0 ? `頭痛やだるさが出やすい人は、気圧が動く前に睡眠と水分を確保し、予定に余裕を持たせておきたい。` : '生活リズムを整え、いつも通りに過ごしたい。',
+  ];
+  const TODS = ['未明', '朝', '昼', '夕方', '夜'];
+  const row = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th><td><span class="lvno sm tm-${r.mood.level}">${r.mood.level}</span>${esc(r.mood.label)}</td><td class="num">${r.mood.score}</td><td>${r.ok ? `<span class="pill lv-${r.level}">${esc(r.label)}</span>${r.at && r.level !== 'none' ? `<small>${jstDH(r.at)} ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}</small>` : ''}` : '—'}</td></tr>`;
   const body = `
-<div class="page-head"><div class="wrap"><p class="en">DAILY FORECAST · ${ymd}</p><h1>${esc(date)}の気象病予報｜${esc(headline)}</h1><p>全国9地方の「体調そらもよう」と気圧の動きから、今日の体調への影響をまとめました。毎朝更新。</p></div></div>
-<div class="wrap article-wrap daily">
+<div class="wrap np">
+<header class="np-mast">
+  <p class="np-name">ウェルミー<b>気象病予報</b></p>
+  <p class="np-meta"><span>${d.getUTCFullYear()}年${esc(date)}</span><span>第${no}号</span><span>朝の版・毎朝更新</span></p>
+</header>
 <p class="sample-note">これは「今日の気象病予報（デイリー記事）」のサンプルです。内容は実際の予報データから自動で作成しています。</p>
-<div class="keypoints" role="note"><p class="kp-h">今日のポイント</p><ul>${points.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
-<section class="sec"><h2 class="pg-h">全国の体調そらもよう</h2>${dotMapHtml(sum.rows)}
+<article class="np-lead">
+  <p class="np-kicker">きょうの体調そらもよう</p>
+  <h1>${esc(headline)}</h1>
+  <p class="np-deck">${esc(points[0])}</p>
+  <p class="np-by">ウェルミー編集部（自動配信）　${esc(date)}</p>
+  <div class="np-cols">
+    <div class="np-body">${paras.map((t, i) => `<p${i === 0 ? ' class="np-first"' : ''}>${esc(t)}</p>`).join('')}</div>
+    <aside class="np-side">
+      <section class="np-box np-nums"><h2>数字で見る</h2>
+        <dl><div><dt>全国平均スコア</dt><dd>${avg ?? '–'}<small>/100</small></dd></div>
+        <div><dt>注意が必要な地方</dt><dd>${lv1.length + lv2.length}<small>/9地方</small></dd></div>
+        <div><dt>最大の気圧低下</dt><dd>${big ? Math.abs(big.rate).toFixed(1) : '–'}<small>hPa/h${big ? `（${esc(big.region)}）` : ''}</small></dd></div></dl>
+      </section>
+      <section class="np-box"><h2>気圧が動く時間帯</h2>
+        <ul class="np-time">${TODS.filter((t) => byTod[t]).map((t) => `<li><b>${t}</b><span>${byTod[t].map((r) => esc(r.region)).join('・')}</span></li>`).join('') || '<li><span>大きな変化なし</span></li>'}</ul>
+      </section>
+    </aside>
+  </div>
+</article>
+<section class="np-sec"><h2 class="np-h">図1　全国の体調そらもよう</h2>${dotMapHtml(sum.rows)}
 <p class="dl-legend"><span><i class="tm-5"></i>気候が快調</span><span><i class="tm-4"></i>おおむね良好</span><span><i class="tm-3"></i>やや不安定</span><span><i class="tm-2"></i>影響しそう</span><span><i class="tm-1"></i>体調不良に注意</span></p></section>
-<section class="sec"><h2 class="pg-h">地方ごとの見通し</h2><div class="dl-grid">${rows.sort((a, b) => a.mood.score - b.mood.score).map(card).join('')}</div></section>
-<section class="sec"><h2 class="pg-h">今日の過ごし方のヒント</h2><p>${f0 ? `今日は「${esc(FACTOR_JA[f0])}」に気をつけたい一日です。` : '大きな変化の少ない日です。生活リズムを整えて過ごしましょう。'}</p>
+<section class="np-sec"><h2 class="np-h">表1　地方別の見通し<small>スコアの低い順・各地方の代表都市</small></h2>
+<div class="np-tbl"><table><thead><tr><th>地方</th><th>体調そらもよう</th><th>スコア</th><th>気圧の動き（今後24時間）</th></tr></thead><tbody>${[...rows].sort((x, y) => x.mood.score - y.mood.score).map(row).join('')}</tbody></table></div>
+<p class="muted small">気圧の動きは、1時間あたりの変化量による4段階。数値は最も大きく動く時刻と変化量（hPa/h）。<a href="/today">全国の地図</a>・<a href="/pressure">都道府県別の気圧予報</a></p></section>
+<section class="np-sec np-care"><h2 class="np-h">きょうの備え<small>${f0 ? `要因「${esc(FACTOR_JA[f0])}」への対策` : '生活リズムを整える'}</small></h2>
 <ol class="care-list">${tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol>
 <p class="row"><a class="btn primary" href="/care">今日の過ごし方をくわしく</a><a class="btn" href="/app/#log" data-quicklog>いまの体調を記録する</a></p></section>
-<section class="sec"><h2 class="pg-h">あわせて見る</h2><ul class="plain"><li><a href="/today">全国の地図（今日の気圧）</a>・<a href="/weather">週間天気</a>・<a href="/pressure">都道府県別の気圧予報</a></li><li>症状別：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}</li><li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li></ul></section>
-<div class="refs"><p class="muted small">気圧・天気のデータ：気象庁、OpenWeatherMap。体調そらもようは、気圧・気温差・降水・湿度の目安を点数化した、ウェルミー独自の指標です。地方の値は代表都市のものです。医学的な診断ではありません。作成：${esc(SITE)}（自動生成）</p></div>
+<section class="np-sec"><h2 class="np-h">関連記事</h2><ul class="plain"><li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li><li><a href="/guide">気象病ガイド・症状別</a>：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}</li><li><a href="/weather">週間天気と気圧予報</a></li></ul></section>
+<footer class="np-foot"><p>【データ】気象庁、OpenWeatherMap。体調そらもようは、気圧・気温差・降水・湿度の目安を点数化したウェルミー独自の指標で、地方の値は代表都市のもの。医学的な診断ではない。</p></footer>
 </div>`;
   return layout({
     title: `${date}の気象病予報｜${headline}`,
@@ -1060,6 +1094,6 @@ export function dailyPage(sum) {
     keywords: ['気象病 予報', '今日 気圧 頭痛', '天気痛', ymd],
     page: 'today', path: '/daily', noindex: true,
     jsonld: [{ '@type': 'NewsArticle', headline: `${date}の気象病予報｜${headline}`, datePublished: new Date(sum.now).toISOString(), dateModified: new Date(sum.now).toISOString(), inLanguage: 'ja', author: { '@type': 'Organization', name: `${SITE}編集部` }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }],
-    body, wide: true,
+    body, wide: true, bodyClass: 'np-page',
   });
 }

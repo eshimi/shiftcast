@@ -1,5 +1,5 @@
 // アプリシェルのキャッシュ + FCM(Web Push)の受信
-const CACHE = 'kiatsu-shell-v139';
+const CACHE = 'kiatsu-shell-v141';
 const API_OK = ['/api/week', '/api/forecast', '/api/area-stats', '/api/me', '/api/logs', '/api/areas', '/api/config', '/api/insights', '/api/today']; // オフラインでも前回の値を出すAPI(GETのみ)
 const SHELL = ['/app/', '/tokens.css', '/style.css', '/ds.css', '/header.css', '/brand.css', '/dash.css', '/app.js', '/wx.js', '/faces.js', '/manifest.json', '/offline', '/pwa.js', '/terms.html', '/hero/hero.js', '/hero/hero.css', '/vendor/chart.js'];
 
