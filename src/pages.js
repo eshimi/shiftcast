@@ -1022,7 +1022,7 @@ export function dailyPage(sum) {
   const good = rows.filter((r) => r.mood.level >= 4);
   const avg = rows.length ? Math.round(rows.reduce((a, r) => a + r.mood.score, 0) / rows.length) : null;
   const headline = !rows.length ? '全国の体調そらもよう'
-    : bad.length ? `${bad.slice(0, 3).map((r) => r.region).join('・')}は体調に注意`
+    : rows.some((r) => r.mood.score <= 60) ? `${rows.filter((r) => r.mood.score <= 60).sort((x, y) => x.mood.score - y.mood.score).slice(0, 3).map((r) => r.region).join('・')}は体調に注意`
     : mid.length ? `${mid.slice(0, 3).map((r) => r.region).join('・')}はやや不安定` : '全国的に穏やかな一日';
   // いちばん多い要因
   const fc = {}; rows.forEach((r) => r.mood.factors.forEach((f) => { fc[f] = (fc[f] || 0) + (6 - r.mood.level); }));
@@ -1061,17 +1061,18 @@ export function dailyPage(sum) {
   const timing = TODS.filter((t) => byTod[t]).map((t) => `${t}：${byTod[t].map((r) => r.region).join('・')}`);
   const fcount = Object.keys(FACTOR_JA).map((k) => [k, rows.filter((r) => r.mood.factors.includes(k)).length]).filter(([, n]) => n).sort((x, y) => y[1] - x[1]);
   const kanji = ['一', '二', '三'];
+  const needCare = rows.filter((r) => r.mood.score <= 60); // 判定バッジの「要注意」と同じ基準
   // 天気図(模式図): 地図本体は静的、低・高気圧と前線は当日の代表都市の気圧から配置
   const proj = (lat, lon, code) => { const O = LAND_PROJ.ok; const o = code === '47'; const lo = o ? O.tx + (lon - O.cx) * O.k : lon, la = o ? O.ty + (lat - O.cy) * O.k : lat; return [(lo - LAND_PROJ.lon0) * LAND_PROJ.kx * LAND_PROJ.s, (LAND_PROJ.lat1 - la) * LAND_PROJ.s]; };
   const withP = rows.filter((r) => r.ok && r.pressure != null && r.code !== '47'); // 気圧配置の記号は本州・北海道・四国・九州の上に置く(沖縄は枠内で狭いため)
   const lo = withP.length ? withP.reduce((m, r) => (r.pressure < m.pressure ? r : m)) : null;
   const hi = withP.length ? withP.reduce((m, r) => (r.pressure > m.pressure ? r : m)) : null;
-  const sym = (r, k) => { const A = AREA_BY_CODE.get(r.code); const [x, y] = proj(A.lat, A.lon, r.code); const c = k === 'L' ? 'var(--accent)' : 'var(--navy)';
+  const sym = (r, k) => { const A = AREA_BY_CODE.get(r.code); const [x, y] = proj(A.lat, A.lon, r.code); const c = k === 'L' ? 'var(--wp-low)' : 'var(--navy)';
     return `<g class="wm-${k}"><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="42" fill="none" stroke="${c}" stroke-width="1" opacity=".55"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="74" fill="none" stroke="${c}" stroke-width="1" opacity=".35"/>
 <text x="${x.toFixed(0)}" y="${(y + 12).toFixed(0)}" text-anchor="middle" font-size="40" font-weight="800" fill="${c}">${k === 'L' ? '低' : '高'}</text><text x="${x.toFixed(0)}" y="${(y + 40).toFixed(0)}" text-anchor="middle" font-size="18" font-weight="700" fill="${c}">${Math.round(r.pressure)}</text></g>`; };
   const front = lo && big ? (() => { const A = AREA_BY_CODE.get(lo.code); const [x, y] = proj(A.lat, A.lon, lo.code); const p = `M${(x - 20).toFixed(0)} ${(y + 20).toFixed(0)} Q${(x - 120).toFixed(0)} ${(y + 90).toFixed(0)} ${(x - 230).toFixed(0)} ${(y + 140).toFixed(0)}`;
-    const tri = [0.2, 0.45, 0.7].map((t) => { const bx = (1 - t) ** 2 * (x - 20) + 2 * (1 - t) * t * (x - 120) + t * t * (x - 230), by = (1 - t) ** 2 * (y + 20) + 2 * (1 - t) * t * (y + 90) + t * t * (y + 140); return `<path d="M${(bx - 9).toFixed(0)} ${(by - 4).toFixed(0)}L${(bx + 9).toFixed(0)} ${(by + 4).toFixed(0)}L${(bx - 4).toFixed(0)} ${(by + 14).toFixed(0)}Z" fill="var(--accent)"/>`; }).join('');
-    return `<path d="${p}" fill="none" stroke="var(--accent)" stroke-width="3"/>${tri}`; })() : '';
+    const tri = [0.2, 0.45, 0.7].map((t) => { const bx = (1 - t) ** 2 * (x - 20) + 2 * (1 - t) * t * (x - 120) + t * t * (x - 230), by = (1 - t) ** 2 * (y + 20) + 2 * (1 - t) * t * (y + 90) + t * t * (y + 140); return `<path d="M${(bx - 9).toFixed(0)} ${(by - 4).toFixed(0)}L${(bx + 9).toFixed(0)} ${(by + 4).toFixed(0)}L${(bx - 4).toFixed(0)} ${(by + 14).toFixed(0)}Z" fill="var(--wp-low)"/>`; }).join('');
+    return `<path d="${p}" fill="none" stroke="var(--wp-low)" stroke-width="3"/>${tri}`; })() : '';
   const map = `<svg class="wp-map" viewBox="0 0 ${LAND_W} ${LAND_H}" role="img" aria-label="予想天気図(模式図)">
 <rect width="${LAND_W}" height="${LAND_H}" fill="var(--sea)"/><rect x="8" y="8" width="170" height="150" fill="none" stroke="var(--hair2)" stroke-dasharray="3 3"/><text x="14" y="24" font-size="11" fill="var(--ink-sub)">沖縄</text>
 <g fill="var(--land)" stroke="var(--ink)" stroke-width=".6" stroke-linejoin="round">${LAND_PATHS.map(([, dd]) => `<path d="${dd}"/>`).join('')}</g>
@@ -1082,7 +1083,7 @@ ${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
 <div class="wp-run"><span>毎朝更新・自動生成</span><span class="wp-run-c">WEATHER-HEALTH DAILY</span><span>第${no}号</span></div>
 <header class="wp-mast">
   <p class="wp-mast-l">気象病予報<br><small>朝刊・全国版</small></p>
-  <div class="wp-mast-c"><p class="wp-ruby">ウェルミー</p><p class="wp-title">Welmy <em>Today's Report</em></p><p class="wp-tag">天気で揺れる体調を、紙面でひと目に。</p></div>
+  <div class="wp-mast-c"><p class="wp-ruby">ウェルミー</p><p class="wp-title"><img src="/logo-h.webp" alt="Welmy" width="172" height="60"><em>Today's Report</em></p><p class="wp-tag">天気で揺れる体調を、紙面でひと目に。</p></div>
   <p class="wp-mast-r">${esc(ymdJa)}<br><small>朝刊</small></p>
 </header>
 <p class="wp-band">気圧と体調の“そらもよう”、毎朝おとどけ。</p>
@@ -1098,7 +1099,7 @@ ${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
 </section>
 <section class="wp-stats" aria-label="主な指標">
   <div><p>全国平均スコア</p><b>${avg ?? '–'}<small>／100</small></b></div>
-  <div><p>注意が必要な地域</p><b class="wp-acc">${lv1.length + lv2.length}<small>／9</small></b></div>
+  <div><p>注意が必要な地域<small>（要注意＝60点以下）</small></p><b class="wp-acc">${needCare.length}<small>／${rows.length || 9}</small></b></div>
   <div><p>最大の気圧低下</p><b>${big ? Math.abs(big.rate).toFixed(1) : '–'}<small>hPa/h${big ? `（${esc(big.region)}）` : ''}</small></b></div>
   <div><p>気圧変化のタイミング</p><span class="wp-timing">${timing.length ? timing.map(esc).join('<br>') : '大きな変化なし'}</span></div>
 </section>
@@ -1124,7 +1125,7 @@ ${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
     description: points.join(' '),
     keywords: ['気象病 予報', '今日 気圧 頭痛', '天気痛', ymd],
     page: 'today', path: '/daily', noindex: true,
-    extraHead: '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Shippori+Mincho:wght@500;700;800&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="/daily.css">',
+    extraHead: '<link rel="stylesheet" href="/daily.css">',
     jsonld: [{ '@type': 'NewsArticle', headline: `${date}の気象病予報｜${headline}`, datePublished: new Date(sum.now).toISOString(), dateModified: new Date(sum.now).toISOString(), inLanguage: 'ja', author: { '@type': 'Organization', name: `${SITE}編集部` }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }],
     body, wide: true, bodyClass: 'wp-page',
   });
