@@ -12,6 +12,8 @@ import { REGION_NOTES, PREF_NOTES } from './pref-notes.js';
 import { SYMPTOMS, symptomBySlug } from './symptoms.js';
 import { repCodeOf } from './today.js';
 import { MAP_COLS, MAP_ROWS, MAP_DOTS } from './japanmap.js';
+import { LAND_W, LAND_H, LAND_PROJ, LAND_PATHS } from './japanland.js';
+import { AREA_BY_CODE } from './areas.js';
 import { PREFS, REGIONS, regionOf, neighbors } from './prefectures.js';
 
 export const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -1050,50 +1052,80 @@ export function dailyPage(sum) {
     f0 ? `頭痛やだるさが出やすい人は、気圧が動く前に睡眠と水分を確保し、予定に余裕を持たせておきたい。` : '生活リズムを整え、いつも通りに過ごしたい。',
   ];
   const TODS = ['未明', '朝', '昼', '夕方', '夜'];
-  const row = (r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th><td><span class="lvno sm tm-${r.mood.level}">${r.mood.level}</span>${esc(r.mood.label)}</td><td class="num">${r.mood.score}</td><td>${r.ok ? `<span class="pill lv-${r.level}">${esc(r.label)}</span>${r.at && r.level !== 'none' ? `<small>${jstDH(r.at)} ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}</small>` : ''}` : '—'}</td></tr>`;
+  // 判定バッジ: スコアから導出(スコアが低いほど要注意)
+  const judge = (sc) => (sc <= 60 ? ['bad', '要注意'] : sc <= 69 ? ['mid', 'やや不安定'] : sc <= 84 ? ['ok', 'おおむね良好'] : ['good', '気候が快調']);
+  const badge = (sc) => { const [k, l] = judge(sc); return `<span class="wp-badge wp-${k}">${l}</span>`; };
+  const sorted = [...rows].sort((x, y) => x.mood.score - y.mood.score);
+  const pmove = (r) => (r.ok ? `${esc(r.label)}${r.at && r.level !== 'none' ? `（${jstDH(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h）` : ''}` : '準備中');
+  const ymdJa = `${d.getUTCFullYear()}年${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${'日月火水木金土'[d.getUTCDay()]}）`;
+  const timing = TODS.filter((t) => byTod[t]).map((t) => `${t}：${byTod[t].map((r) => r.region).join('・')}`);
+  const fcount = Object.keys(FACTOR_JA).map((k) => [k, rows.filter((r) => r.mood.factors.includes(k)).length]).filter(([, n]) => n).sort((x, y) => y[1] - x[1]);
+  const kanji = ['一', '二', '三'];
+  // 天気図(模式図): 地図本体は静的、低・高気圧と前線は当日の代表都市の気圧から配置
+  const proj = (lat, lon, code) => { const O = LAND_PROJ.ok; const o = code === '47'; const lo = o ? O.tx + (lon - O.cx) * O.k : lon, la = o ? O.ty + (lat - O.cy) * O.k : lat; return [(lo - LAND_PROJ.lon0) * LAND_PROJ.kx * LAND_PROJ.s, (LAND_PROJ.lat1 - la) * LAND_PROJ.s]; };
+  const withP = rows.filter((r) => r.ok && r.pressure != null && r.code !== '47'); // 気圧配置の記号は本州・北海道・四国・九州の上に置く(沖縄は枠内で狭いため)
+  const lo = withP.length ? withP.reduce((m, r) => (r.pressure < m.pressure ? r : m)) : null;
+  const hi = withP.length ? withP.reduce((m, r) => (r.pressure > m.pressure ? r : m)) : null;
+  const sym = (r, k) => { const A = AREA_BY_CODE.get(r.code); const [x, y] = proj(A.lat, A.lon, r.code); const c = k === 'L' ? 'var(--accent)' : 'var(--navy)';
+    return `<g class="wm-${k}"><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="42" fill="none" stroke="${c}" stroke-width="1" opacity=".55"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="74" fill="none" stroke="${c}" stroke-width="1" opacity=".35"/>
+<text x="${x.toFixed(0)}" y="${(y + 12).toFixed(0)}" text-anchor="middle" font-size="40" font-weight="800" fill="${c}">${k === 'L' ? '低' : '高'}</text><text x="${x.toFixed(0)}" y="${(y + 40).toFixed(0)}" text-anchor="middle" font-size="18" font-weight="700" fill="${c}">${Math.round(r.pressure)}</text></g>`; };
+  const front = lo && big ? (() => { const A = AREA_BY_CODE.get(lo.code); const [x, y] = proj(A.lat, A.lon, lo.code); const p = `M${(x - 20).toFixed(0)} ${(y + 20).toFixed(0)} Q${(x - 120).toFixed(0)} ${(y + 90).toFixed(0)} ${(x - 230).toFixed(0)} ${(y + 140).toFixed(0)}`;
+    const tri = [0.2, 0.45, 0.7].map((t) => { const bx = (1 - t) ** 2 * (x - 20) + 2 * (1 - t) * t * (x - 120) + t * t * (x - 230), by = (1 - t) ** 2 * (y + 20) + 2 * (1 - t) * t * (y + 90) + t * t * (y + 140); return `<path d="M${(bx - 9).toFixed(0)} ${(by - 4).toFixed(0)}L${(bx + 9).toFixed(0)} ${(by + 4).toFixed(0)}L${(bx - 4).toFixed(0)} ${(by + 14).toFixed(0)}Z" fill="var(--accent)"/>`; }).join('');
+    return `<path d="${p}" fill="none" stroke="var(--accent)" stroke-width="3"/>${tri}`; })() : '';
+  const map = `<svg class="wp-map" viewBox="0 0 ${LAND_W} ${LAND_H}" role="img" aria-label="予想天気図(模式図)">
+<rect width="${LAND_W}" height="${LAND_H}" fill="var(--sea)"/><rect x="8" y="8" width="170" height="150" fill="none" stroke="var(--hair2)" stroke-dasharray="3 3"/><text x="14" y="24" font-size="11" fill="var(--ink-sub)">沖縄</text>
+<g fill="var(--land)" stroke="var(--ink)" stroke-width=".6" stroke-linejoin="round">${LAND_PATHS.map(([, dd]) => `<path d="${dd}"/>`).join('')}</g>
+${front}${lo ? sym(lo, 'L') : ''}${hi && hi !== lo ? sym(hi, 'H') : ''}</svg>`;
+  const mapCap = lo && hi ? `低気圧は${lo.region}付近（${Math.round(lo.pressure)}hPa）、高気圧は${hi.region}付近（${Math.round(hi.pressure)}hPa）。${big ? `${big.region}を中心に気圧が下がる見込み。` : '大きな気圧の低下は見込まれていない。'}` : '気圧データを集計中。';
   const body = `
-<div class="wrap np">
-<header class="np-mast">
-  <p class="np-name">ウェルミー<b>気象病予報</b></p>
-  <p class="np-meta"><span>${d.getUTCFullYear()}年${esc(date)}</span><span>第${no}号</span><span>朝の版・毎朝更新</span></p>
+<div class="wp">
+<div class="wp-run"><span>毎朝更新・自動生成</span><span class="wp-run-c">WEATHER-HEALTH DAILY</span><span>第${no}号</span></div>
+<header class="wp-mast">
+  <p class="wp-mast-l">気象病予報<br><small>朝刊・全国版</small></p>
+  <div class="wp-mast-c"><p class="wp-ruby">ウェルミー</p><p class="wp-title">Welmy <em>Today's Report</em></p><p class="wp-tag">天気で揺れる体調を、紙面でひと目に。</p></div>
+  <p class="wp-mast-r">${esc(ymdJa)}<br><small>朝刊</small></p>
 </header>
-<p class="sample-note">これは「今日の気象病予報（デイリー記事）」のサンプルです。内容は実際の予報データから自動で作成しています。</p>
-<article class="np-lead">
-  <p class="np-kicker">きょうの体調そらもよう</p>
-  <h1>${esc(headline)}</h1>
-  <p class="np-deck">${esc(points[0])}</p>
-  <p class="np-by">ウェルミー編集部（自動配信）　${esc(date)}</p>
-  <div class="np-cols">
-    <div class="np-body">${paras.map((t, i) => `<p${i === 0 ? ' class="np-first"' : ''}>${esc(t)}</p>`).join('')}</div>
-    <aside class="np-side">
-      <section class="np-box np-nums"><h2>数字で見る</h2>
-        <dl><div><dt>全国平均スコア</dt><dd>${avg ?? '–'}<small>/100</small></dd></div>
-        <div><dt>注意が必要な地方</dt><dd>${lv1.length + lv2.length}<small>/9地方</small></dd></div>
-        <div><dt>最大の気圧低下</dt><dd>${big ? Math.abs(big.rate).toFixed(1) : '–'}<small>hPa/h${big ? `（${esc(big.region)}）` : ''}</small></dd></div></dl>
-      </section>
-      <section class="np-box"><h2>気圧が動く時間帯</h2>
-        <ul class="np-time">${TODS.filter((t) => byTod[t]).map((t) => `<li><b>${t}</b><span>${byTod[t].map((r) => esc(r.region)).join('・')}</span></li>`).join('') || '<li><span>大きな変化なし</span></li>'}</ul>
-      </section>
-    </aside>
+<p class="wp-band">気圧と体調の“そらもよう”、毎朝おとどけ。</p>
+<p class="wp-sample">これは「今日の気象病予報」のサンプル紙面です。内容は実際の予報データから自動で作成しています。</p>
+<section class="wp-top">
+  <div class="wp-head">
+    <p class="wp-label">本日の大見出し</p>
+    <h1>${esc(headline)}</h1>
+    <p class="wp-lead">${esc(paras[0])}</p>
+    ${paras[2] ? `<p class="wp-lead2">${esc(paras[2])}</p>` : ''}
   </div>
-</article>
-<section class="np-sec"><h2 class="np-h">図1　全国の体調そらもよう</h2>${dotMapHtml(sum.rows)}
-<p class="dl-legend"><span><i class="tm-5"></i>気候が快調</span><span><i class="tm-4"></i>おおむね良好</span><span><i class="tm-3"></i>やや不安定</span><span><i class="tm-2"></i>影響しそう</span><span><i class="tm-1"></i>体調不良に注意</span></p></section>
-<section class="np-sec"><h2 class="np-h">表1　地方別の見通し<small>スコアの低い順・各地方の代表都市</small></h2>
-<div class="np-tbl"><table><thead><tr><th>地方</th><th>体調そらもよう</th><th>スコア</th><th>気圧の動き（今後24時間）</th></tr></thead><tbody>${[...rows].sort((x, y) => x.mood.score - y.mood.score).map(row).join('')}</tbody></table></div>
-<p class="muted small">気圧の動きは、1時間あたりの変化量による4段階。数値は最も大きく動く時刻と変化量（hPa/h）。<a href="/today">全国の地図</a>・<a href="/pressure">都道府県別の気圧予報</a></p></section>
-<section class="np-sec np-care"><h2 class="np-h">きょうの備え<small>${f0 ? `要因「${esc(FACTOR_JA[f0])}」への対策` : '生活リズムを整える'}</small></h2>
-<ol class="care-list">${tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol>
-<p class="row"><a class="btn primary" href="/care">今日の過ごし方をくわしく</a><a class="btn" href="/app/#log" data-quicklog>いまの体調を記録する</a></p></section>
-<section class="np-sec"><h2 class="np-h">関連記事</h2><ul class="plain"><li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li><li><a href="/guide">気象病ガイド・症状別</a>：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}</li><li><a href="/weather">週間天気と気圧予報</a></li></ul></section>
-<footer class="np-foot"><p>【データ】気象庁、OpenWeatherMap。体調そらもようは、気圧・気温差・降水・湿度の目安を点数化したウェルミー独自の指標で、地方の値は代表都市のもの。医学的な診断ではない。</p></footer>
+  <figure class="wp-fig"><figcaption class="wp-cap-t">予想天気図／${d.getUTCMonth() + 1}月${d.getUTCDate()}日</figcaption>${map}<figcaption class="wp-cap-b">${esc(mapCap)}<small>※ 地図上の気圧配置は代表都市の気圧から描いた模式図です。</small></figcaption></figure>
+</section>
+<section class="wp-stats" aria-label="主な指標">
+  <div><p>全国平均スコア</p><b>${avg ?? '–'}<small>／100</small></b></div>
+  <div><p>注意が必要な地域</p><b class="wp-acc">${lv1.length + lv2.length}<small>／9</small></b></div>
+  <div><p>最大の気圧低下</p><b>${big ? Math.abs(big.rate).toFixed(1) : '–'}<small>hPa/h${big ? `（${esc(big.region)}）` : ''}</small></b></div>
+  <div><p>気圧変化のタイミング</p><span class="wp-timing">${timing.length ? timing.map(esc).join('<br>') : '大きな変化なし'}</span></div>
+</section>
+<section class="wp-main">
+  <div class="wp-col">
+    <h2 class="wp-h">地域別 そらもよう一覧<small>点数の低い順・各地方の代表都市</small></h2>
+    <table class="wp-table"><thead><tr><th scope="col">地域／代表都市</th><th scope="col">点数</th><th scope="col">判定</th><th scope="col">気圧の動き（今後24時間）</th></tr></thead>
+    <tbody>${sorted.map((r) => `<tr><th scope="row">${esc(r.region)}<small>${esc(r.name)}</small></th><td class="wp-num">${r.mood.score}</td><td>${badge(r.mood.score)}</td><td>${pmove(r)}</td></tr>`).join('')}</tbody></table>
+    <ul class="wp-list">${sorted.map((r) => `<li><div><b>${esc(r.region)}</b><small>${esc(r.name)}</small>${r.at && r.level !== 'none' && r.rate < 0 ? `<span class="wp-sub">気圧低下 ${jstDH(r.at)}ごろ ${Math.abs(r.rate).toFixed(1)}hPa/h</span>` : ''}</div><div class="wp-li-r">${badge(r.mood.score)}<span class="wp-num">${r.mood.score}</span></div></li>`).join('')}</ul>
+  </div>
+  <aside class="wp-side">
+    <section class="wp-box"><h2>要因分析</h2><p>${esc(paras[1])}</p>
+      <ul class="wp-fac">${fcount.map(([k, n]) => `<li><span>${esc(FACTOR_JA[k])}</span><i style="--w:${Math.round((n / 9) * 100)}%"></i><b>${n}地域</b></li>`).join('') || '<li><span>目立った要因なし</span></li>'}</ul></section>
+    <section class="wp-box"><h2>本日のセルフケア 三か条</h2><ol class="wp-care">${tips.map((x, i) => `<li><span class="wp-maru">${kanji[i]}</span><div><b>${esc(x.t)}</b><p>${esc(x.d)}</p></div></li>`).join('')}</ol>
+      <p class="wp-links"><a href="/care">今日の過ごし方をくわしく</a>・<a href="/app/#log" data-quicklog>体調を記録する</a></p></section>
+  </aside>
+</section>
+<section class="wp-legend" aria-label="判定の凡例"><span class="wp-badge wp-bad">要注意</span>60点以下<span class="wp-badge wp-mid">やや不安定</span>61〜69点<span class="wp-badge wp-ok">おおむね良好</span>70〜84点<span class="wp-badge wp-good">気候が快調</span>85点以上</section>
+<footer class="wp-foot"><p>【出典】気象庁、OpenWeatherMap。“体調そらもよう”指数は、気圧・気温差・降水・湿度から算出したウェルミー独自の目安で、医学的な診断ではありません。天気図は模式図です。</p><p>関連：<a href="/today">全国の地図</a>・<a href="/weather">週間天気</a>・<a href="/guide">気象病ガイド・症状別</a>・<a href="/columns/day-before">気圧が下がる前日の準備</a></p><p class="wp-pub">発行＝Welmy 編集部</p></footer>
 </div>`;
   return layout({
     title: `${date}の気象病予報｜${headline}`,
     description: points.join(' '),
     keywords: ['気象病 予報', '今日 気圧 頭痛', '天気痛', ymd],
     page: 'today', path: '/daily', noindex: true,
+    extraHead: '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Shippori+Mincho:wght@500;700;800&family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">\n<link rel="stylesheet" href="/daily.css">',
     jsonld: [{ '@type': 'NewsArticle', headline: `${date}の気象病予報｜${headline}`, datePublished: new Date(sum.now).toISOString(), dateModified: new Date(sum.now).toISOString(), inLanguage: 'ja', author: { '@type': 'Organization', name: `${SITE}編集部` }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }],
-    body, wide: true, bodyClass: 'np-page',
+    body, wide: true, bodyClass: 'wp-page',
   });
 }
