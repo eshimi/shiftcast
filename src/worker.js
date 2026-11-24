@@ -18,7 +18,7 @@ import { miniChartHtml } from './minichart.js';
 import { SYMPTOMS } from './symptoms.js';
 import { robotsTxt, llmsTxt, llmsFullTxt } from './seo.js';
 import { factorTilesHtml, moodBlockHtml, moodMiniHtml } from './tiles.js';
-import { guidePage, symptomPage } from './pages.js';
+import { guidePage, symptomPage, dailyPage } from './pages.js';
 import { carePage, checkPage, todayPage, glossaryPage, appPage, topPage, pressurePage, pressureIndexPage, weatherPage, columnsPage, columnPage, aboutPage, notFoundPage } from './pages.js';
 
 const app = new Hono();
@@ -284,6 +284,12 @@ app.get('/today', async (c) => {
   try { sum = await todaySummary(c.env); } catch (e) { console.error('[today]', e); }
   c.header('Cache-Control', 'public, max-age=600');
   return c.html(todayPage(sum));
+});
+app.get('/daily', async (c) => { // 今日の気象病予報(デイリー記事のサンプル。noindex)
+  let sum = { now: Date.now(), rows: [] };
+  try { sum = await todaySummary(c.env); } catch (e) { console.error('[daily]', e); }
+  c.header('Cache-Control', 'public, max-age=600');
+  return c.html(dailyPage(sum));
 });
 app.get('/check', (c) => html(c, checkPage()));
 app.get('/care', (c) => html(c, carePage()));

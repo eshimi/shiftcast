@@ -35,7 +35,7 @@ export async function todaySummary(env, now = Date.now()) {
     const cur = past[past.length - 1] ?? ann[0];
     const worst = worstDrop(ann.filter((p) => p.ts > now && p.ts <= now + 24 * HOUR));
     return {
-      region, code, name: AREA_BY_CODE.get(code).name, ok: true, mood: mood ? { level: mood.level, label: mood.label, score: mood.score } : null,
+      region, code, name: AREA_BY_CODE.get(code).name, ok: true, mood: mood ? { level: mood.level, label: mood.label, score: mood.score, desc: mood.desc, factors: mood.factors || [] } : null,
       pressure: Math.round(cur.pressure * 10) / 10,
       level: worst ? worst.level : 'none', label: LEVEL_LABEL[worst ? worst.level : 'none'],
       rate: worst ? worst.rate : null, at: worst ? worst.ts : null, severity: worst ? SEVERITY[worst.level] : 0,

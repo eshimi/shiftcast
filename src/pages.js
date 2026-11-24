@@ -4,7 +4,7 @@ import { PEOPLE, PERSON } from './people.js';
 import { SITE_URL, SITE_NAME, OG_IMAGE } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
-import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL } from './care.js';
+import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL, CARE_GENERAL } from './care.js';
 import { factorTilesHtml, moodBlockHtml } from './tiles.js';
 import { miniChartHtml } from './minichart.js';
 import { COLUMN_EXTRA } from './column-extra.js';
@@ -100,7 +100,7 @@ const DS_FONTS = TOP_FONTS; // トップ以外も明朝体にそろえる(design
 
 const jsonLd = (list) => list.map((o) => `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', ...o }).replace(/</g, '\\u003c')}</script>`).join('\n');
 
-function layout({ title, rawTitle, description, keywords, page, path, jsonld = [], body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
+function layout({ title, rawTitle, description, keywords, page, path, jsonld = [], noindex = false, body, extraHead = '', scripts = '', wide = false, chrome = true, bodyClass = '' }) {
   const full = rawTitle || `${title} | ${SITE_TITLE}`;
   const url = path ? SITE_URL + path : '';
   const ogType = page === 'column' ? 'article' : 'website';
@@ -122,7 +122,7 @@ ${url ? `<link rel="canonical" href="${esc(url)}">\n<meta property="og:url" cont
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-${page === 'none' ? '<meta name="robots" content="noindex">\n' : ''}${jsonLd(jsonld)}
+${page === 'none' || noindex ? '<meta name="robots" content="noindex">\n' : ''}${jsonLd(jsonld)}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 ${chrome ? DS_FONTS : TOP_FONTS}
@@ -1002,5 +1002,64 @@ ${faqHtml(faq)}
     keywords: ['気象病', '天気痛', x.name, '気圧'], page: 'symptom', path: `/symptoms/${x.slug}`,
     jsonld: [{ '@type': 'MedicalWebPage', name: x.h1, url: `${SITE_URL}/symptoms/${x.slug}`, inLanguage: 'ja', about: { '@type': 'MedicalSymptom', name: x.name }, dateModified: COLUMN_UPDATED, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }, faqLd(faq), crumbLd([['トップ', '/'], ['気象病ガイド', '/guide'], [x.name, `/symptoms/${x.slug}`]])],
     body,
+  });
+}
+
+
+/* ---------- 今日の気象病予報(デイリー記事・サンプル) ---------- */
+const FACTOR_JA = { past: '過去24時間の気圧低下', pressure: '気圧の変化', temp: '気温差', rain: '雨', hum: '湿度' };
+const TOD_JA = (h) => (h < 5 ? '未明' : h < 10 ? '朝' : h < 14 ? '昼' : h < 18 ? '夕方' : '夜');
+export function dailyPage(sum) {
+  const d = new Date(sum.now + 9 * 3600e3);
+  const date = `${d.getUTCMonth() + 1}月${d.getUTCDate()}日（${'日月火水木金土'[d.getUTCDay()]}）`;
+  const ymd = d.toISOString().slice(0, 10);
+  const rows = sum.rows.filter((r) => r.mood);
+  const short = (r) => r.region + (r.region === '北海道' || r.region === '沖縄' ? '' : `（${r.name.replace(/[都府県]$/, '')}）`);
+  const bad = rows.filter((r) => r.mood.level <= 2).sort((a, b) => a.mood.score - b.mood.score);
+  const mid = rows.filter((r) => r.mood.level === 3);
+  const good = rows.filter((r) => r.mood.level >= 4);
+  const avg = rows.length ? Math.round(rows.reduce((a, r) => a + r.mood.score, 0) / rows.length) : null;
+  const headline = !rows.length ? '全国の体調そらもよう'
+    : bad.length ? `${bad.slice(0, 3).map((r) => r.region).join('・')}は体調に注意`
+    : mid.length ? `${mid.slice(0, 3).map((r) => r.region).join('・')}はやや不安定` : '全国的に穏やかな一日';
+  // いちばん多い要因
+  const fc = {}; rows.forEach((r) => r.mood.factors.forEach((f) => { fc[f] = (fc[f] || 0) + (6 - r.mood.level); }));
+  const topF = Object.entries(fc).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  const f0 = topF[0];
+  // 気圧が動く時間帯
+  const byTod = {};
+  rows.filter((r) => r.at && r.level !== 'none').forEach((r) => { const h = new Date(r.at + 9 * 3600e3).getUTCHours(); (byTod[TOD_JA(h)] ||= []).push(r); });
+  const points = !rows.length ? ['データを準備中です。'] : [
+    bad.length ? [1, 2].map((lv) => { const a = bad.filter((r) => r.mood.level === lv); if (!a.length) return ''; const lb = a[0].mood.label; return `${a.slice(0, 4).map((r) => r.region).join('・')}${a.length > 4 ? `など${a.length}地方` : ''}が「${lb}」`; }).filter(Boolean).join('、') + `。無理のない予定を（全国平均スコア ${avg}）。` : `「体調に影響しそう」以上の地方はありません（全国平均スコア ${avg}）。`,
+    f0 ? `全国でいちばん効いている要因は「${FACTOR_JA[f0]}」です。` : '目立った要因はありません。',
+    Object.keys(byTod).length ? `気圧が動く時間帯：${Object.entries(byTod).map(([t, a]) => `${t}（${a.map((r) => r.region).join('・')}）`).join('、')}。` : '今後24時間、大きな気圧の変化は見込まれていません。',
+  ];
+  const tips = f0 && CARE_FACTORS[f0] ? CARE_FACTORS[f0].tips.slice(0, 3) : CARE_GENERAL.slice(0, 3);
+  const card = (r) => `<article class="dl-card tm-b-${r.mood.level}"><header><b>${esc(r.region)}</b><small>${esc(r.name)}</small><span class="dl-score">${r.mood.score}<small>/100</small></span></header>
+  <p class="dl-lv"><span class="lvno sm tm-${r.mood.level}">${r.mood.level}</span>${esc(r.mood.label)}</p>
+  <p class="dl-p">${r.ok ? `気圧 ${Math.round(r.pressure)}hPa・<span class="pill lv-${r.level}">${esc(r.label)}</span>` : '気圧 準備中'}${r.at && r.level !== 'none' ? `<br><small>${jstDH(r.at)}ごろ ${sgn(r.rate)}${Math.abs(r.rate).toFixed(1)}hPa/h</small>` : ''}</p>
+  ${r.mood.factors.length ? `<p class="dl-f">${r.mood.factors.map((f) => `<span>${esc(FACTOR_JA[f])}</span>`).join('')}</p>` : ''}
+  <a class="dl-more" href="/pressure/${PREFS.find((p) => p.code === r.code)?.slug || ''}">${esc(r.name)}の予報 →</a></article>`;
+  const body = `
+<div class="page-head"><div class="wrap"><p class="en">DAILY FORECAST · ${ymd}</p><h1>${esc(date)}の気象病予報｜${esc(headline)}</h1><p>全国9地方の「体調そらもよう」と気圧の動きから、今日の体調への影響をまとめました。毎朝更新。</p></div></div>
+<div class="wrap article-wrap daily">
+<p class="sample-note">これは「今日の気象病予報（デイリー記事）」のサンプルです。内容は実際の予報データから自動で作成しています。</p>
+<div class="keypoints" role="note"><p class="kp-h">今日のポイント</p><ul>${points.map((t) => `<li>${esc(t)}</li>`).join('')}</ul></div>
+<section class="sec"><h2 class="pg-h">全国の体調そらもよう</h2>${dotMapHtml(sum.rows)}
+<p class="dl-legend"><span><i class="tm-5"></i>気候が快調</span><span><i class="tm-4"></i>おおむね良好</span><span><i class="tm-3"></i>やや不安定</span><span><i class="tm-2"></i>影響しそう</span><span><i class="tm-1"></i>体調不良に注意</span></p></section>
+<section class="sec"><h2 class="pg-h">地方ごとの見通し</h2><div class="dl-grid">${rows.sort((a, b) => a.mood.score - b.mood.score).map(card).join('')}</div></section>
+<section class="sec"><h2 class="pg-h">今日の過ごし方のヒント</h2><p>${f0 ? `今日は「${esc(FACTOR_JA[f0])}」に気をつけたい一日です。` : '大きな変化の少ない日です。生活リズムを整えて過ごしましょう。'}</p>
+<ol class="care-list">${tips.map((x) => `<li><b>${esc(x.t)}</b><span>${esc(x.d)}</span></li>`).join('')}</ol>
+<p class="row"><a class="btn primary" href="/care">今日の過ごし方をくわしく</a><a class="btn" href="/app/#log" data-quicklog>いまの体調を記録する</a></p></section>
+<section class="sec"><h2 class="pg-h">あわせて見る</h2><ul class="plain"><li><a href="/today">全国の地図（今日の気圧）</a>・<a href="/weather">週間天気</a>・<a href="/pressure">都道府県別の気圧予報</a></li><li>症状別：${SYMPTOMS.map((y) => `<a href="/symptoms/${y.slug}">${esc(y.name)}</a>`).join('・')}</li><li><a href="/columns/day-before">気圧が下がる前日にできる5つの準備</a></li></ul></section>
+<div class="refs"><p class="muted small">気圧・天気のデータ：気象庁、OpenWeatherMap。体調そらもようは、気圧・気温差・降水・湿度の目安を点数化した、ウェルミー独自の指標です。地方の値は代表都市のものです。医学的な診断ではありません。作成：${esc(SITE)}（自動生成）</p></div>
+</div>`;
+  return layout({
+    title: `${date}の気象病予報｜${headline}`,
+    description: points.join(' '),
+    keywords: ['気象病 予報', '今日 気圧 頭痛', '天気痛', ymd],
+    page: 'today', path: '/daily', noindex: true,
+    jsonld: [{ '@type': 'NewsArticle', headline: `${date}の気象病予報｜${headline}`, datePublished: new Date(sum.now).toISOString(), dateModified: new Date(sum.now).toISOString(), inLanguage: 'ja', author: { '@type': 'Organization', name: `${SITE}編集部` }, publisher: { '@type': 'Organization', name: SITE, url: SITE_URL } }],
+    body, wide: true,
   });
 }
