@@ -287,6 +287,8 @@ app.get('/today', async (c) => {
   return c.html(todayPage(sum));
 });
 // 今日の気象病予報: /daily = 今日の号、/daily/YYYY-MM-DD = その日の号(保存済み)、/daily/archive = バックナンバー
+app.get('/apps', (c) => c.redirect('/app/', 301)); // よくある打ち間違い
+app.get('/apps/', (c) => c.redirect('/app/', 301));
 app.get('/daily', async (c) => {
   let r = { date: null, sum: { now: Date.now(), rows: [] }, saved: false };
   try { r = await ensureDaily(c.env); } catch (e) { console.error('[daily]', e); }
