@@ -230,6 +230,17 @@ function renderNotifyCard() {
   const on = S.me.notify && S.me.hasPush;
   if (on || !S.cfg.firebase || !S.cfg.vapidKey) { el.hidden = true; return; } // 設定済み、またはサーバー側の通知設定が未完了のときは出さない
   el.hidden = false;
+  // iPhone/iPad の Safari タブでは通知を登録できない(ホーム画面に追加したアプリからのみ)。押しても失敗するボタンは出さず、手順を案内する
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent), standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  if (ios && !standalone) {
+    el.replaceChildren(
+      h('p', { class: 'ncard-h' }, '通知は、ホーム画面のアプリで受け取れます'),
+      h('ol', { class: 'ncard-ul' },
+        h('li', {}, 'Safari の「共有」（または「≡」→「共有」）から「ホーム画面に追加」を選びます。'),
+        h('li', {}, 'ホーム画面の「ウェルミー」アイコンから開き、この欄の「受け取る」を押します。')),
+      h('p', { class: 'muted small' }, 'すでに追加している場合は、ホーム画面のアイコンから開いてください。'));
+    return;
+  }
   el.replaceChildren(
     h('p', { class: 'ncard-h' }, '明日が注意以上の日は、前の晩20時にお知らせします'),
     h('div', { class: 'ncard-sample', 'aria-hidden': 'true' }, h('b', {}, 'ウェルミー'), h('span', {}, '明日は気圧が大きく下がる見込みです（警戒）。早めの備えを'), h('small', {}, '20:00')),
