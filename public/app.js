@@ -282,6 +282,7 @@ async function quickLog(pain) {
 }
 // 記録の保存(記録タブのフォームと、今日の記録ミニで共通)
 async function saveLog(body, editId) {
+  try { window.gtag?.('event', editId ? 'log_edit' : 'log_save', { pain: body.pain }); } catch { /* 計測失敗は無視 */ }
   return editId ? api('/logs/' + editId, { method: 'PUT', body }) : api('/logs', { method: 'POST', body });
 }
 function painButtons(onPick, selected) {
@@ -609,6 +610,7 @@ async function enablePush() {
   // eslint-disable-next-line no-undef
   const token = await firebase.messaging().getToken({ vapidKey: S.cfg.vapidKey, serviceWorkerRegistration: reg });
   S.me = await api('/me', { method: 'PUT', body: { fcm_token: token, notify: true } });
+  try { window.gtag?.('event', 'push_enable'); } catch { /* 無視 */ }
 }
 $('#notifyChk').addEventListener('change', async (e) => {
   try {

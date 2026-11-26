@@ -1,7 +1,7 @@
 // サーバー側で描画するページ（トップ / 週間天気 / コラム）。共通のヘッダー・フッターをここで持つ。
 import { COLUMNS, COLUMN_UPDATED, COLUMN_KEYWORDS, findColumn } from './columns.js';
 import { PEOPLE, PERSON } from './people.js';
-import { SITE_URL, SITE_NAME, OG_IMAGE } from './siteconfig.js';
+import { SITE_URL, SITE_NAME, OG_IMAGE, GA_ID } from './siteconfig.js';
 import { APP_BODY, APP_TABS } from './appbody.js';
 import { GLOSSARY } from './glossary.js';
 import { CARE_FACTORS, CARE_TIMES, CARE_HELP, CARE_MAX_LEVEL, CARE_GENERAL } from './care.js';
@@ -134,7 +134,7 @@ ${chrome ? DS_FONTS : TOP_FONTS}
 <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/icon-192.png?v=2" sizes="192x192" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
-<link rel="manifest" href="/manifest.json">
+${GA_ID ? `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA_ID}"></script>\n<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA_ID}');</script>\n` : ''}<link rel="manifest" href="/manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ウェルミー">
